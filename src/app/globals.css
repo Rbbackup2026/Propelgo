@@ -1,26 +1,151 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  /* Brand — taken from the PropelGo logo */
+  --color-forest: #062617;
+  --color-forest-950: #03140c;
+  --color-forest-900: #051e12;
+  --color-forest-800: #0a2c1c;
+  --color-forest-700: #0f3a26;
+  --color-forest-600: #175034;
+  --color-signal: #07f258;
+  --color-signal-dim: #05c247;
+  --color-leaf: #049a39;
+  --color-mint: #d7f5df;
+  --color-mint-50: #eefbf1;
+
+  /* Neutrals */
+  --color-paper: #f5f4ef;
+  --color-paper-200: #ebe9e1;
+  --color-paper-300: #dedbd0;
+  --color-ink: #0c1f16;
+  --color-ink-soft: #3c4c43;
+  --color-muted: #66756c;
+  --color-amber: #c98a1b;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-rail: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --animate-drift-a: drift-a 22s ease-in-out infinite alternate;
+  --animate-drift-b: drift-b 28s ease-in-out infinite alternate;
+  --animate-marquee: marquee 48s linear infinite;
+  --animate-pulse-ring: pulse-ring 2.8s var(--ease-out-expo) infinite;
+
+  @keyframes drift-a {
+    0% { transform: translate3d(-8%, -4%, 0) scale(1); }
+    100% { transform: translate3d(10%, 8%, 0) scale(1.15); }
+  }
+  @keyframes drift-b {
+    0% { transform: translate3d(6%, 10%, 0) scale(1.1); }
+    100% { transform: translate3d(-10%, -6%, 0) scale(0.95); }
+  }
+  @keyframes marquee {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(0.85); opacity: 0.55; }
+    100% { transform: scale(1.9); opacity: 0; }
   }
 }
 
+:root {
+  color-scheme: light;
+  --header-h: 72px;
+}
+
+html {
+  background: var(--color-forest-950);
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-signal);
+  color: var(--color-forest);
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+@utility display {
+  font-weight: 500;
+  letter-spacing: -0.038em;
+  line-height: 0.98;
+}
+
+@utility heading {
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+}
+
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Fine engineering grid used behind diagrams and on dark sections */
+@utility grid-lines {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+@utility grid-lines-ink {
+  background-image:
+    linear-gradient(to right, rgb(12 31 22 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(12 31 22 / 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+@utility grain {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.09;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
