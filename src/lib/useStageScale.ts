@@ -8,19 +8,18 @@ import { useEffect, useRef, useState } from "react";
  */
 export function useStageScale<T extends HTMLElement>(stageWidth: number, max = 1) {
   const ref = useRef<T>(null);
-  const [scale, setScale] = useState(1);
+  const [width, setWidth] = useState(0);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const ro = new ResizeObserver(([entry]) => {
-      setScale(Math.min(max, entry.contentRect.width / stageWidth));
-    });
+    const ro = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
     ro.observe(el);
     return () => ro.disconnect();
-  }, [stageWidth, max]);
+  }, []);
 
-  return { ref, scale };
+  const scale = width ? Math.min(max, width / stageWidth) : 1;
+  return { ref, scale, width };
 }
 
 /** Advances a looping phase index while `active` is true. */

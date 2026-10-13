@@ -1,62 +1,34 @@
 import { security } from "@/content/home";
-import { Eyebrow, MaskLines, Reveal } from "@/components/ui/Reveal";
-import { EyeIcon, LockIcon, ShieldIcon } from "@/components/ui/icons";
-import { ControlsConsole } from "./visuals/ControlsConsole";
-
-const principleIcons = [ShieldIcon, LockIcon, EyeIcon];
+import { Eyebrow, Reveal } from "@/components/ui/Reveal";
+import { ShieldIcon } from "@/components/ui/icons";
 
 export function Security() {
   return (
-    <section className="bg-paper" aria-labelledby="security-title">
-      <div className="mx-auto grid max-w-[1320px] gap-14 px-5 py-24 md:px-8 md:py-32 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
-        <div>
-          <Eyebrow>{security.eyebrow}</Eyebrow>
-          <h2 id="security-title" className="heading mt-6 text-[36px] text-ink md:text-[48px] lg:text-[52px]">
-            <MaskLines lines={["Built for trust.", "Designed for", "enterprise."]} />
-          </h2>
-          <Reveal delay={0.1}>
-            <p className="mt-7 max-w-[42ch] text-[16px] leading-relaxed text-ink-soft">{security.copy}</p>
+    <section aria-labelledby="security-title" className="py-20 md:py-24">
+      <div className="container-page">
+        <div className="grid items-center gap-10 border-y border-line py-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
+          <Reveal className="max-w-[460px]">
+            <Eyebrow>{security.eyebrow}</Eyebrow>
+            <h2 id="security-title" className="mt-3 text-[clamp(1.625rem,1.3rem+1vw,2.125rem)] leading-tight font-semibold tracking-[-0.022em] text-ink">
+              {security.title}
+            </h2>
+            <p className="mt-3 text-[16px] leading-relaxed text-copy">{security.copy}</p>
           </Reveal>
-
-          <ul className="mt-10 space-y-px overflow-hidden rounded-2xl border border-paper-300 bg-paper-300">
-            {security.principles.map((p, i) => {
-              const Icon = principleIcons[i];
-              return (
-                <Reveal as="li" key={p.title} delay={0.1 + i * 0.08} className="flex gap-4 bg-paper p-5">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white text-leaf ring-1 ring-paper-300">
-                    <Icon />
+          <Reveal delay={0.08}>
+            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {security.badges.map((b) => (
+                <li key={b.name} className="flex flex-col items-center gap-3 rounded-2xl px-4 py-5 text-center ring-1 ring-line sm:w-[150px]">
+                  <span className="grid size-12 place-items-center rounded-full bg-mist text-brand ring-1 ring-mint">
+                    <ShieldIcon className="size-5" />
                   </span>
-                  <div>
-                    <p className="text-[16px] font-medium text-ink">{p.title}</p>
-                    <p className="mt-1 text-[14px] leading-relaxed text-muted">{p.copy}</p>
-                  </div>
-                </Reveal>
-              );
-            })}
-          </ul>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <Reveal>
-            <ControlsConsole controls={security.controls} />
-          </Reveal>
-          <Reveal delay={0.1}>
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="grid aspect-[4/3] place-items-center rounded-2xl border border-dashed border-paper-300 bg-white/60 text-center"
-                >
-                  <div>
-                    <span className="mx-auto grid size-8 place-items-center rounded-full border border-dashed border-ink/20 text-ink/40">
-                      <ShieldIcon className="size-3.5" />
-                    </span>
-                    <span className="label mt-2 block !text-[8.5px] text-muted">Certification</span>
-                  </div>
-                </div>
+                  <span>
+                    <span className="block text-[15px] font-semibold text-ink">{b.name}</span>
+                    <span className="mt-0.5 block text-[12.5px] text-sub">{b.line}</span>
+                  </span>
+                </li>
               ))}
-            </div>
-            <p className="label mt-3 w-fit rounded border border-dashed border-amber/50 bg-[#fbf0d9]/60 px-2 py-1 !text-[9.5px] text-amber">{security.badgesNote}</p>
+            </ul>
+            <p className="mt-3 text-right text-[12px] text-sub">{security.note}</p>
           </Reveal>
         </div>
       </div>

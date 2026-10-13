@@ -9,6 +9,7 @@ import { Security } from "@/components/home/Security";
 import { Testimonials } from "@/components/home/Testimonials";
 import { Resources } from "@/components/home/Resources";
 import { FinalCta } from "@/components/home/FinalCta";
+import { DirectionSwitcher } from "@/components/options/DirectionSwitcher";
 
 const orgJsonLd = {
   "@context": "https://schema.org",
@@ -36,6 +37,8 @@ export default function HomePage() {
         <FinalCta />
       </main>
       <Footer />
+      {/* Review aid while the client compares directions; remove before launch. */}
+      <DirectionSwitcher current="a" />
     </>
   );
 }

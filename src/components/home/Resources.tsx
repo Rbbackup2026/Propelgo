@@ -1,39 +1,37 @@
 import Link from "next/link";
 import { resources } from "@/content/home";
-import { TextLink } from "@/components/ui/Button";
-import { Eyebrow, MaskLines, Reveal } from "@/components/ui/Reveal";
-import { ArrowUpRight } from "@/components/ui/icons";
+import { Button } from "@/components/ui/Button";
+import { Reveal, SectionIntro } from "@/components/ui/Reveal";
+
+type Art = (typeof resources.items)[number]["art"];
 
 export function Resources() {
   return (
-    <section className="bg-paper" aria-labelledby="resources-title">
-      <div className="mx-auto max-w-[1320px] px-5 py-24 md:px-8 md:py-32">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div>
-            <Eyebrow>{resources.eyebrow}</Eyebrow>
-            <h2 id="resources-title" className="heading mt-6 text-[36px] text-ink md:text-[48px] lg:text-[52px]">
-              <MaskLines lines={["Explore our latest insights."]} />
-            </h2>
-          </div>
-          <TextLink href={resources.cta.href}>{resources.cta.label}</TextLink>
+    <section className="pb-28 md:pb-36">
+      <div className="container-page">
+        <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <SectionIntro eyebrow={resources.eyebrow} title={resources.title} />
+          <Button href={resources.cta.href} variant="text" className="self-start md:self-auto">
+            {resources.cta.label}
+          </Button>
         </div>
-
-        <ul className="mt-14 grid gap-5 md:grid-cols-3">
+        <ul className="mt-12 grid gap-6 md:grid-cols-3">
           {resources.items.map((r, i) => (
-            <Reveal as="li" key={r.title} delay={i * 0.08}>
+            <Reveal as="li" key={r.title} delay={i * 0.06}>
               <Link href={r.href} className="group block">
-                <div className="relative aspect-[4/3] overflow-hidden rounded-[24px]">
-                  <Art kind={r.art} />
+                <div className="aspect-[4/3] overflow-hidden rounded-2xl ring-1 ring-line">
+                  <div className="size-full transition-transform duration-700 ease-out-expo group-hover:scale-[1.04]">
+                    <Cover art={r.art} />
+                  </div>
                 </div>
-                <div className="mt-5 flex items-center gap-2">
-                  <span className="label rounded bg-paper-200 px-2 py-1 !text-[9.5px] text-ink-soft">{r.type}</span>
-                  <span className="label !text-[9.5px] text-muted">{r.read}</span>
-                </div>
-                <h3 className="mt-3 text-[20px] leading-snug font-medium tracking-[-0.02em] text-ink transition-colors group-hover:text-leaf">{r.title}</h3>
-                <span className="mt-4 inline-flex items-center gap-1.5 border-b border-ink/25 pb-1 text-[14px] font-medium text-ink transition-colors group-hover:border-leaf">
-                  Read more
-                  <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </span>
+                <p className="mt-5 flex items-center gap-2 text-[14px] text-sub">
+                  <span className="font-medium text-brand">{r.type}</span>
+                  <span aria-hidden="true">·</span>
+                  {r.read}
+                </p>
+                <h3 className="mt-2 text-[19px] leading-snug font-semibold tracking-[-0.014em] text-pretty text-ink decoration-ghost underline-offset-4 group-hover:underline">
+                  {r.title}
+                </h3>
               </Link>
             </Reveal>
           ))}
@@ -43,66 +41,47 @@ export function Resources() {
   );
 }
 
-function Art({ kind }: { kind: string }) {
-  if (kind === "rails") {
+/** Flat editorial covers, one composition per topic. */
+function Cover({ art }: { art: Art }) {
+  if (art === "orchestration") {
     return (
-      <div className="grid-lines absolute inset-0 bg-forest">
-        <svg viewBox="0 0 400 300" className="absolute inset-0 size-full" fill="none" aria-hidden="true">
-          <path d="M0 210 H150 V130 H260 V90 H400" stroke="rgba(7,242,88,0.25)" strokeWidth="1.5" />
-          <path
-            d="M0 210 H150 V130 H260 V90 H400"
-            stroke="#07F258"
-            strokeWidth="1.5"
-            pathLength="1"
-            strokeDasharray="1"
-            className="[stroke-dashoffset:0.55] transition-[stroke-dashoffset] duration-1000 ease-out-expo group-hover:[stroke-dashoffset:0]"
-          />
-          <circle cx="150" cy="210" r="4" fill="#07F258" />
-          <circle cx="260" cy="130" r="4" fill="#07F258" />
-        </svg>
-        <span className="absolute top-[37%] left-[34%] grid size-14 place-items-center rounded-xl bg-signal text-forest transition-transform duration-700 ease-out-expo group-hover:translate-x-6 group-hover:-translate-y-4">
-          <ArrowUpRight className="size-6" />
-        </span>
-      </div>
+      <svg viewBox="0 0 400 300" className="size-full bg-mist" fill="none" aria-hidden="true">
+        {[60, 105, 150, 195, 240].map((y, i) => (
+          <path key={y} d={`M0 ${y} C 140 ${y}, 160 150, 260 150`} stroke={i === 2 ? "#017649" : "#95DE64"} strokeWidth={i === 2 ? 3 : 2} />
+        ))}
+        <path d="M260 150 H400" stroke="#017649" strokeWidth="3" />
+        <circle cx="260" cy="150" r="22" fill="#fff" stroke="#017649" strokeWidth="3" />
+        <circle cx="260" cy="150" r="8" fill="#017649" />
+      </svg>
     );
   }
-  if (kind === "card") {
+  if (art === "credit") {
     return (
-      <div className="absolute inset-0 grid place-items-center bg-mint">
-        <div className="w-[62%]">
-          <div className="mx-auto aspect-[1.6] w-[78%] -rotate-6 rounded-2xl bg-[linear-gradient(135deg,#145234,#062617)] p-4 shadow-[0_30px_50px_-20px_rgba(6,38,23,0.6)] transition-transform duration-700 ease-out-expo group-hover:-translate-y-3 group-hover:rotate-0">
-            <div className="flex justify-end">
-              <ArrowUpRight className="size-5 text-signal" />
-            </div>
-          </div>
-          <div className="mt-8 flex h-2 overflow-hidden rounded-full bg-white">
-            <span className="h-full w-[52%] bg-forest" />
-            <span className="h-full w-[10%] bg-leaf transition-[width] duration-1000 ease-out-expo group-hover:w-[30%]" />
-          </div>
-          <p className="label mt-3 text-center !text-[9.5px] text-forest/70">OD/CC limit → card spend</p>
-        </div>
-      </div>
+      <svg viewBox="0 0 400 300" className="size-full bg-mint/50" fill="none" aria-hidden="true">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <rect key={i} x={70 + i * 56} y={220 - (i + 1) * 30} width="36" height={(i + 1) * 30} rx="6" fill={i === 4 ? "#017649" : "#95DE64"} opacity={i === 4 ? 1 : 0.35 + i * 0.15} />
+        ))}
+        <rect x="200" y="50" width="140" height="88" rx="12" fill="#fff" stroke="#D9F7BE" strokeWidth="2" transform="rotate(-8 270 94)" />
+        <rect x="216" y="70" width="24" height="18" rx="4" fill="#D9F7BE" transform="rotate(-8 270 94)" />
+        <path d="M60 240h290" stroke="#D9F7BE" strokeWidth="2" />
+      </svg>
     );
   }
   return (
-    <div className="absolute inset-0 grid place-items-center bg-paper-200">
-      <ul className="w-[64%] space-y-2.5">
-        {[
-          ["w-[58%]", "bg-mint", "w-10"],
-          ["w-[44%]", "bg-mint", "w-12"],
-          ["w-[52%]", "bg-[#fbf0d9]", "w-9"],
-        ].map(([w, pill, pw], i) => (
-          <li
-            key={i}
-            className="flex items-center gap-3 rounded-xl bg-white px-4 py-3.5 shadow-[0_10px_24px_-16px_rgba(6,38,23,0.4)] transition-transform duration-500 ease-out-expo group-hover:translate-x-2"
-            style={{ transitionDelay: `${i * 60}ms` }}
-          >
-            <span className={`size-2.5 rounded-[3px] ${i === 2 ? "bg-paper-300" : "bg-forest"}`} />
-            <span className={`h-1.5 rounded-full bg-paper-300 ${w}`} />
-            <span className={`ml-auto h-4 rounded-full ${pill} ${pw}`} />
-          </li>
-        ))}
-      </ul>
-    </div>
+    <svg viewBox="0 0 400 300" className="size-full bg-surface" fill="none" aria-hidden="true">
+      {[0, 1, 2].map((row) =>
+        [0, 1, 2, 3].map((col) => {
+          const lit = (row === 1 && col === 2) || (row === 0 && col === 0);
+          return (
+            <g key={`${row}-${col}`} transform={`translate(${52 + col * 78} ${52 + row * 70})`}>
+              <rect width="64" height="54" rx="8" fill={lit ? "#017649" : "#fff"} stroke={lit ? "none" : "#E8E8E8"} />
+              <rect x="10" y="12" width="28" height="4" rx="2" fill={lit ? "#95DE64" : "#E8E8E8"} />
+              <rect x="10" y="22" width="40" height="4" rx="2" fill={lit ? "#ffffff" : "#EAEAEA"} opacity={lit ? 0.4 : 1} />
+              <rect x="10" y="38" width="20" height="6" rx="3" fill={lit ? "#ffffff" : "#D9F7BE"} opacity={lit ? 0.8 : 1} />
+            </g>
+          );
+        }),
+      )}
+    </svg>
   );
 }

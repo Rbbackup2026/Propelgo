@@ -49,16 +49,14 @@ export const nav = {
 
 export const hero = {
   eyebrow: "Enterprise payment infrastructure",
-  headline: ["Powering the", "way businesses", "move and", "manage money."],
-  accentWord: "move",
+  headline: "Powering the way businesses move and manage money.",
   copy: "From vendor payments and commercial credit to payment orchestration and cards, PropelGo helps businesses manage modern payment operations from one platform.",
   primaryCta: { label: "Talk to Us", href: "/contact" },
   secondaryCta: { label: "Explore our products", href: "#products" },
 };
 
 export const ecosystem = {
-  title: "Built across the payment ecosystem.",
-  caption: "Banks, networks and enterprises",
+  caption: "Built across the payment ecosystem",
   // Rendered as wordmarks until approved logo files are supplied.
   names: [
     "Air India Express",
@@ -81,65 +79,83 @@ export const overview = {
   title: "Building the infrastructure behind modern business payments.",
   lead: "PropelGo is an enterprise payments platform built to help businesses simplify how they move, manage, and control money.",
   body: "We connect the different parts of the business payment ecosystem, from banks, issuers and card networks to payment systems, workflows and financial operations, through technology designed for greater control, visibility, and efficiency.",
-  milestone: {
-    label: "Our story · First milestone",
-    text: "Founded by bankers and credit specialists. First transaction enabled for Air India Express.",
-  },
+  milestone: "Founded by bankers and credit specialists. First transaction enabled for Air India Express.",
   cta: { label: "Discover PropelGo", href: "/about" },
   nodes: [
-    { verb: "Connect", noun: "Banks" },
-    { verb: "Issue", noun: "Issuers" },
-    { verb: "Route", noun: "Card networks" },
-    { verb: "Integrate", noun: "Payment systems" },
-    { verb: "Automate", noun: "Workflows" },
-    { verb: "Reconcile", noun: "Financial operations" },
+    { verb: "Connect", noun: "Banks", line: "Multiple banking and issuer relationships through one integration." },
+    { verb: "Issue", noun: "Issuers", line: "Virtual and commercial cards issued with the right controls." },
+    { verb: "Route", noun: "Card networks", line: "Payments flow across Visa, Mastercard and RuPay." },
+    { verb: "Integrate", noun: "Payment systems", line: "ERP and enterprise applications connected over APIs." },
+    { verb: "Automate", noun: "Workflows", line: "Approvals and policies run inside every payment." },
+    { verb: "Reconcile", noun: "Finance teams", line: "Settlement data flows straight back to the ledger." },
   ],
 };
 
 export const stats = {
   title: "Built on experience. Growing with every milestone.",
-  note: "Illustrative figures · final numbers to be supplied by PropelGo",
+  note: "Illustrative figures. Final numbers to be supplied by PropelGo.",
   items: [
     { prefix: "", value: 120, suffix: "+", label: "Enterprise customers" },
     { prefix: "", value: 25, suffix: "M+", label: "Transactions processed" },
     { prefix: "₹", value: 8500, suffix: " Cr+", label: "Payment volume" },
-    { prefix: "", value: 18, suffix: "+", label: "Banking & financial ecosystem partners" },
+    { prefix: "", value: 18, suffix: "+", label: "Banking and ecosystem partners" },
   ],
 };
+
+export type ProductKey = "versa" | "odcc" | "orchestration";
 
 export const products = {
   eyebrow: "Our products",
   title: "One platform. Multiple ways to power business payments.",
   copy: "From vendor payments and commercial credit to payment orchestration, PropelGo brings together infrastructure designed for modern enterprise payment operations.",
-  versa: {
-    index: "Product 01",
-    flow: ["Vendor payments", "Virtual cards"],
-    name: "Versa",
-    tagline: "Enterprise vendor payments, simplified.",
-    copy: "Manage vendor and supplier payments through virtual cards, automated workflows, payment controls, visibility, and reconciliation.",
-    chips: ["Multi-bank", "ERP & API", "Reconciliation"],
-    cta: { label: "Explore Versa", href: "/products/versa" },
-  },
-  odcc: {
-    index: "Product 02",
-    flow: ["Credit", "Commercial card"],
-    name: "ODCC",
-    tagline: "Existing credit. New possibilities.",
-    copy: "Turn eligible OD/CC limits into a modern commercial-card experience for business spending.",
-    chips: ["Visa", "Mastercard", "RuPay"],
-    cta: { label: "Explore ODCC", href: "/products/odcc" },
-  },
-  orchestration: {
-    index: "Product 03",
-    flow: ["Many connections", "One layer"],
-    name: "Orchestration Layer",
-    tagline: "Orchestrate enterprise payments. From one layer.",
-    copy: "Connect enterprise systems with banks, issuers, networks, and payment providers through a unified payment orchestration layer.",
-    note: "The foundation beneath Versa, ODCC and any payment flow you build next.",
-    chips: ["API-first", "Routing rules", "Settlement"],
-    cta: { label: "Explore Orchestration", href: "/products/orchestration-layer" },
-  },
+  hint: "Tap a card to see what's inside",
+  items: [
+    {
+      key: "versa" as ProductKey,
+      name: "Versa",
+      category: "Vendor payments",
+      tagline: "Enterprise vendor payments, simplified.",
+      copy: "Manage vendor and supplier payments through virtual cards, automated workflows, payment controls, visibility, and reconciliation.",
+      features: [
+        "Virtual cards with controls for every payment",
+        "Maker-checker approval workflows",
+        "Vendor and supplier management",
+        "Automated payment reconciliation",
+      ],
+      cta: { label: "Explore Versa", href: "/products/versa" },
+    },
+    {
+      key: "odcc" as ProductKey,
+      name: "ODCC",
+      category: "Commercial credit",
+      tagline: "Existing credit. New possibilities.",
+      copy: "Turn eligible OD/CC limits into a modern commercial-card experience for business spending.",
+      features: [
+        "Use already-sanctioned OD/CC limits",
+        "Supplier, vendor, travel and utility spends",
+        "Spend controls set by the business",
+        "Runs on Visa, Mastercard and RuPay",
+      ],
+      cta: { label: "Explore ODCC", href: "/products/odcc" },
+    },
+    {
+      key: "orchestration" as ProductKey,
+      name: "Orchestration Layer",
+      category: "Infrastructure",
+      tagline: "Orchestrate enterprise payments. From one layer.",
+      copy: "Connect enterprise systems with banks, issuers, networks, and payment providers through a unified payment orchestration layer.",
+      features: [
+        "One integration, multiple banks and issuers",
+        "Configurable routing rules",
+        "Settlement and reconciliation built in",
+        "API-first, ERP-ready",
+      ],
+      cta: { label: "Explore Orchestration", href: "/products/orchestration-layer" },
+    },
+  ],
 };
+
+export type CapabilityKey = "routing" | "cards" | "workflow" | "reconcile";
 
 export const capabilities = {
   eyebrow: "Platform capabilities",
@@ -147,21 +163,25 @@ export const capabilities = {
   cta: { label: "Talk to our team", href: "/contact" },
   items: [
     {
+      key: "routing" as CapabilityKey,
       title: "Payment orchestration",
       copy: "Connect and manage payment flows across a complex payment ecosystem.",
       detail: "Configured routing rules decide which bank, network or provider carries each payment.",
     },
     {
+      key: "cards" as CapabilityKey,
       title: "Virtual & commercial cards",
       copy: "Enable controlled, purpose-driven business spending through card-based infrastructure.",
       detail: "Issue a card per vendor, per purpose or per trip, each with its own limits and validity.",
     },
     {
+      key: "workflow" as CapabilityKey,
       title: "Workflow automation",
       copy: "Bring approvals, controls, and operational workflows into the payment process.",
       detail: "Maker-checker and role-based approvals run inside the payment, not around it.",
     },
     {
+      key: "reconcile" as CapabilityKey,
       title: "Reconciliation & visibility",
       copy: "Bring payment data, settlement information, and operational insights into one view.",
       detail: "Payments match to the ledger automatically, so month-end is a review, not a hunt.",
@@ -172,30 +192,22 @@ export const capabilities = {
 export const security = {
   eyebrow: "Security & compliance",
   title: "Built for trust. Designed for enterprise.",
-  copy: "Financial infrastructure is built on trust. Compliance, security and accountability are embedded into the way we build, not added after.",
-  principles: [
-    { title: "Compliance first", copy: "Foundational to responsible financial infrastructure, not an afterthought." },
-    { title: "Security by design", copy: "Security as a core consideration, from the ground up." },
-    { title: "Transparency", copy: "Open communication and accountability on every commitment." },
+  copy: "Compliance, security and accountability are embedded into the way we build, not added after.",
+  // Placeholder labels until PropelGo confirms certifications and supplies badge artwork.
+  badges: [
+    { name: "PCI DSS", line: "Card data security" },
+    { name: "ISO 27001", line: "Information security" },
+    { name: "SOC 2", line: "Service controls" },
+    { name: "RBI aligned", line: "Regulatory guidelines" },
   ],
-  controls: [
-    "Role-based access",
-    "Maker-checker",
-    "Velocity controls",
-    "Merchant controls",
-    "Spend limits",
-    "IP whitelisting",
-    "Audit logs",
-    "Policy engine",
-  ],
-  badgesNote: "Certification badges to be supplied by PropelGo",
+  note: "Badges to be confirmed by PropelGo",
 };
 
 export const testimonials = {
-  eyebrow: "Customer testimonials",
+  eyebrow: "Customer stories",
   title: "Trusted by businesses building what's next.",
-  note: "Sample copy · replace with approved quotes",
-  cta: { label: "Customer stories", href: "/resources/customer-stories" },
+  note: "Sample copy. Replace with approved quotes.",
+  cta: { label: "Read customer stories", href: "/resources/customer-stories" },
   items: [
     {
       metric: "4×",
@@ -236,21 +248,21 @@ export const resources = {
       type: "Article",
       read: "6 min read",
       title: "What is payment orchestration, and why are enterprises adopting it?",
-      art: "rails",
+      art: "orchestration" as const,
       href: "/resources/articles/payment-orchestration",
     },
     {
       type: "Insight",
       read: "4 min read",
       title: "Getting more from working capital: OD/CC limits as a commercial card.",
-      art: "card",
+      art: "credit" as const,
       href: "/resources/articles/od-cc-commercial-card",
     },
     {
       type: "Guide",
       read: "8 min read",
       title: "A finance team's guide to virtual cards for vendor payments.",
-      art: "ledger",
+      art: "vendors" as const,
       href: "/resources/articles/virtual-cards-vendor-payments",
     },
   ],
@@ -258,8 +270,7 @@ export const resources = {
 
 export const finalCta = {
   eyebrow: "Get in touch",
-  title: ["Let's build better", "business"],
-  accent: "payments.",
+  title: "Let's build better business payments.",
   copy: "Tell us what you're building, and let's explore how PropelGo can help simplify your payment infrastructure.",
   cta: { label: "Talk to Us", href: "/contact" },
   email: "support@propelgpayments.com",

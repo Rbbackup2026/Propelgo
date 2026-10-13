@@ -1,161 +1,172 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
-import { LogoMark } from "@/components/ui/Logo";
+import { AnimatePresence, motion } from "motion/react";
+import type { CapabilityKey } from "@/content/home";
 import { Check } from "@/components/ui/icons";
 import { usePhaseLoop } from "@/lib/useStageScale";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-export function CapabilityArt({ index, active }: { index: number; active: boolean }) {
-  const Art = [RoutingArt, CardsArt, WorkflowArt, LedgerArt][index];
-  return <Art active={active} />;
+export function CapabilityArt({ kind, playing }: { kind: CapabilityKey; playing: boolean }) {
+  if (kind === "routing") return <RoutingArt playing={playing} />;
+  if (kind === "cards") return <CardsArt playing={playing} />;
+  if (kind === "workflow") return <WorkflowArt playing={playing} />;
+  return <LedgerArt playing={playing} />;
 }
 
-function useLoop(n: number, ms: number, active: boolean) {
-  const reduce = useReducedMotion();
-  const { phase } = usePhaseLoop(n, ms, active && !reduce);
-  return reduce ? n - 1 : phase;
-}
+/* 1. Rule engine: a payment is evaluated against a routing rule and drops into its lane. */
+const routed = [
+  { amount: "₹14,20,000", big: true },
+  { amount: "₹3,60,000", big: false },
+  { amount: "₹22,75,000", big: true },
+  { amount: "₹88,500", big: false },
+];
 
-/* 01 — Payment orchestration */
-function RoutingArt({ active }: { active: boolean }) {
-  const phase = useLoop(3, 1600, active);
-  const dests = [
-    { label: "Bank 01", meta: "NEFT", y: 50 },
-    { label: "Bank 02", meta: "Virtual card", y: 150 },
-    { label: "Card network", meta: "RuPay", y: 250 },
-  ];
-  const order = [1, 0, 2];
-  const target = order[phase];
-  const path = (y: number) => `M200 170 H290 V${y + 22} H350`;
+function RoutingArt({ playing }: { playing: boolean }) {
+  // phase 0: payment arrives, 1: rule evaluates, 2: routed
+  const { phase, cycle } = usePhaseLoop(3, 1100, playing);
+  const p = routed[cycle % routed.length];
+  const lane = p.big ? 0 : 1;
+  const counts = [0, 1].map((l) => routed.slice(0, (cycle % routed.length) + (phase === 2 ? 1 : 0)).filter((r) => (r.big ? 0 : 1) === l).length);
+
   return (
-    <svg viewBox="0 0 520 340" className="size-full" fill="none" aria-hidden="true">
-      <rect x="10" y="140" width="130" height="60" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.14)" />
-      <text x="26" y="164" fill="rgba(255,255,255,0.45)" fontSize="10" fontFamily="var(--font-mono)" letterSpacing="1.2">PAYMENT</text>
-      <text x="26" y="186" fill="#fff" fontSize="16" fontFamily="var(--font-sans)">₹4,82,500</text>
-      <path d="M140 170 H160" stroke="#07F258" strokeWidth="1.5" />
-      <rect x="160" y="146" width="48" height="48" rx="12" fill="#07F258" />
-      <path d="m176 178 16-16m-11 0h11v11" stroke="#062617" strokeWidth="2.2" />
-      {dests.map((d, i) => (
-        <g key={d.label}>
-          <path d={path(d.y)} stroke={i === target ? "#07F258" : "rgba(255,255,255,0.12)"} strokeWidth={i === target ? 1.6 : 1} style={{ transition: "stroke .4s" }} />
-          <rect
-            x="350"
-            y={d.y}
-            width="160"
-            height="44"
-            rx="10"
-            fill={i === target ? "rgba(7,242,88,0.1)" : "rgba(255,255,255,0.03)"}
-            stroke={i === target ? "rgba(7,242,88,0.7)" : "rgba(255,255,255,0.12)"}
-            style={{ transition: "all .4s" }}
-          />
-          <text x="366" y={d.y + 27} fill={i === target ? "#fff" : "rgba(255,255,255,0.6)"} fontSize="13" fontFamily="var(--font-sans)">
-            {d.label}
-          </text>
-          <text x="496" y={d.y + 27} textAnchor="end" fill={i === target ? "#07F258" : "rgba(255,255,255,0.3)"} fontSize="9" fontFamily="var(--font-mono)">
-            {d.meta.toUpperCase()}
-          </text>
-        </g>
-      ))}
-      <circle key={target} r="4.5" fill="#07F258">
-        <animateMotion dur="1.2s" repeatCount="indefinite" path={path(dests[target].y)} />
-      </circle>
-      <text x="10" y="320" fill="rgba(255,255,255,0.35)" fontSize="10" fontFamily="var(--font-mono)" letterSpacing="1.2">
-        RULE · ROUTE BY AMOUNT, VENDOR AND RAIL
-      </text>
-    </svg>
-  );
-}
+    <div className="flex h-full flex-col items-center justify-center gap-6 px-8">
+      <div className="h-11">
+        <AnimatePresence mode="wait">
+          {phase < 2 && (
+            <motion.div
+              key={cycle}
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 24, transition: { duration: 0.3 } }}
+              transition={{ duration: 0.5, ease }}
+              className="tabular rounded-full bg-white px-6 py-3 text-[17px] font-semibold text-ink shadow-[0_8px_20px_-10px_rgba(31,31,31,0.3)] ring-1 ring-line"
+            >
+              {p.amount}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
-/* 02 — Virtual & commercial cards */
-function CardsArt({ active }: { active: boolean }) {
-  const reduce = useReducedMotion();
-  const open = active || reduce;
-  const cards = [
-    { label: "Vendor · Kaveri Logistics", num: "8812", rot: -14, x: -120, y: 20 },
-    { label: "Travel · A. Mehta", num: "7730", rot: 0, x: 0, y: -10 },
-    { label: "Utilities · Recurring", num: "3047", rot: 14, x: 120, y: 20 },
-  ];
-  const chips = ["Limit ₹2,00,000", "Vendor-locked", "Valid 30 days", "Single use"];
-  return (
-    <div className="relative grid size-full place-items-center">
-      <div className="relative h-[170px] w-[260px] max-sm:-mt-10 max-sm:scale-[0.62]">
-        {cards.map((c, i) => (
-          <motion.div
-            key={c.num}
-            className={`absolute inset-0 overflow-hidden rounded-2xl border p-4 ${
-              i === 1 ? "z-10 border-signal/50 bg-[linear-gradient(135deg,#145234,#0a2c1c)]" : "border-white/12 bg-[linear-gradient(135deg,#0f3a26,#051e12)]"
-            }`}
-            animate={open ? { rotate: c.rot, x: c.x, y: c.y } : { rotate: 0, x: 0, y: 0 }}
-            transition={{ duration: 1, ease, delay: open ? 0.1 + i * 0.06 : 0 }}
-          >
-            <div className="flex items-center justify-between">
-              <LogoMark tone="dark" className="size-6" />
-              <span className="font-mono text-[9px] tracking-[0.14em] text-white/45">VIRTUAL</span>
-            </div>
-            <p className="mt-9 font-mono text-[14px] tracking-[0.16em] text-white/85">•••• {c.num}</p>
-            <p className="mt-1.5 font-mono text-[9px] tracking-[0.12em] text-white/45 uppercase">{c.label}</p>
-          </motion.div>
+      <div className="w-full max-w-[440px] rounded-2xl bg-white p-6 shadow-[0_12px_32px_-20px_rgba(31,31,31,0.18)] ring-1 ring-line">
+        <p className="text-[12px] font-medium text-sub">Routing rule</p>
+        <div className="mt-3 space-y-2 text-[15px]">
+          <RuleRow on={phase >= 1 && p.big} label="If amount above ₹10,00,000" target="Bank A" />
+          <RuleRow on={phase >= 1 && !p.big} label="Otherwise" target="Bank B" />
+        </div>
+      </div>
+
+      <div className="grid w-full max-w-[440px] grid-cols-2 gap-3">
+        {["Bank A", "Bank B"].map((b, i) => (
+          <div key={b} className={`rounded-xl px-4 py-3 transition-colors duration-500 ${phase === 2 && lane === i ? "bg-mint" : "bg-surface"}`}>
+            <p className="text-[13px] text-copy">{b}</p>
+            <p className="tabular mt-0.5 text-[18px] font-semibold text-ink">{counts[i]} routed</p>
+          </div>
         ))}
       </div>
-      <ul className="absolute bottom-2 left-1/2 flex w-full max-w-[360px] -translate-x-1/2 flex-wrap justify-center gap-2 sm:bottom-6">
-        {chips.map((c, i) => (
-          <motion.li
-            key={c}
-            initial={false}
-            animate={open ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
-            transition={{ duration: 0.5, ease, delay: open ? 0.6 + i * 0.12 : 0 }}
-            className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 font-mono text-[10.5px] text-white/75"
-          >
-            <span className="size-1.5 rounded-full bg-signal" />
-            {c}
-          </motion.li>
-        ))}
-      </ul>
     </div>
   );
 }
 
-/* 03 — Workflow automation */
-function WorkflowArt({ active }: { active: boolean }) {
-  const phase = useLoop(4, 1100, active);
-  const steps = [
-    { who: "Maker", what: "Payment raised", by: "A. Mehta · Finance" },
-    { who: "Checker", what: "Reviewed & approved", by: "R. Kapoor · Controller" },
-    { who: "Release", what: "Paid on virtual card", by: "Policy engine · auto" },
-  ];
+function RuleRow({ on, label, target }: { on: boolean; label: string; target: string }) {
   return (
-    <div className="grid size-full place-items-center">
-      <ol className="relative w-full max-w-[360px]">
-        <span className="absolute top-6 bottom-6 left-[19px] w-px bg-white/10" />
+    <div className={`flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors duration-300 ${on ? "bg-mist ring-1 ring-mint" : "bg-surface"}`}>
+      <span className={`max-sm:text-[13.5px] ${on ? "text-ink" : "text-copy"}`}>{label}</span>
+      <span className={`flex shrink-0 items-center gap-1.5 font-medium whitespace-nowrap ${on ? "text-brand" : "text-sub"}`}>
+        → {target}
+      </span>
+    </div>
+  );
+}
+
+/* 2. Physical cards: a deck fans out into purpose-built cards, each with its own limit. */
+const deck = [
+  { purpose: "Vendor · Skyline Hotels", limit: "₹2,50,000", bg: "linear-gradient(140deg,#017649,#062617)", dark: true },
+  { purpose: "Travel · Sales team", limit: "₹50,000", bg: "linear-gradient(140deg,#95DE64,#5fb83a)", dark: false },
+  { purpose: "Software subscriptions", limit: "₹20,000", bg: "linear-gradient(140deg,#ffffff,#f6ffee)", dark: false },
+];
+
+function CardsArt({ playing }: { playing: boolean }) {
+  // phase 0: stacked, 1..3: each card fans out, 4: hold
+  const { phase } = usePhaseLoop(5, 900, playing);
+  return (
+    <div className="relative grid h-full place-items-center max-sm:scale-[0.58]">
+      {deck.map((c, i) => {
+        const out = phase > i && phase > 0;
+        const angle = (i - 1) * 8;
+        return (
+          <motion.div
+            key={c.purpose}
+            className={`absolute h-[140px] w-[218px] rounded-2xl p-4 shadow-[0_18px_36px_-18px_rgba(6,38,23,0.45)] ${c.dark ? "text-white" : "text-ink ring-1 ring-line"}`}
+            style={{ background: c.bg, zIndex: i }}
+            initial={false}
+            animate={out ? { rotate: angle, x: (i - 1) * 172, y: Math.abs(i - 1) * 16 } : { rotate: 0, x: 0, y: -i * 4 }}
+            transition={{ type: "spring", stiffness: 120, damping: 16 }}
+          >
+            <p className={`text-[11px] ${c.dark ? "text-white/70" : "text-copy"}`}>Virtual card</p>
+            <p className="mt-1 text-[13.5px] font-semibold">{c.purpose}</p>
+            <div className="absolute inset-x-4 bottom-4 flex items-end justify-between">
+              <div>
+                <p className={`text-[10.5px] ${c.dark ? "text-white/60" : "text-sub"}`}>Limit</p>
+                <p className="tabular text-[14px] font-semibold">{c.limit}</p>
+              </div>
+              <AnimatePresence>
+                {out && (
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    className={`rounded-full px-2 py-0.5 text-[10.5px] font-medium ${c.dark ? "bg-white/15" : "bg-white/80 text-brand"}`}
+                  >
+                    Active
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        );
+      })}
+      <p className="absolute bottom-8 text-[13px] text-sub">One card per vendor, purpose or trip</p>
+    </div>
+  );
+}
+
+/* 3. Approval timeline: each step checks off as the line fills downwards. */
+const flow = [
+  { who: "RK", role: "Maker", action: "Raised payment to Meridian Supplies" },
+  { who: "AS", role: "Checker", action: "Verified invoice and vendor" },
+  { who: "PV", role: "Finance head", action: "Approved within policy" },
+  { who: "", role: "System", action: "Payment released on virtual card" },
+];
+
+function WorkflowArt({ playing }: { playing: boolean }) {
+  const { phase } = usePhaseLoop(flow.length + 2, 950, playing);
+  const done = Math.min(phase, flow.length);
+  return (
+    <div className="flex h-full items-center justify-center px-8">
+      <ol className="relative w-full max-w-[400px]">
+        <span className="absolute top-[42px] bottom-[42px] left-[19px] w-px bg-line" aria-hidden="true" />
         <motion.span
-          className="absolute top-6 left-[19px] w-px origin-top bg-signal"
-          style={{ height: "calc(100% - 48px)" }}
-          animate={{ scaleY: Math.min(phase, 2) / 2 }}
+          className="absolute top-[42px] bottom-[42px] left-[19px] w-px origin-top bg-brand"
+          aria-hidden="true"
+          initial={false}
+          animate={{ scaleY: Math.max(done - 1, 0) / (flow.length - 1) }}
           transition={{ duration: 0.6, ease }}
         />
-        {steps.map((s, i) => {
-          const done = phase > i;
-          const current = phase === i;
+        {flow.map((s, i) => {
+          const ok = i < done;
           return (
-            <li key={s.who} className="relative flex items-center gap-4 py-3">
+            <li key={s.role} className="relative flex items-center gap-4 py-3">
               <span
-                className={`relative z-10 grid size-10 shrink-0 place-items-center rounded-full border transition-all duration-500 ${
-                  done ? "border-signal bg-signal text-forest" : current ? "border-signal bg-forest-800 text-signal" : "border-white/15 bg-forest-900 text-white/30"
+                className={`relative z-10 grid size-10 shrink-0 place-items-center rounded-full text-[12px] font-semibold transition-colors duration-300 ${
+                  ok ? "bg-brand text-white" : "bg-white text-sub ring-1 ring-line"
                 }`}
               >
-                {done ? <Check className="size-3.5" /> : <span className="font-mono text-[11px]">0{i + 1}</span>}
-                {current && <span className="animate-pulse-ring absolute inset-0 rounded-full bg-signal/30" />}
+                {ok ? <Check className="size-3.5" /> : s.who || "₹"}
               </span>
-              <div
-                className={`flex-1 rounded-xl border px-4 py-3 transition-all duration-500 ${
-                  done || current ? "border-white/15 bg-white/[0.05]" : "border-white/[0.06] bg-transparent opacity-50"
-                }`}
-              >
-                <p className="font-mono text-[9.5px] tracking-[0.14em] text-signal uppercase">{s.who}</p>
-                <p className="mt-0.5 text-[14px] text-white">{s.what}</p>
-                <p className="text-[11.5px] text-white/45">{s.by}</p>
+              <div className={`flex-1 rounded-xl px-4 py-3 transition-colors duration-300 ${ok ? "bg-white ring-1 ring-line" : "bg-transparent"}`}>
+                <p className="text-[12px] text-sub">{s.role}</p>
+                <p className={`text-[14.5px] font-medium transition-colors ${ok ? "text-ink" : "text-sub"}`}>{s.action}</p>
               </div>
             </li>
           );
@@ -165,59 +176,62 @@ function WorkflowArt({ active }: { active: boolean }) {
   );
 }
 
-/* 04 — Reconciliation & visibility */
-function LedgerArt({ active }: { active: boolean }) {
-  const phase = useLoop(4, 1000, active);
-  const rows = ["₹4,82,500", "₹1,26,000", "₹68,240"];
-  const matched = Math.min(phase, 3);
+/* 4. Reconciliation: payments on the left find their ledger entries on the right. */
+const recon = [
+  { ref: "PAY-2041", amt: "₹2,48,500", gl: "Travel" },
+  { ref: "PAY-2042", amt: "₹86,240", gl: "Travel" },
+  { ref: "PAY-2043", amt: "₹4,12,000", gl: "Equipment" },
+  { ref: "PAY-2044", amt: "₹19,800", gl: "Software" },
+];
+
+function LedgerArt({ playing }: { playing: boolean }) {
+  const { phase } = usePhaseLoop(recon.length + 3, 800, playing);
+  const matched = Math.min(phase, recon.length);
   return (
-    <div className="grid size-full place-items-center">
-      <div className="w-full max-w-[400px]">
-        <div className="grid grid-cols-[1fr_56px_1fr_24px] items-center gap-2 pb-2 font-mono text-[9.5px] tracking-[0.14em] text-white/40">
-          <span>PAYMENT</span>
-          <span />
-          <span>LEDGER</span>
-          <span />
-        </div>
-        {rows.map((r, i) => {
+    <div className="flex h-full flex-col justify-center px-6 md:px-10">
+      <div className="grid grid-cols-[1fr_44px_1fr] text-[12px] font-medium text-sub">
+        <span>Payments</span>
+        <span />
+        <span>Ledger</span>
+      </div>
+      <div className="mt-3 space-y-2.5">
+        {recon.map((r, i) => {
           const ok = i < matched;
           return (
-            <div key={r} className="grid grid-cols-[1fr_56px_1fr_24px] items-center gap-2 border-t border-white/[0.08] py-3">
-              <span className="tabular font-mono text-[13px] text-white">{r}</span>
-              <svg viewBox="0 0 56 4" className="h-1 w-full" aria-hidden="true">
-                <line x1="0" y1="2" x2="56" y2="2" stroke="rgba(255,255,255,0.15)" strokeDasharray="2 3" />
-                <motion.line
-                  x1="0"
-                  y1="2"
-                  x2="56"
-                  y2="2"
-                  stroke="#07F258"
-                  strokeDasharray="2 3"
+            <div key={r.ref} className="grid grid-cols-[1fr_44px_1fr] items-center">
+              <div className={`rounded-lg px-3 py-2.5 transition-colors duration-300 ${ok ? "bg-mist ring-1 ring-mint" : "bg-white ring-1 ring-line"}`}>
+                <p className="tabular text-[12px] text-sub">{r.ref}</p>
+                <p className="tabular text-[14px] font-semibold text-ink">{r.amt}</p>
+              </div>
+              <div className="relative flex h-full items-center justify-center">
+                <motion.span
+                  className="absolute inset-x-1 h-px origin-left bg-brand"
                   initial={false}
-                  animate={{ pathLength: ok ? 1 : 0, opacity: ok ? 1 : 0 }}
-                  transition={{ duration: 0.4 }}
+                  animate={{ scaleX: ok ? 1 : 0 }}
+                  transition={{ duration: 0.4, ease }}
                 />
-              </svg>
-              <span className={`tabular font-mono text-[13px] transition-colors duration-300 ${ok ? "text-white" : "text-white/35"}`}>{ok ? r : "pending"}</span>
-              <span
-                className={`grid size-5 place-items-center rounded-full transition-all duration-300 ${
-                  ok ? "scale-100 bg-signal text-forest" : "scale-75 border border-white/20 text-transparent"
-                }`}
-              >
-                <Check className="size-2.5" />
-              </span>
+                <motion.span
+                  className="relative grid size-5 place-items-center rounded-full bg-brand text-white"
+                  initial={false}
+                  animate={{ scale: ok ? 1 : 0 }}
+                  transition={{ duration: 0.3, ease, delay: 0.2 }}
+                >
+                  <Check className="size-2.5" />
+                </motion.span>
+              </div>
+              <div className={`rounded-lg px-3 py-2.5 transition-colors duration-300 ${ok ? "bg-mist ring-1 ring-mint" : "bg-white ring-1 ring-line"}`}>
+                <p className="text-[12px] text-sub">{r.gl}</p>
+                <p className="tabular text-[14px] font-semibold text-ink">{r.amt}</p>
+              </div>
             </div>
           );
         })}
-        <div className="mt-4 rounded-lg bg-signal/10 px-3 py-2.5 ring-1 ring-signal/30">
-          <div className="flex items-center justify-between font-mono text-[10.5px] tracking-[0.1em] text-signal">
-            <span>{matched} OF 3 MATCHED</span>
-            <span>{Math.round((matched / 3) * 100)}%</span>
-          </div>
-          <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
-            <motion.div className="h-full bg-signal" animate={{ width: `${(matched / 3) * 100}%` }} transition={{ duration: 0.5, ease }} />
-          </div>
-        </div>
+      </div>
+      <div className="mt-5 flex items-center justify-between rounded-lg bg-white px-4 py-3 ring-1 ring-line">
+        <span className="text-[13px] text-copy">Matched automatically</span>
+        <span className="tabular text-[15px] font-semibold text-ink">
+          {matched}/{recon.length}
+        </span>
       </div>
     </div>
   );

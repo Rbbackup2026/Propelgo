@@ -1,77 +1,40 @@
-"use client";
-
-import { motion, useReducedMotion } from "motion/react";
 import { finalCta } from "@/content/home";
 import { Button } from "@/components/ui/Button";
-import { Eyebrow, MaskLines, Reveal } from "@/components/ui/Reveal";
-
-const ease = [0.16, 1, 0.3, 1] as const;
+import { Eyebrow, Reveal } from "@/components/ui/Reveal";
 
 export function FinalCta() {
-  const reduce = useReducedMotion();
   return (
-    <section className="grain relative isolate overflow-hidden bg-forest text-white" aria-labelledby="cta-title">
-      <svg className="pointer-events-none absolute inset-0 -z-10 size-full" viewBox="0 0 1440 640" preserveAspectRatio="xMaxYMid slice" fill="none" aria-hidden="true">
-        {[0, 70].map((o, i) => (
-          <motion.path
-            key={o}
-            d={`M${1040 + o} 700 L${1460 + o} 280`}
-            stroke={i === 0 ? "#07F258" : "#049A39"}
-            strokeOpacity={i === 0 ? 0.35 : 0.3}
-            strokeWidth="1.5"
-            initial={reduce ? false : { pathLength: 0 }}
-            whileInView={{ pathLength: 1 }}
-            viewport={{ once: true, margin: "-20% 0px" }}
-            transition={{ duration: 1.8, ease, delay: 0.2 + i * 0.2 }}
-          />
-        ))}
-      </svg>
-      <div className="absolute -bottom-40 -left-40 -z-10 size-[600px] rounded-full bg-[radial-gradient(circle,rgba(7,242,88,0.14),transparent_65%)]" aria-hidden="true" />
-
-      <div className="mx-auto grid max-w-[1320px] gap-14 px-5 py-24 md:px-8 md:py-32 lg:grid-cols-[1.15fr_1fr] lg:gap-20">
-        <div>
-          <Eyebrow tone="dark">{finalCta.eyebrow}</Eyebrow>
-          <h2 id="cta-title" className="display mt-7 text-[46px] md:text-[64px] lg:text-[76px]">
-            <MaskLines
-              lines={[...finalCta.title.slice(0, 1), `${finalCta.title[1]} ${finalCta.accent}`]}
-              render={(line, i) =>
-                i === 1 ? (
-                  <>
-                    {finalCta.title[1]} <span className="text-signal">{finalCta.accent}</span>
-                  </>
-                ) : (
-                  line
-                )
-              }
-            />
-          </h2>
-          <Reveal delay={0.15}>
-            <p className="mt-7 max-w-[44ch] text-[17px] leading-relaxed text-white/65">{finalCta.copy}</p>
-            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+    <section className="pb-24 md:pb-32">
+      <div className="container-page">
+        <Reveal className="grid gap-14 rounded-[32px] bg-mist px-7 py-14 ring-1 ring-mint md:px-14 md:py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:gap-20">
+          <div>
+            <Eyebrow>{finalCta.eyebrow}</Eyebrow>
+            <h2 className="mt-4 max-w-[16ch] text-h2 text-balance text-ink">{finalCta.title}</h2>
+            <p className="mt-5 max-w-[46ch] text-lead text-pretty text-copy">{finalCta.copy}</p>
+            <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
               <Button href={finalCta.cta.href} size="lg">
                 {finalCta.cta.label}
               </Button>
-              <a href={`mailto:${finalCta.email}`} className="font-mono text-[13px] text-white/55 transition-colors hover:text-white">
-                or write to <span className="text-white/85 underline decoration-white/25 underline-offset-4">{finalCta.email}</span>
+              <a href={`mailto:${finalCta.email}`} className="text-[15px] font-medium text-ink underline decoration-ghost underline-offset-4 hover:decoration-brand">
+                {finalCta.email}
               </a>
             </div>
-          </Reveal>
-        </div>
-
-        <div className="lg:border-l lg:border-white/10 lg:pl-14">
-          <p className="label !text-[10px] text-white/45">What happens next</p>
-          <ol className="mt-5 border-t border-white/10">
+          </div>
+          <ol className="relative self-center">
+            <span className="absolute top-5 bottom-5 left-[19px] w-px bg-mint" aria-hidden="true" />
             {finalCta.steps.map((s, i) => (
-              <Reveal as="li" key={s.title} delay={0.1 + i * 0.1} className="flex gap-5 border-b border-white/10 py-6">
-                <span className="grid size-10 shrink-0 place-items-center rounded-full font-mono text-[12px] text-signal ring-1 ring-signal/40">0{i + 1}</span>
-                <div>
-                  <p className="text-[17px] font-medium">{s.title}</p>
-                  <p className="mt-1 text-[14.5px] leading-relaxed text-white/55">{s.copy}</p>
-                </div>
-              </Reveal>
+              <li key={s.title} className="relative flex gap-5 py-4">
+                <span className="relative z-10 grid size-10 shrink-0 place-items-center rounded-full bg-white text-[14px] font-semibold text-brand ring-1 ring-mint">
+                  {i + 1}
+                </span>
+                <span className="pt-1.5">
+                  <span className="block text-[16.5px] font-semibold tracking-[-0.01em] text-ink">{s.title}</span>
+                  <span className="mt-1 block text-[15px] leading-relaxed text-copy">{s.copy}</span>
+                </span>
+              </li>
             ))}
           </ol>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

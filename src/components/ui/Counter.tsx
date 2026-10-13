@@ -12,12 +12,14 @@ export function Counter({
   suffix = "",
   duration = 1.8,
   className = "",
+  suffixClassName = "",
 }: {
   value: number;
   prefix?: string;
   suffix?: string;
   duration?: number;
   className?: string;
+  suffixClassName?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "0px 0px -15% 0px" });
@@ -38,7 +40,7 @@ export function Counter({
     <span ref={ref} className={`tabular ${className}`}>
       {prefix}
       {inr.format(reduce ? value : display)}
-      {suffix}
+      <span className={suffixClassName}>{suffix}</span>
     </span>
   );
 }
