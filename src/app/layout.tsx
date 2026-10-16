@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { InspectGuard } from "@/components/ui/InspectGuard";
+import { Preloader } from "@/components/ui/Preloader";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
 import "./globals.css";
 
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en-IN" className={`${inter.variable} antialiased`}>
       <body>
+        <Preloader />
         <SmoothScroll />
         <InspectGuard />
         {children}

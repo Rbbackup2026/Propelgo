@@ -194,7 +194,7 @@ function ControlCard({ limit, allowed, mode, frozen }: { limit: number; allowed:
           </div>
           <div className="flex items-center gap-3">
             <ContactlessIcon className="size-5 text-white/70" />
-            <span className="text-[15px] font-bold italic">VISA</span>
+            <span className="rounded-full bg-white/12 px-2.5 py-1 text-[10.5px] font-semibold tracking-[0.12em] uppercase ring-1 ring-white/20">Commercial</span>
           </div>
         </div>
       </motion.div>

@@ -226,7 +226,7 @@ function RoutingScreen() {
   const log = [
     { id: "TXN-88214", amt: "₹14,20,000", via: "Bank A", rule: "High value" },
     { id: "TXN-88215", amt: "₹3,60,000", via: "Bank B", rule: "Default" },
-    { id: "TXN-88216", amt: "₹62,000", via: "RuPay", rule: "Domestic card" },
+    { id: "TXN-88216", amt: "₹62,000", via: "Network B", rule: "Domestic card" },
     { id: "TXN-88217", amt: "₹22,75,000", via: "Bank A", rule: "High value" },
   ];
   return (

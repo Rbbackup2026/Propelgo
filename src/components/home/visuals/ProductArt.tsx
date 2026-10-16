@@ -102,8 +102,8 @@ function OrchestrationArt({ active }: { active: boolean }) {
   const outs = [
     { y: 30, label: "Bank A" },
     { y: 72, label: "Bank B" },
-    { y: 114, label: "Visa" },
-    { y: 156, label: "RuPay" },
+    { y: 114, label: "Network A" },
+    { y: 156, label: "Network B" },
   ];
   return (
     <div className="relative grid h-full place-items-center">

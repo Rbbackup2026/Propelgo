@@ -1,0 +1,195 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+3 0 obj
+<< /Length 3594 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.02 0.43 0.29 rg 0 0 11 842 re f
+0.12 0.12 0.12 rg BT /F2 23 Tf 1 0 0 1 46 773 Tm (PropelGo: Technology & Animation Report) Tj ET
+0.37 0.37 0.37 rg BT /F1 9 Tf 1 0 0 1 46 750 Tm (A code-based overview of the project stack, motion design, typography, and visual system.) Tj ET
+0.9 0.9 0.9 rg 46 724 500 1 re f
+0.02 0.43 0.29 rg BT /F2 13 Tf 1 0 0 1 46 700 Tm (1. Technology stack) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 677 Tm (- Next.js 16.4.0 - React framework; routes and application structure are in src/app.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 660 Tm (- React 19.3.0 and TypeScript - UI components, interactive state, and typed code.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 643 Tm (- Tailwind CSS 4 - utility-first styling; project design tokens are defined in globals.css.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 626 Tm (- Motion 14.1.0 \(motion/react\) - component transitions, scroll reveals, gestures, and animated) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 613 Tm (  values.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 596 Tm (- Lenis 1.3.26 - smooth scrolling on desktop pointer devices; disabled for reduced-motion and) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 583 Tm (  touch input.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 566 Tm (- Next/font/google - loads and optimizes the Inter typeface. Icons and some illustrations are) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 553 Tm (  inline SVG/React components.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 536 Tm (- Available scripts: next dev, next build, next start, and eslint.) Tj ET
+0.02 0.43 0.29 rg BT /F2 13 Tf 1 0 0 1 46 509 Tm (2. Font and typography) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 486 Tm (- The primary font is Inter, not Roboto. src/app/layout.tsx imports Inter through Next.js and) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 473 Tm (  defines the --font-inter variable; globals.css uses it as the sans-serif font.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 456 Tm (- Headings generally use weight 600 \(semibold\), tight negative letter spacing, and responsive) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 443 Tm (  clamp-based sizing. Display, H2, H3, lead, and body text have separate scales.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 426 Tm (- Body copy uses regular Inter; UI labels also use medium and semibold weights. Numeric data uses) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 413 Tm (  tabular numerals.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 396 Tm (- Font files are not bundled in the public directory; Next/font/google loads the typeface.) Tj ET
+0.02 0.43 0.29 rg BT /F2 13 Tf 1 0 0 1 46 369 Tm (3. Design tokens) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 346 Tm (- Palette: forest and brand greens, lime and mint accents, white surfaces, ink #1f1f1f, and copy) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 333 Tm (  #595959.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 316 Tm (- Motion easing uses soft ease-out curves such as cubic-bezier\(0.16, 1, 0.3, 1\); responsive layout) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 303 Tm (  uses Tailwind utilities.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 286 Tm (- Reduced motion is supported through CSS prefers-reduced-motion rules and Motion useReducedMotion) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 273 Tm (  hooks.) Tj ET
+0.02 0.43 0.29 rg BT /F2 8 Tf 1 0 0 1 46 24 Tm (PROPELGO  /  PROJECT TECHNOLOGY REPORT) Tj ET
+0.37 0.37 0.37 rg BT /F1 8 Tf 1 0 0 1 435 24 Tm (1  |  15 Oct 2026) Tj ET
+endstream
+endobj
+4 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 3 0 R >>
+endobj
+5 0 obj
+<< /Length 4134 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.02 0.43 0.29 rg 0 0 11 842 re f
+0.12 0.12 0.12 rg BT /F2 23 Tf 1 0 0 1 46 773 Tm (Animations: effects in use) Tj ET
+0.37 0.37 0.37 rg BT /F1 9 Tf 1 0 0 1 46 750 Tm (Motion effects found in the project, with their visible behavior and typical use.) Tj ET
+0.9 0.9 0.9 rg 46 724 500 1 re f
+0.02 0.43 0.29 rg BT /F2 13 Tf 1 0 0 1 46 700 Tm (4. Entrance and scroll animations) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 677 Tm (- Fade and rise: headings, paragraphs, buttons, and sections fade in while moving upward into) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 664 Tm (  place, often with staggered delays. Used in the home hero and HeroB/HeroC options.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 647 Tm (- Scroll reveal: the Reveal component uses whileInView to reveal content once it enters the) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 634 Tm (  viewport. Used by Overview, the final CTA, and other content sections.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 617 Tm (- Staggered lists: table rows, steps, and card content appear sequentially with short delays.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 600 Tm (- Tab and content crossfades: AnimatePresence transitions between exiting and entering content.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 587 Tm (  Used in HeroSlip, HeroB, testimonials, and option demos.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 570 Tm (- Hero artwork entrance: illustrations and previews appear with opacity and position transitions.) Tj ET
+0.02 0.43 0.29 rg BT /F2 13 Tf 1 0 0 1 46 543 Tm (5. Interactive and continuous motion) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 520 Tm (- 3D flip cards: FlipCard rotates 180 degrees on click with a spring transition; hover state is) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 507 Tm (  also passed into card content.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 490 Tm (- Animated counters: Counter counts values up when scrolled into view and formats numbers using) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 477 Tm (  Indian digit grouping.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 460 Tm (- Smooth scrolling: Lenis smooths scrolling for desktop mouse and trackpad users.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 443 Tm (- Marquee: the Ecosystem strip uses CSS keyframes for a 60-second linear loop.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 426 Tm (- Orbit and auto-rotation: EcosystemOrbit changes the active node about every 2.8 seconds;) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 413 Tm (  testimonials and capabilities also rotate active content.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 396 Tm (- SVG path animation: chart and illustration lines animate pathLength; bars, progress rails, and) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 383 Tm (  check marks fill or scale into place.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 366 Tm (- Micro-interactions: dropdown fades/slides, chevron rotation, mobile menu transforms, shared tab) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 353 Tm (  indicators, spring toggles, pulse status dots, and color/opacity transitions.) Tj ET
+0.02 0.43 0.29 rg BT /F2 13 Tf 1 0 0 1 46 326 Tm (6. Motion and accessibility) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 303 Tm (- Many Motion effects use useReducedMotion to simplify or disable movement. Global CSS also) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 290 Tm (  reduces animation and transition durations.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 273 Tm (- Lenis does not initialize when reduced motion is preferred or when the pointer is coarse \(touch) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 260 Tm (  input\).) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 243 Tm (- Some visual demos advance on timed intervals; tabs, switches, and cards also respond to user) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 230 Tm (  interaction.) Tj ET
+0.02 0.43 0.29 rg BT /F2 8 Tf 1 0 0 1 46 24 Tm (PROPELGO  /  PROJECT TECHNOLOGY REPORT) Tj ET
+0.37 0.37 0.37 rg BT /F1 8 Tf 1 0 0 1 435 24 Tm (2  |  15 Oct 2026) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 5 0 R >>
+endobj
+7 0 obj
+<< /Length 3182 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.02 0.43 0.29 rg 0 0 11 842 re f
+0.12 0.12 0.12 rg BT /F2 23 Tf 1 0 0 1 46 773 Tm (Code reference) Tj ET
+0.37 0.37 0.37 rg BT /F1 9 Tf 1 0 0 1 46 750 Tm (Key files for locating the animation, typography, and design system.) Tj ET
+0.9 0.9 0.9 rg 46 724 500 1 re f
+0.02 0.43 0.29 rg BT /F2 13 Tf 1 0 0 1 46 700 Tm (7. Main files) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 677 Tm (- src/components/ui/Reveal.tsx - fade-and-rise reveal on scroll.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 660 Tm (- src/components/ui/SmoothScroll.tsx - Lenis smooth scrolling.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 643 Tm (- src/components/ui/Counter.tsx - count-up values triggered in view.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 626 Tm (- src/components/ui/FlipCard.tsx - 3D flip card with spring transition.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 609 Tm (- src/components/home/Hero.tsx - homepage hero entrance animation.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 592 Tm (- src/components/home/visuals/HeroSlip.tsx - interactive payment demo with spring tilt and) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 579 Tm (  tab/content transitions.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 562 Tm (- src/components/home/visuals/EcosystemOrbit.tsx - orbit and active-node animation.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 545 Tm (- src/components/home/Capabilities.tsx - timed active item, progress indicator, and content) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 532 Tm (  transitions.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 515 Tm (- src/components/home/Ecosystem.tsx - CSS marquee.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 498 Tm (- src/components/layout/Header.tsx - dropdown, mobile menu, hover, and scroll states.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 481 Tm (- src/app/globals.css - font tokens, colors, marquee keyframes, and reduced-motion rules.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 464 Tm (- src/app/layout.tsx - Inter loading and global application wrapper.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 447 Tm (- src/components/options/HeroB.tsx and HeroC.tsx - alternate animated hero and demo concepts.) Tj ET
+0.02 0.43 0.29 rg BT /F2 13 Tf 1 0 0 1 46 420 Tm (8. Summary) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 397 Tm (- Overall style: restrained SaaS/product motion, including fade/slide entrances, hover and toggle) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 384 Tm (  feedback, content transitions, number counting, a looping marquee, and animated SVG artwork.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 367 Tm (- Core motion tools: Motion for React animations, CSS keyframes/transitions for simple loops and) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 354 Tm (  states, and Lenis for smooth scrolling.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 337 Tm (- Typeface: Inter \(not Roboto\). Styling: Tailwind CSS 4 with project-specific CSS design tokens.) Tj ET
+0.02 0.43 0.29 rg BT /F2 8 Tf 1 0 0 1 46 24 Tm (PROPELGO  /  PROJECT TECHNOLOGY REPORT) Tj ET
+0.37 0.37 0.37 rg BT /F1 8 Tf 1 0 0 1 435 24 Tm (3  |  15 Oct 2026) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 7 0 R >>
+endobj
+9 0 obj
+<< /Length 3155 >>
+stream
+1 1 1 rg 0 0 595 842 re f
+0.02 0.43 0.29 rg 0 0 11 842 re f
+0.12 0.12 0.12 rg BT /F2 23 Tf 1 0 0 1 46 773 Tm (Libraries & typography details) Tj ET
+0.37 0.37 0.37 rg BT /F1 9 Tf 1 0 0 1 46 750 Tm (Dependency inventory and the exact typeface configuration, verified against package.json) Tj ET
+0.37 0.37 0.37 rg BT /F1 9 Tf 1 0 0 1 46 736 Tm (and source files.) Tj ET
+0.9 0.9 0.9 rg 46 724 500 1 re f
+0.02 0.43 0.29 rg BT /F2 13 Tf 1 0 0 1 46 700 Tm (9. Runtime libraries \(dependencies\)) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 677 Tm (- next 16.4.0 - application framework and Next.js font-loading API.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 660 Tm (- react 19.3.0 and react-dom 19.3.0 - UI component runtime and rendering.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 643 Tm (- motion ^14.1.0 - motion/react package for animations, gestures, scroll reveals, and spring) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 630 Tm (  transitions.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 613 Tm (- lenis ^1.3.26 - smooth scrolling.) Tj ET
+0.02 0.43 0.29 rg BT /F2 13 Tf 1 0 0 1 46 586 Tm (10. Development libraries \(devDependencies\)) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 563 Tm (-  tailwindcss ^4 - CSS utility framework; @tailwindcss/turbopack ^4 - Tailwind/Turbopack) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 550 Tm (  integration.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 533 Tm (-  typescript ^5 - type checking; @types/node ^20, @types/react ^19, and @types/react-dom ^19 -) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 520 Tm (  TypeScript definitions.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 503 Tm (-  eslint ^9 and eslint-config-next 16.4.0 - linting and Next.js lint rules.) Tj ET
+0.02 0.43 0.29 rg BT /F2 13 Tf 1 0 0 1 46 476 Tm (11. Exact font answer) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 453 Tm (- The font family is Inter, not Roboto. layout.tsx imports Inter through next/font/google and) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 440 Tm (  creates the --font-inter variable.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 423 Tm (- globals.css sets --font-sans to Inter; the body and site typography inherit this sans-serif) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 410 Tm (  family.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 393 Tm (- The interface uses regular \(400\), medium \(500\), semibold \(600\), and occasional bold styles.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 380 Tm (  Headings are generally semibold.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 363 Tm (- next/font/google is a Next.js font-loading feature. No separate Roboto package or local font) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 350 Tm (  file was found.) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 333 Tm (- Icons and some illustrations are inline SVG/React components; package.json does not list a) Tj ET
+0.12 0.12 0.12 rg BT /F1 9 Tf 1 0 0 1 56 320 Tm (  separate icon library.) Tj ET
+0.02 0.43 0.29 rg BT /F2 8 Tf 1 0 0 1 46 24 Tm (PROPELGO  /  PROJECT TECHNOLOGY REPORT) Tj ET
+0.37 0.37 0.37 rg BT /F1 8 Tf 1 0 0 1 435 24 Tm (4  |  15 Oct 2026) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 9 0 R >>
+endobj
+11 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R 10 0 R] /Count 4 >>
+endobj
+12 0 obj
+<< /Type /Catalog /Pages 11 0 R >>
+endobj
+xref
+0 13
+0000000000 65535 f 
+0000000015 00000 n 
+0000000085 00000 n 
+0000000160 00000 n 
+0000003806 00000 n 
+0000003943 00000 n 
+0000008129 00000 n 
+0000008266 00000 n 
+0000011500 00000 n 
+0000011637 00000 n 
+0000014844 00000 n 
+0000014982 00000 n 
+0000015059 00000 n 
+trailer
+<< /Size 13 /Root 12 0 R >>
+startxref
+15110
+%%EOF

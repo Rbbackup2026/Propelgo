@@ -57,12 +57,9 @@ export const hero = {
 
 export const ecosystem = {
   caption: "Built across the payment ecosystem",
-  // Rendered as wordmarks until approved logo files are supplied.
+  // Rendered as wordmarks until approved logo files are supplied. Card networks are left out by brief.
   names: [
     "Air India Express",
-    "VISA",
-    "Mastercard",
-    "RuPay",
     "IndusInd Bank",
     "Citi",
     "IDFC FIRST",
@@ -84,7 +81,7 @@ export const overview = {
   nodes: [
     { verb: "Connect", noun: "Banks", line: "Multiple banking and issuer relationships through one integration." },
     { verb: "Issue", noun: "Issuers", line: "Virtual and commercial cards issued with the right controls." },
-    { verb: "Route", noun: "Card networks", line: "Payments flow across Visa, Mastercard and RuPay." },
+    { verb: "Route", noun: "Card networks", line: "Payments flow across all major card networks." },
     { verb: "Integrate", noun: "Payment systems", line: "ERP and enterprise applications connected over APIs." },
     { verb: "Automate", noun: "Workflows", line: "Approvals and policies run inside every payment." },
     { verb: "Reconcile", noun: "Finance teams", line: "Settlement data flows straight back to the ledger." },
@@ -134,7 +131,7 @@ export const products = {
         "Use already-sanctioned OD/CC limits",
         "Supplier, vendor, travel and utility spends",
         "Spend controls set by the business",
-        "Runs on Visa, Mastercard and RuPay",
+        "Runs on all major card networks",
       ],
       cta: { label: "Explore ODCC", href: "/products/odcc" },
     },
