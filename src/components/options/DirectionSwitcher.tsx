@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 const directions = [
-  { key: "a", label: "A", name: "Split hero, payment slip", href: "/" },
-  { key: "b", label: "B", name: "Centred, product window", href: "/options/b" },
+  { key: "a", label: "A", name: "Light hero, payment rails", href: "/" },
+  { key: "b", label: "B", name: "Gradient hero, live card", href: "/options/b" },
   { key: "c", label: "C", name: "Card-led, live controls", href: "/options/c" },
 ];
 

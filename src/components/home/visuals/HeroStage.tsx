@@ -16,6 +16,7 @@ import { LogoMark } from "@/components/ui/Logo";
 import { Check, ContactlessIcon } from "@/components/ui/icons";
 import { usePreloaderDone } from "@/lib/preloader";
 import { useStageScale } from "@/lib/useStageScale";
+import { HeroRails } from "./HeroRails";
 
 const W = 580;
 const H = 600;
@@ -35,7 +36,7 @@ const BASE = 0.45;
 
 const panel = "rounded-2xl bg-white shadow-[0_1px_2px_rgba(6,38,23,0.06),0_28px_56px_-24px_rgba(6,38,23,0.28)] ring-1 ring-black/[0.05]";
 
-export function HeroStage({ mx, my, ready }: Pointer & { ready: boolean }) {
+export function HeroStage({ mx, my, ready, rails = true }: Pointer & { ready: boolean; rails?: boolean }) {
   const { ref, scale } = useStageScale<HTMLDivElement>(W);
   const inView = useInView(ref);
   const reduce = useReducedMotion();
@@ -52,7 +53,10 @@ export function HeroStage({ mx, my, ready }: Pointer & { ready: boolean }) {
   return (
     <div ref={ref} className="relative w-full" style={{ height: H * scale }} aria-hidden="true">
       <div className="absolute top-0 left-0 origin-top-left" style={{ width: W, height: H, transform: `scale(${scale})` }}>
-        <div className="absolute top-[150px] left-[90px] size-[400px] rounded-full bg-[radial-gradient(circle,rgba(149,222,100,0.55),transparent_65%)]" />
+        <div
+          className={`absolute top-[150px] left-[90px] size-[400px] rounded-full ${rails ? "bg-[radial-gradient(circle,rgba(149,222,100,0.28),transparent_65%)]" : "bg-[radial-gradient(circle,rgba(149,222,100,0.55),transparent_65%)]"}`}
+        />
+        {rails && <HeroRails animate={!reduce} ready={ready} />}
         <Orbits animateDots={!reduce} ready={ready} />
 
         <Depth mx={mx} my={my} depth={10} delay={0.35} className="absolute top-[150px] left-[150px]">

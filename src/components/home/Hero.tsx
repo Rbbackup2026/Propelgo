@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/Button";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { usePreloaderDone } from "@/lib/preloader";
 import { HeroStage } from "./visuals/HeroStage";
-
 const ease = [0.16, 1, 0.3, 1] as const;
 
 /** Trailing words of the headline set in the brand gradient. */
@@ -108,11 +107,6 @@ export function Hero() {
                 <span className="relative">{hero.primaryCta.label}</span>
               </Button>
             </Magnetic>
-            <Magnetic strength={0.2}>
-              <Button href={hero.secondaryCta.href} size="lg" variant="secondary" arrow={false} className="bg-white/80 backdrop-blur">
-                {hero.secondaryCta.label}
-              </Button>
-            </Magnetic>
           </motion.div>
         </motion.div>
 
@@ -146,16 +140,13 @@ function Aurora({ x, y }: { x?: MotionValue<number>; y?: MotionValue<number> }) 
       <div className="absolute inset-0 bg-[radial-gradient(60%_50%_at_15%_0%,#f6ffee_0%,transparent_70%)]" />
       <motion.div
         style={{ x, y }}
-        className="absolute -top-[30%] -right-[18%] h-[105%] w-[78%] origin-top-right -skew-y-12 overflow-hidden opacity-90 [mask-image:linear-gradient(to_right,transparent,#000_30%)] max-lg:-right-[40%] max-lg:w-[130%] max-lg:opacity-60"
+        className="absolute -top-[30%] -right-[18%] h-[105%] w-[78%] max-lg:-right-[40%] max-lg:w-[130%]"
       >
-        <div className="absolute inset-0 bg-[#f6ffee]" />
-        <div className="absolute -top-[10%] left-[5%] size-[70%] animate-blob-a rounded-full bg-[radial-gradient(circle,#95de64_0%,transparent_62%)] motion-reduce:animate-none" />
-        <div className="absolute top-[20%] right-[-10%] size-[75%] animate-blob-b rounded-full bg-[radial-gradient(circle,#2fd38a_0%,transparent_60%)] opacity-80 motion-reduce:animate-none" />
-        <div className="absolute bottom-[-20%] left-[25%] size-[70%] animate-blob-c rounded-full bg-[radial-gradient(circle,#b8f0d4_0%,transparent_62%)] motion-reduce:animate-none" />
-        <div className="absolute top-[35%] left-[-10%] size-[55%] animate-blob-b rounded-full bg-[radial-gradient(circle,#e8fa9e_0%,transparent_60%)] [animation-delay:-9s] motion-reduce:animate-none" />
-        <div className="absolute top-[5%] right-[15%] size-[45%] animate-blob-a rounded-full bg-[radial-gradient(circle,rgba(1,118,73,0.55)_0%,transparent_62%)] [animation-delay:-12s] motion-reduce:animate-none" />
+        {/* Skew and mask live on their own layer: motion's inline transform would override the skew, and a mask on the parent clips the slanted edge. */}
+        <div className="absolute inset-0 origin-top-right -skew-y-12 overflow-hidden bg-[linear-gradient(115deg,#f6ffee_0%,#effbf3_50%,#eef8fb_100%)] [mask-image:linear-gradient(to_right,transparent,#000_30%)]">
+          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-mint to-[#cdeee6]" />
+        </div>
       </motion.div>
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(6,38,23,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(6,38,23,0.05)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(70%_60%_at_30%_30%,#000_0%,transparent_80%)]" />
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-white" />
     </div>
   );

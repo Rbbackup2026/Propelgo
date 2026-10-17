@@ -57,18 +57,18 @@ export const hero = {
 
 export const ecosystem = {
   caption: "Built across the payment ecosystem",
-  // Rendered as wordmarks until approved logo files are supplied. Card networks are left out by brief.
-  names: [
-    "Air India Express",
-    "IndusInd Bank",
-    "Citi",
-    "IDFC FIRST",
-    "SBI",
-    "Axis Bank",
-    "YES BANK",
-    "RBL Bank",
-    "Kotak",
+  // Placeholder logos from Wikimedia Commons; replace with client-approved files. Sizes are display px, tuned for optical balance.
+  logos: [
+    { name: "Air India Express", src: "/logos/air-india-express.svg", width: 106, height: 32 },
+    { name: "IndusInd Bank", src: "/logos/indusind-bank.svg", width: 185, height: 20 },
+    { name: "Citi", src: "/logos/citi.svg", width: 52, height: 34 },
+    { name: "IDFC FIRST Bank", src: "/logos/idfc-first-bank.svg", width: 91, height: 32 },
+    { name: "SBI", src: "/logos/sbi.svg", width: 88, height: 30 },
+    { name: "Axis Bank", src: "/logos/axis-bank.svg", width: 101, height: 26 },
+    { name: "YES BANK", src: "/logos/yes-bank.svg", width: 75, height: 28 },
   ],
+  // Direction B renders these as text wordmarks.
+  names: ["Air India Express", "IndusInd Bank", "Citi", "IDFC FIRST", "SBI", "Axis Bank", "YES BANK", "RBL Bank", "Kotak"],
 };
 
 export const overview = {

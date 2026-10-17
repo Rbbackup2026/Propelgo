@@ -1,255 +1,163 @@
 "use client";
 
-import { AnimatePresence, motion, useInView, useReducedMotion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform, type MotionValue } from "motion/react";
+import { useRef } from "react";
 import { hero } from "@/content/home";
 import { Button } from "@/components/ui/Button";
-import { Check } from "@/components/ui/icons";
-import { ProductGlyph } from "@/components/ui/ProductGlyph";
+import { Magnetic } from "@/components/ui/Magnetic";
+import { usePreloaderDone } from "@/lib/preloader";
+import { HeroStage } from "@/components/home/visuals/HeroStage";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-const tabs = [
-  { key: "versa", label: "Versa", note: "Vendor payments" },
-  { key: "odcc", label: "ODCC", note: "Commercial credit" },
-  { key: "orchestration", label: "Orchestration", note: "Routing" },
-] as const;
+/** Trailing words of the headline set in the brand gradient. */
+const HIGHLIGHT_WORDS = 4;
 
-type TabKey = (typeof tabs)[number]["key"];
+/** Lets the preloader curtain clear the top of the screen before copy rises. */
+const BASE = 0.35;
 
-/** Direction B: centred editorial hero with a working product window underneath. */
+/** Direction B: the homepage hero as first reviewed, with the drifting aurora and both CTAs. */
 export function HeroB() {
+  const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { margin: "-10% 0px" });
-  const [tab, setTab] = useState<TabKey>("versa");
-  const [manual, setManual] = useState(false);
+  const ready = usePreloaderDone();
 
-  useEffect(() => {
-    if (!inView || manual || reduce) return;
-    const t = setTimeout(() => {
-      const i = tabs.findIndex((x) => x.key === tab);
-      setTab(tabs[(i + 1) % tabs.length].key);
-    }, 6000);
-    return () => clearTimeout(t);
-  }, [tab, inView, manual, reduce]);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const copyY = useTransform(scrollYProgress, [0, 1], [0, -90]);
+  const copyOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0]);
+  const stageY = useTransform(scrollYProgress, [0, 1], [0, -150]);
+  const stageScale = useTransform(scrollYProgress, [0, 1], [1, 0.92]);
+  const auroraY = useTransform(scrollYProgress, [0, 1], [0, 140]);
+
+  const px = useMotionValue(0);
+  const py = useMotionValue(0);
+  const mx = useSpring(px, { stiffness: 70, damping: 20, mass: 0.8 });
+  const my = useSpring(py, { stiffness: 70, damping: 20, mass: 0.8 });
+  const auroraX = useTransform(mx, [-0.5, 0.5], [-30, 30]);
+
+  const onMove = (e: React.PointerEvent<HTMLElement>) => {
+    if (reduce || e.pointerType !== "mouse") return;
+    const r = e.currentTarget.getBoundingClientRect();
+    px.set((e.clientX - r.left) / r.width - 0.5);
+    py.set((e.clientY - r.top) / r.height - 0.5);
+  };
+  const onLeave = () => {
+    px.set(0);
+    py.set(0);
+  };
 
   const rise = (delay: number) =>
-    reduce ? {} : { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.9, ease, delay } };
+    reduce ? {} : { initial: { opacity: 0, y: 22 }, animate: ready ? { opacity: 1, y: 0 } : undefined, transition: { duration: 0.9, ease, delay: BASE + delay } };
+
+  const words = hero.headline.split(" ");
 
   return (
-    <section className="relative overflow-hidden pt-[136px] pb-24 md:pt-[168px] md:pb-32">
-      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-[720px] bg-[radial-gradient(60%_60%_at_50%_0%,#f6ffee_0%,#ffffff_70%)]" />
-      <div className="container-page relative text-center">
-        <motion.p {...rise(0)} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-[14px] font-medium text-brand ring-1 ring-mint">
-          <span className="size-1.5 rounded-full bg-lime" /> {hero.eyebrow}
-        </motion.p>
-        <motion.h1 {...rise(0.06)} className="mx-auto mt-6 max-w-[18ch] text-display text-balance text-ink">
-          {hero.headline}
-        </motion.h1>
-        <motion.p {...rise(0.14)} className="mx-auto mt-6 max-w-[56ch] text-lead text-pretty text-copy">
-          {hero.copy}
-        </motion.p>
-        <motion.div {...rise(0.22)} className="mt-9 flex flex-wrap justify-center gap-3">
-          <Button href={hero.primaryCta.href} size="lg">
-            {hero.primaryCta.label}
-          </Button>
-          <Button href={hero.secondaryCta.href} size="lg" variant="secondary" arrow={false}>
-            {hero.secondaryCta.label}
-          </Button>
+    <section
+      ref={ref}
+      onPointerMove={onMove}
+      onPointerLeave={onLeave}
+      className="relative isolate overflow-hidden pt-[124px] pb-16 md:pt-[148px] md:pb-24 lg:min-h-[100svh]"
+    >
+      <Aurora y={reduce ? undefined : auroraY} x={reduce ? undefined : auroraX} />
+
+      <div className="container-page grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:gap-10">
+        <motion.div style={reduce ? undefined : { y: copyY, opacity: copyOpacity }} className="relative max-w-[600px]">
+          <motion.p
+            {...rise(0)}
+            className="inline-flex items-center gap-2.5 rounded-full bg-white/80 py-1.5 pr-4 pl-1.5 text-[14px] font-medium text-forest shadow-[0_1px_2px_rgba(6,38,23,0.06)] ring-1 ring-mint backdrop-blur"
+          >
+            <span className="relative grid size-6 place-items-center rounded-full bg-mint">
+              <span className="absolute inset-1 animate-ping-soft rounded-full bg-lime" />
+              <span className="relative size-2 rounded-full bg-brand" />
+            </span>
+            {hero.eyebrow}
+          </motion.p>
+
+          <h1 className="mt-6 text-[clamp(2.6rem,1.5rem+3.4vw,4.4rem)] leading-[1.02] font-semibold tracking-[-0.04em] text-balance text-ink">
+            {words.map((word, i) => {
+              const highlight = i >= words.length - HIGHLIGHT_WORDS;
+              return (
+                <span key={i}>
+                  <span className="-mb-[0.12em] inline-block overflow-hidden pb-[0.12em] align-bottom">
+                    <motion.span
+                      className={`inline-block ${highlight ? "bg-[linear-gradient(100deg,#017649_0%,#03a35f_45%,#5fbf3f_100%)] bg-clip-text text-transparent" : ""}`}
+                      initial={reduce ? false : { y: "110%", rotate: 6 }}
+                      animate={ready ? { y: "0%", rotate: 0 } : undefined}
+                      transition={{ duration: 1, ease, delay: BASE + 0.12 + i * 0.06 }}
+                    >
+                      {word}
+                    </motion.span>
+                  </span>
+                  {i < words.length - 1 && " "}
+                </span>
+              );
+            })}
+          </h1>
+
+          <motion.p {...rise(0.55)} className="mt-6 max-w-[52ch] text-lead text-pretty text-copy">
+            {hero.copy}
+          </motion.p>
+
+          <motion.div {...rise(0.68)} className="mt-9 flex flex-wrap items-center gap-3">
+            <Magnetic>
+              <Button
+                href={hero.primaryCta.href}
+                size="lg"
+                className="relative overflow-hidden shadow-[0_14px_30px_-12px_rgba(1,118,73,0.65)]"
+              >
+                <span className="pointer-events-none absolute inset-y-0 left-0 w-1/3 animate-shine bg-gradient-to-r from-transparent via-white/30 to-transparent motion-reduce:hidden" />
+                <span className="relative">{hero.primaryCta.label}</span>
+              </Button>
+            </Magnetic>
+            <Magnetic strength={0.2}>
+              <Button href={hero.secondaryCta.href} size="lg" variant="secondary" arrow={false} className="bg-white/80 backdrop-blur">
+                {hero.secondaryCta.label}
+              </Button>
+            </Magnetic>
+          </motion.div>
         </motion.div>
 
-        <motion.div
-          ref={ref}
-          {...(reduce ? {} : { initial: { opacity: 0, y: 40 }, animate: { opacity: 1, y: 0 }, transition: { duration: 1.1, ease, delay: 0.3 } })}
-          className="mx-auto mt-16 max-w-[1000px] overflow-hidden rounded-[22px] bg-white text-left shadow-[0_40px_80px_-40px_rgba(6,38,23,0.3)] ring-1 ring-line md:mt-20"
-        >
-          <div className="flex items-center gap-4 border-b border-line bg-surface px-4 py-3">
-            <span className="flex gap-1.5" aria-hidden="true">
-              <span className="size-2.5 rounded-full bg-ghost" />
-              <span className="size-2.5 rounded-full bg-ghost" />
-              <span className="size-2.5 rounded-full bg-ghost" />
-            </span>
-            <div role="tablist" aria-label="Product preview" className="flex gap-1 overflow-x-auto [scrollbar-width:none]">
-              {tabs.map((t) => (
-                <button
-                  key={t.key}
-                  type="button"
-                  role="tab"
-                  aria-selected={tab === t.key}
-                  onClick={() => {
-                    setManual(true);
-                    setTab(t.key);
-                  }}
-                  className={`relative flex shrink-0 items-center gap-2 rounded-lg px-3 py-1.5 text-[13.5px] font-medium transition-colors ${
-                    tab === t.key ? "text-ink" : "text-sub hover:text-copy"
-                  }`}
-                >
-                  {tab === t.key && <motion.span layoutId="b-tab" className="absolute inset-0 rounded-lg bg-white ring-1 ring-line" transition={{ duration: 0.35, ease }} />}
-                  <span className="relative">{t.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="relative h-[420px] md:h-[400px]">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={tab}
-                className="absolute inset-0"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.35, ease }}
-              >
-                {tab === "versa" && <VersaScreen />}
-                {tab === "odcc" && <OdccScreen />}
-                {tab === "orchestration" && <RoutingScreen />}
-              </motion.div>
-            </AnimatePresence>
-          </div>
+        <motion.div style={reduce ? undefined : { y: stageY, scale: stageScale }} className="relative">
+          <HeroStage mx={mx} my={my} ready={ready} rails={false} />
         </motion.div>
       </div>
+
+      <motion.div
+        initial={reduce ? false : { opacity: 0 }}
+        animate={ready ? { opacity: 1 } : undefined}
+        transition={{ delay: BASE + 1.6, duration: 0.8 }}
+        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 lg:block"
+        aria-hidden="true"
+      >
+        <div className="flex h-10 w-6 justify-center rounded-full ring-1 ring-ghost">
+          <motion.span
+            className="mt-2 h-2 w-1 rounded-full bg-brand"
+            animate={reduce ? undefined : { y: [0, 12, 0], opacity: [1, 0.2, 1] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
+      </motion.div>
     </section>
   );
 }
 
-function ScreenShell({ kind, title, meta, children }: { kind: TabKey; title: string; meta: string; children: React.ReactNode }) {
+function Aurora({ x, y }: { x?: MotionValue<number>; y?: MotionValue<number> }) {
   return (
-    <div className="flex h-full">
-      <aside className="hidden w-[200px] shrink-0 border-r border-line p-5 md:block">
-        <span className="grid size-10 place-items-center rounded-xl bg-mist text-forest ring-1 ring-mint">
-          <ProductGlyph kind={kind} className="size-6" />
-        </span>
-        <ul className="mt-6 space-y-1 text-[13.5px]">
-          {["Overview", "Payments", "Approvals", "Reports"].map((n, i) => (
-            <li key={n} className={`rounded-lg px-3 py-2 ${i === 1 ? "bg-surface font-medium text-ink" : "text-copy"}`}>
-              {n}
-            </li>
-          ))}
-        </ul>
-      </aside>
-      <div className="min-w-0 flex-1 p-5 md:p-7">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-[12.5px] text-sub">{meta}</p>
-            <p className="mt-0.5 text-[18px] font-semibold tracking-[-0.015em] text-ink">{title}</p>
-          </div>
-        </div>
-        <div className="mt-5">{children}</div>
-      </div>
+    <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+      <div className="absolute inset-0 bg-[radial-gradient(60%_50%_at_15%_0%,#f6ffee_0%,transparent_70%)]" />
+      <motion.div
+        style={{ x, y }}
+        className="absolute -top-[30%] -right-[18%] h-[105%] w-[78%] origin-top-right -skew-y-12 overflow-hidden opacity-90 [mask-image:linear-gradient(to_right,transparent,#000_30%)] max-lg:-right-[40%] max-lg:w-[130%] max-lg:opacity-60"
+      >
+        <div className="absolute inset-0 bg-[#f6ffee]" />
+        <div className="absolute -top-[10%] left-[5%] size-[70%] animate-blob-a rounded-full bg-[radial-gradient(circle,#95de64_0%,transparent_62%)] motion-reduce:animate-none" />
+        <div className="absolute top-[20%] right-[-10%] size-[75%] animate-blob-b rounded-full bg-[radial-gradient(circle,#2fd38a_0%,transparent_60%)] opacity-80 motion-reduce:animate-none" />
+        <div className="absolute bottom-[-20%] left-[25%] size-[70%] animate-blob-c rounded-full bg-[radial-gradient(circle,#b8f0d4_0%,transparent_62%)] motion-reduce:animate-none" />
+        <div className="absolute top-[35%] left-[-10%] size-[55%] animate-blob-b rounded-full bg-[radial-gradient(circle,#e8fa9e_0%,transparent_60%)] [animation-delay:-9s] motion-reduce:animate-none" />
+        <div className="absolute top-[5%] right-[15%] size-[45%] animate-blob-a rounded-full bg-[radial-gradient(circle,rgba(1,118,73,0.55)_0%,transparent_62%)] [animation-delay:-12s] motion-reduce:animate-none" />
+      </motion.div>
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(6,38,23,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(6,38,23,0.05)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(70%_60%_at_30%_30%,#000_0%,transparent_80%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-white" />
     </div>
-  );
-}
-
-function Status({ s }: { s: "Paid" | "Approved" | "Pending" }) {
-  const tone = s === "Paid" ? "bg-mint text-forest" : s === "Approved" ? "bg-mist text-brand ring-1 ring-mint" : "bg-surface text-copy";
-  return <span className={`rounded-full px-2.5 py-1 text-[12px] font-medium whitespace-nowrap ${tone}`}>{s}</span>;
-}
-
-function VersaScreen() {
-  const rows = [
-    { v: "Skyline Hotels Pvt Ltd", c: "•••• 4021", a: "₹2,48,500", s: "Paid" as const },
-    { v: "Aerolink Travels", c: "•••• 7713", a: "₹86,240", s: "Approved" as const },
-    { v: "Meridian Supplies Co.", c: "•••• 3390", a: "₹4,12,000", s: "Pending" as const },
-    { v: "Northfield Logistics", c: "•••• 5128", a: "₹1,05,600", s: "Paid" as const },
-    { v: "Cloudnine Software", c: "•••• 9042", a: "₹19,800", s: "Paid" as const },
-  ];
-  return (
-    <ScreenShell kind="versa" title="Vendor payments" meta="Versa · This week">
-      <div className="overflow-hidden rounded-xl ring-1 ring-line">
-        <div className="grid grid-cols-[1.6fr_1fr_auto] gap-4 bg-surface px-4 py-2.5 text-[12px] font-medium text-sub sm:grid-cols-[1.6fr_1fr_1fr_auto]">
-          <span>Vendor</span>
-          <span className="hidden sm:block">Virtual card</span>
-          <span>Amount</span>
-          <span>Status</span>
-        </div>
-        {rows.map((r, i) => (
-          <motion.div
-            key={r.v}
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, ease, delay: 0.08 * i }}
-            className="grid grid-cols-[1.6fr_1fr_auto] items-center gap-4 border-t border-line px-4 py-3 text-[13.5px] sm:grid-cols-[1.6fr_1fr_1fr_auto]"
-          >
-            <span className="truncate font-medium text-ink">{r.v}</span>
-            <span className="tabular hidden text-copy sm:block">{r.c}</span>
-            <span className="tabular text-ink">{r.a}</span>
-            <Status s={r.s} />
-          </motion.div>
-        ))}
-      </div>
-    </ScreenShell>
-  );
-}
-
-function OdccScreen() {
-  const spends = [
-    { m: "Supplier · Meridian Supplies", a: "₹4,12,000" },
-    { m: "Travel · Aerolink Travels", a: "₹86,240" },
-    { m: "Utilities · State Power Board", a: "₹1,24,300" },
-  ];
-  return (
-    <ScreenShell kind="odcc" title="Credit on card" meta="ODCC · OD/CC facility">
-      <div className="grid gap-4 sm:grid-cols-[1fr_1.2fr]">
-        <div className="rounded-xl bg-mist p-5 ring-1 ring-mint">
-          <p className="text-[12.5px] text-copy">Sanctioned limit</p>
-          <p className="tabular mt-1 text-[26px] font-semibold tracking-[-0.02em] text-ink">₹5,00,00,000</p>
-          <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-white ring-1 ring-mint">
-            <motion.div className="h-full rounded-full bg-brand" initial={{ width: 0 }} animate={{ width: "38%" }} transition={{ duration: 1.1, ease, delay: 0.2 }} />
-          </div>
-          <div className="mt-3 flex justify-between text-[12.5px]">
-            <span className="text-ink">₹1.9 Cr on card</span>
-            <span className="text-copy">₹3.1 Cr available</span>
-          </div>
-        </div>
-        <div className="rounded-xl ring-1 ring-line">
-          <p className="border-b border-line px-4 py-2.5 text-[12px] font-medium text-sub">Recent card spends</p>
-          {spends.map((s, i) => (
-            <motion.div
-              key={s.m}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease, delay: 0.25 + i * 0.08 }}
-              className="flex items-center justify-between gap-3 border-b border-line px-4 py-3 text-[13.5px] last:border-0"
-            >
-              <span className="truncate text-ink">{s.m}</span>
-              <span className="tabular shrink-0 font-medium text-ink">{s.a}</span>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </ScreenShell>
-  );
-}
-
-function RoutingScreen() {
-  const log = [
-    { id: "TXN-88214", amt: "₹14,20,000", via: "Bank A", rule: "High value" },
-    { id: "TXN-88215", amt: "₹3,60,000", via: "Bank B", rule: "Default" },
-    { id: "TXN-88216", amt: "₹62,000", via: "Network B", rule: "Domestic card" },
-    { id: "TXN-88217", amt: "₹22,75,000", via: "Bank A", rule: "High value" },
-  ];
-  return (
-    <ScreenShell kind="orchestration" title="Routing log" meta="Orchestration Layer · Live">
-      <ul className="space-y-2.5">
-        {log.map((l, i) => (
-          <motion.li
-            key={l.id}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease, delay: 0.1 * i }}
-            className="flex items-center gap-3 rounded-xl px-4 py-3 ring-1 ring-line"
-          >
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-mint text-brand">
-              <Check className="size-3" />
-            </span>
-            <span className="tabular hidden w-[92px] text-[13px] text-copy sm:block">{l.id}</span>
-            <span className="tabular flex-1 text-[14px] font-semibold text-ink">{l.amt}</span>
-            <span className="hidden text-[12.5px] text-sub md:block">{l.rule}</span>
-            <span className="rounded-full bg-surface px-3 py-1 text-[12.5px] font-medium text-ink">→ {l.via}</span>
-          </motion.li>
-        ))}
-      </ul>
-    </ScreenShell>
   );
 }
