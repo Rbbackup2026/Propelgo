@@ -71,7 +71,7 @@ export function Hero() {
             {hero.eyebrow}
           </motion.p>
 
-          <h1 className="mt-6 text-[clamp(2.6rem,1.5rem+3.4vw,4.4rem)] leading-[1.02] font-semibold tracking-[-0.04em] text-balance text-ink">
+          <h1 className="mt-6 text-[clamp(2.25rem,1.4rem+2.4vw,3.5rem)] leading-[1.05] font-semibold tracking-[-0.04em] text-balance text-ink">
             {words.map((word, i) => {
               const highlight = i >= words.length - HIGHLIGHT_WORDS;
               return (
