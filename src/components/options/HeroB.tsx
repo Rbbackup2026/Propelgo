@@ -118,7 +118,7 @@ export function HeroB() {
         </motion.div>
 
         <motion.div style={reduce ? undefined : { y: stageY, scale: stageScale }} className="relative">
-          <HeroStage mx={mx} my={my} ready={ready} rails={false} />
+          <HeroStage mx={mx} my={my} ready={ready} rails={false} accents={false} />
         </motion.div>
       </div>
 

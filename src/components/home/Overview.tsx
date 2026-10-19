@@ -18,15 +18,32 @@ import { Counter } from "@/components/ui/Counter";
 import { LogoMark } from "@/components/ui/Logo";
 import { Check } from "@/components/ui/icons";
 import { useMediaQuery } from "@/lib/useMediaQuery";
-import { NodeGlyph, type NodeKind } from "./visuals/NodeGlyph";
+import { CustomerOrbit } from "./visuals/CustomerOrbit";
+import { GREEN, NodeGlyph, type GlyphPalette, type NodeKind } from "./visuals/NodeGlyph";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const kinds: NodeKind[] = ["connect", "issue", "route", "integrate", "automate", "reconcile"];
 
+const INDIGO: GlyphPalette = { BRAND: "#5b57d9", LIME: "#a9a6f5", MINT: "#e6e5fd", LINE: "#d8d6f6" };
+const TEAL: GlyphPalette = { BRAND: "#0e8ba3", LIME: "#6fd0de", MINT: "#d4f1f5", LINE: "#c3e6ec" };
+const AMBER: GlyphPalette = { BRAND: "#d9822b", LIME: "#f5c27d", MINT: "#fdecd6", LINE: "#f1dcc1" };
+const ROSE: GlyphPalette = { BRAND: "#c8507a", LIME: "#f2a3bf", MINT: "#fbe1ea", LINE: "#f0d0dc" };
+const BLUE: GlyphPalette = { BRAND: "#2f6fd8", LIME: "#8db6f5", MINT: "#dde9fc", LINE: "#cddcf3" };
+
+/** One palette per ecosystem step, Connect through Reconcile. */
+const NODE_PALETTES = [GREEN, INDIGO, TEAL, AMBER, ROSE, BLUE];
+/** Palettes for the three small stat tiles. */
+const STAT_PALETTES = [INDIGO, AMBER, TEAL];
+
+type Tone = "spectrum" | "brand";
+
 /** Index of the title word set in the brand gradient ("infrastructure"). */
 const ACCENT_WORD = 2;
 
-export function Overview() {
+type FeaturedDecor = "orbit" | "rings";
+
+/** `featured` picks the decoration on the headline stat and `tone` the colouring; Direction B keeps rings and brand green. */
+export function Overview({ featured = "orbit", tone = "spectrum" }: { featured?: FeaturedDecor; tone?: Tone }) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: sheetRef, offset: ["start end", "start 0.1"] });
@@ -38,12 +55,12 @@ export function Overview() {
       <motion.div
         ref={sheetRef}
         style={reduce ? undefined : { scale, borderRadius: radius }}
-        className="relative origin-top overflow-clip rounded-[40px] bg-mist ring-1 ring-mint"
+        className={`relative origin-top overflow-clip rounded-[40px] ring-1 ${tone === "spectrum" ? "bg-[linear-gradient(180deg,#f9fef5_0%,#ffffff_22%,#fbfcff_60%,#f7fcfb_100%)] ring-[#e7f0e6]" : "bg-mist ring-mint"}`}
       >
-        <SheetBackdrop progress={scrollYProgress} />
-        <Statement />
-        <Rail />
-        <Stats />
+        {tone === "spectrum" ? <AuroraBackdrop progress={scrollYProgress} /> : <SheetBackdrop progress={scrollYProgress} />}
+        <Statement tone={tone} />
+        <Rail tone={tone} />
+        <Stats featured={featured} tone={tone} />
       </motion.div>
     </section>
   );
@@ -62,7 +79,26 @@ function SheetBackdrop({ progress }: { progress: MotionValue<number> }) {
   );
 }
 
-function Statement() {
+/** Light, slow-drifting washes in the site palette; radial gradients rather than blur filters keep it cheap over a tall sheet. */
+function AuroraBackdrop({ progress }: { progress: MotionValue<number> }) {
+  const rotate = useTransform(progress, [0, 1], [-30, 0]);
+  return (
+    <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div className="absolute inset-x-0 top-0 h-[900px] bg-[radial-gradient(rgba(1,118,73,0.09)_1px,transparent_1px)] bg-[size:22px_22px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,#000,transparent)]" />
+      <div className="absolute -top-56 left-1/2 h-[640px] w-[1100px] -translate-x-1/2 bg-[radial-gradient(closest-side,rgba(149,222,100,0.32),rgba(149,222,100,0.08)_55%,transparent)]" />
+
+      <div className="absolute top-[38%] left-[18%] size-[900px] animate-blob-c rounded-full bg-[radial-gradient(closest-side,rgba(149,222,100,0.2),transparent)] motion-reduce:animate-none" />
+      <div className="absolute top-[58%] -right-[10%] size-[780px] animate-blob-a rounded-full bg-[radial-gradient(closest-side,rgba(217,130,43,0.11),transparent)] [animation-delay:-8s] motion-reduce:animate-none" />
+      <div className="absolute bottom-[2%] -left-[8%] size-[820px] animate-blob-b rounded-full bg-[radial-gradient(closest-side,rgba(47,111,216,0.12),transparent)] [animation-delay:-12s] motion-reduce:animate-none" />
+
+      <motion.div style={{ rotate }} className="absolute -top-24 -right-24 opacity-[0.05]">
+        <LogoMark className="size-[420px]" />
+      </motion.div>
+    </div>
+  );
+}
+
+function Statement({ tone }: { tone: Tone }) {
   const [founded, first] = overview.milestone.split(/(?<=\.)\s+/);
   return (
     <div className="container-page relative pt-24 pb-20 md:pt-36 md:pb-28 lg:pb-4">
@@ -84,8 +120,10 @@ function Statement() {
         </ClipReveal>
 
         <ClipReveal delay={0.12}>
-          <div className="relative overflow-hidden rounded-[28px] bg-white p-6 shadow-[0_30px_60px_-36px_rgba(6,38,23,0.35)] ring-1 ring-mint md:p-7">
-            <FlightPath />
+          <div
+            className={`relative overflow-hidden rounded-[28px] bg-white p-6 ring-1 md:p-7 ${tone === "spectrum" ? "shadow-[0_30px_60px_-36px_rgba(91,87,217,0.3)] ring-[#ecebf7]" : "shadow-[0_30px_60px_-36px_rgba(6,38,23,0.35)] ring-mint"}`}
+          >
+            <FlightPath spectrum={tone === "spectrum"} />
             <ul className="relative mt-5 space-y-4">
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-mint text-brand">
@@ -95,7 +133,7 @@ function Statement() {
               </li>
               {first && (
                 <li className="flex items-start gap-3">
-                  <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-brand text-white">
+                  <span className={`mt-0.5 grid size-7 shrink-0 place-items-center rounded-full text-white ${tone === "spectrum" ? "bg-[#5b57d9]" : "bg-brand"}`}>
                     <Check className="size-3" />
                   </span>
                   <p className="text-[16px] leading-relaxed text-copy">{first}</p>
@@ -160,14 +198,26 @@ function ClipReveal({ children, delay = 0, className = "" }: { children: ReactNo
   );
 }
 
-function FlightPath() {
+function FlightPath({ spectrum }: { spectrum: boolean }) {
   const d = "M8 52 C 70 52, 90 8, 160 14 S 250 40, 292 18";
+  const reduce = useReducedMotion();
+  const end = spectrum ? "#5b57d9" : "#017649";
   return (
-    <svg viewBox="0 0 300 60" className="w-full" fill="none" aria-hidden="true">
-      <path d={d} stroke="#D9F7BE" strokeWidth="2" strokeDasharray="2 6" strokeLinecap="round" />
+    <svg viewBox="0 0 300 60" className="w-full overflow-visible" fill="none" aria-hidden="true">
+      {spectrum && (
+        <defs>
+          <linearGradient id="flight-stroke" x1="0" y1="0" x2="300" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#95DE64" />
+            <stop offset="35%" stopColor="#017649" />
+            <stop offset="70%" stopColor="#0e8ba3" />
+            <stop offset="100%" stopColor="#5b57d9" />
+          </linearGradient>
+        </defs>
+      )}
+      <path d={d} stroke={spectrum ? "#e1dffb" : "#D9F7BE"} strokeWidth="2" strokeDasharray="2 6" strokeLinecap="round" />
       <motion.path
         d={d}
-        stroke="#017649"
+        stroke={spectrum ? "url(#flight-stroke)" : "#017649"}
         strokeWidth="2"
         strokeLinecap="round"
         initial={{ pathLength: 0 }}
@@ -176,15 +226,27 @@ function FlightPath() {
         transition={{ duration: 1.8, ease, delay: 0.4 }}
       />
       <circle cx="8" cy="52" r="5" fill="#95DE64" />
+      {spectrum && !reduce && (
+        <>
+          <circle r="3.5" fill="#fff" stroke="#0e8ba3" strokeWidth="2" opacity="0">
+            <animateMotion dur="3.2s" begin="2.4s" repeatCount="indefinite" path={d} />
+            <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="3.2s" begin="2.4s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="292" cy="18" r="7" fill="none" stroke={end} strokeWidth="1.5" opacity="0">
+            <animate attributeName="r" values="7;16" dur="2.2s" begin="2.4s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.6;0" dur="2.2s" begin="2.4s" repeatCount="indefinite" />
+          </circle>
+        </>
+      )}
       <motion.g initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ delay: 2, type: "spring", bounce: 0.3, visualDuration: 0.4 }} style={{ transformOrigin: "292px 18px" }}>
-        <circle cx="292" cy="18" r="7" fill="#017649" />
+        <circle cx="292" cy="18" r="7" fill={end} />
         <path d="M289 18.5l2 2 3.5-4" stroke="#fff" strokeWidth="1.6" />
       </motion.g>
     </svg>
   );
 }
 
-function Rail() {
+function Rail({ tone }: { tone: Tone }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -254,7 +316,15 @@ function Rail() {
             >
               {pinned && <div className="absolute top-[108px] right-[30%] left-[4%] h-px bg-[repeating-linear-gradient(90deg,#95de64_0_6px,transparent_6px_12px)]" />}
               {nodes.map((n, i) => (
-                <NodeCard key={n.noun} index={i} node={n} kind={kinds[i]} active={pinned ? i === active : true} pinned={pinned} />
+                <NodeCard
+                  key={n.noun}
+                  index={i}
+                  node={n}
+                  kind={kinds[i]}
+                  active={pinned ? i === active : true}
+                  pinned={pinned}
+                  palette={tone === "spectrum" ? NODE_PALETTES[i % NODE_PALETTES.length] : undefined}
+                />
               ))}
             </motion.div>
           </div>
@@ -270,36 +340,73 @@ function NodeCard({
   kind,
   active,
   pinned,
+  palette,
 }: {
   index: number;
   node: (typeof overview.nodes)[number];
   kind: NodeKind;
   active: boolean;
   pinned: boolean;
+  palette?: GlyphPalette;
 }) {
   const reduce = useReducedMotion();
   const enter = pinned || reduce ? {} : { initial: { opacity: 0, y: 30 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "0px 0px -10% 0px" } };
+  const lit = active && pinned;
+
+  if (!palette) {
+    return (
+      <motion.article
+        {...enter}
+        animate={pinned ? { scale: active ? 1 : 0.94, opacity: active ? 1 : 0.62 } : undefined}
+        transition={{ duration: 0.6, ease, delay: pinned ? 0 : (index % 3) * 0.08 }}
+        className={`relative flex flex-col rounded-[28px] bg-white p-6 ring-1 transition-shadow duration-500 ${pinned ? "h-[400px] w-[320px] shrink-0" : ""} ${
+          lit ? "shadow-[0_40px_80px_-40px_rgba(1,118,73,0.55)] ring-brand/25" : "ring-mint"
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <span
+            className={`tabular relative z-10 grid size-10 place-items-center rounded-full text-[13px] font-semibold transition-colors duration-500 ${
+              active ? "bg-brand text-white" : "bg-mist text-forest ring-1 ring-mint"
+            }`}
+          >
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <span className="rounded-full bg-mist px-3 py-1 text-[12.5px] font-medium text-forest ring-1 ring-mint">{node.noun}</span>
+        </div>
+        <div className="mt-6 h-[140px] rounded-2xl bg-[linear-gradient(160deg,#f6ffee,#ffffff)] p-2 ring-1 ring-mint/70">
+          <NodeGlyph kind={kind} active={active} />
+        </div>
+        <h3 className="mt-6 text-[30px] leading-none font-semibold tracking-[-0.035em] text-ink">{node.verb}</h3>
+        <p className="mt-3 text-[15px] leading-relaxed text-pretty text-copy">{node.line}</p>
+      </motion.article>
+    );
+  }
+
+  const p = palette;
   return (
     <motion.article
       {...enter}
       animate={pinned ? { scale: active ? 1 : 0.94, opacity: active ? 1 : 0.62 } : undefined}
       transition={{ duration: 0.6, ease, delay: pinned ? 0 : (index % 3) * 0.08 }}
-      className={`relative flex flex-col rounded-[28px] bg-white p-6 ring-1 transition-shadow duration-500 ${pinned ? "h-[400px] w-[320px] shrink-0" : ""} ${
-        active && pinned ? "shadow-[0_40px_80px_-40px_rgba(1,118,73,0.55)] ring-brand/25" : "ring-mint"
-      }`}
+      className={`relative flex flex-col rounded-[28px] bg-white p-6 transition-shadow duration-500 ${pinned ? "h-[400px] w-[320px] shrink-0" : ""}`}
+      style={{
+        boxShadow: lit ? `0 40px 80px -40px ${p.BRAND}88, inset 0 0 0 1px ${p.LINE}` : `inset 0 0 0 1px ${p.MINT}`,
+      }}
     >
       <div className="flex items-center justify-between">
         <span
-          className={`tabular relative z-10 grid size-10 place-items-center rounded-full text-[13px] font-semibold transition-colors duration-500 ${
-            active ? "bg-brand text-white" : "bg-mist text-forest ring-1 ring-mint"
-          }`}
+          className="tabular relative z-10 grid size-10 place-items-center rounded-full text-[13px] font-semibold transition-colors duration-500"
+          style={active ? { backgroundColor: p.BRAND, color: "#fff" } : { backgroundColor: p.MINT, color: p.BRAND }}
         >
           {String(index + 1).padStart(2, "0")}
         </span>
-        <span className="rounded-full bg-mist px-3 py-1 text-[12.5px] font-medium text-forest ring-1 ring-mint">{node.noun}</span>
+        <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12.5px] font-medium" style={{ backgroundColor: `${p.MINT}aa`, color: p.BRAND }}>
+          <span className="size-1.5 rounded-full" style={{ backgroundColor: p.BRAND }} />
+          {node.noun}
+        </span>
       </div>
-      <div className="mt-6 h-[140px] rounded-2xl bg-[linear-gradient(160deg,#f6ffee,#ffffff)] p-2 ring-1 ring-mint/70">
-        <NodeGlyph kind={kind} active={active} />
+      <div className="mt-6 h-[140px] rounded-2xl p-2" style={{ background: `linear-gradient(160deg, ${p.MINT}99, #ffffff 75%)`, boxShadow: `inset 0 0 0 1px ${p.MINT}` }}>
+        <NodeGlyph kind={kind} active={active} palette={p} />
       </div>
       <h3 className="mt-6 text-[30px] leading-none font-semibold tracking-[-0.035em] text-ink">{node.verb}</h3>
       <p className="mt-3 text-[15px] leading-relaxed text-pretty text-copy">{node.line}</p>
@@ -307,7 +414,7 @@ function NodeCard({
   );
 }
 
-function Stats() {
+function Stats({ featured, tone }: { featured: FeaturedDecor; tone: Tone }) {
   return (
     <div className="container-page relative pt-8 pb-20 md:pb-28 lg:pt-0">
       <ClipReveal>
@@ -315,7 +422,13 @@ function Stats() {
       </ClipReveal>
       <dl className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
         {stats.items.map((s, i) => (
-          <StatTile key={s.label} index={i} featured={i === 0} className={i === 0 ? "sm:col-span-2 lg:row-span-2" : i === 1 ? "lg:col-span-2" : ""}>
+          <StatTile
+            key={s.label}
+            index={i}
+            featured={i === 0}
+            decor={featured}
+            palette={tone === "spectrum" && i > 0 ? STAT_PALETTES[(i - 1) % STAT_PALETTES.length] : undefined}
+            className={i === 0 ? "sm:col-span-2 lg:row-span-2" : i === 1 ? "lg:col-span-2" : ""}>
             <dt className={`text-[15px] ${i === 0 ? "text-white/75" : "text-copy"}`}>{s.label}</dt>
             <dd
               className={`mt-3 leading-none font-semibold tracking-[-0.04em] whitespace-nowrap ${
@@ -332,11 +445,27 @@ function Stats() {
   );
 }
 
-function StatTile({ index, featured, className, children }: { index: number; featured: boolean; className: string; children: ReactNode }) {
+function StatTile({
+  index,
+  featured,
+  decor,
+  palette,
+  className,
+  children,
+}: {
+  index: number;
+  featured: boolean;
+  decor: FeaturedDecor;
+  palette?: GlyphPalette;
+  className: string;
+  children: ReactNode;
+}) {
+  const orbit = featured && decor === "orbit";
   const reduce = useReducedMotion();
   const mx = useMotionValue(-200);
   const my = useMotionValue(-200);
-  const spot = useMotionTemplate`radial-gradient(260px circle at ${mx}px ${my}px, ${featured ? "rgba(149,222,100,0.35)" : "rgba(149,222,100,0.28)"}, transparent 70%)`;
+  const glow = palette ? `${palette.LIME}55` : featured ? "rgba(149,222,100,0.35)" : "rgba(149,222,100,0.28)";
+  const spot = useMotionTemplate`radial-gradient(260px circle at ${mx}px ${my}px, ${glow}, transparent 70%)`;
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
     mx.set(e.clientX - r.left);
@@ -355,7 +484,7 @@ function StatTile({ index, featured, className, children }: { index: number; fea
         mx.set(-200);
         my.set(-200);
       }}
-      className={`group relative flex min-h-[200px] flex-col justify-end overflow-hidden rounded-[28px] p-7 ${
+      className={`group relative flex flex-col justify-end overflow-hidden rounded-[28px] p-7 ${orbit ? "min-h-[500px] sm:min-h-[340px] lg:min-h-[440px]" : "min-h-[200px]"} ${
         featured ? "text-white" : "bg-white ring-1 ring-mint"
       } ${className}`}
       style={{
@@ -364,7 +493,8 @@ function StatTile({ index, featured, className, children }: { index: number; fea
       }}
     >
       <motion.div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: spot }} />
-      {featured && (
+      {orbit && <CustomerOrbit />}
+      {featured && !orbit && (
         <svg viewBox="0 0 400 400" className="pointer-events-none absolute -top-24 -right-24 size-[420px]" fill="none" aria-hidden="true">
           {[0, 1, 2, 3, 4].map((i) => (
             <motion.circle
@@ -382,26 +512,29 @@ function StatTile({ index, featured, className, children }: { index: number; fea
           ))}
         </svg>
       )}
-      {!featured && <MiniBars index={index} />}
+      {!featured && <MiniBars index={index} palette={palette} />}
       <div className="relative">{children}</div>
     </motion.div>
   );
 }
 
-function MiniBars({ index }: { index: number }) {
+function MiniBars({ index, palette }: { index: number; palette?: GlyphPalette }) {
   const heights = [[30, 46, 38, 62, 74], [22, 34, 52, 48, 70], [40, 36, 58, 66, 80]][(index - 1) % 3];
+  const shades = palette ? [palette.MINT, palette.LINE, palette.LIME, `color-mix(in srgb, ${palette.LIME}, ${palette.BRAND})`, palette.BRAND] : null;
   return (
     <div className="absolute top-7 right-7 flex h-[56px] items-end gap-1.5" aria-hidden="true">
       {heights.map((h, i) => (
         <motion.span
           key={i}
-          className={`w-2 origin-bottom rounded-full ${i === heights.length - 1 ? "bg-brand" : "bg-mint"}`}
+          className={`w-2 origin-bottom rounded-full ${shades ? "" : i === heights.length - 1 ? "bg-brand" : "bg-mint"}`}
           style={{ height: `${h}%` }}
           initial={{ scaleY: 0 }}
           whileInView={{ scaleY: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease, delay: 0.4 + i * 0.07 }}
-        />
+        >
+          {shades && <span className="block size-full origin-bottom animate-[bar-breathe_2.8s_ease-in-out_infinite] rounded-full motion-reduce:animate-none" style={{ backgroundColor: shades[i], animationDelay: `${1.2 + i * 0.22}s` }} />}
+        </motion.span>
       ))}
     </div>
   );

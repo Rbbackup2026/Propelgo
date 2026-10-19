@@ -91,6 +91,26 @@
   }
 }
 
+@keyframes bar-breathe {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.72); }
+}
+
+@keyframes chip-bob {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -4px, 0); }
+}
+
+@keyframes streak {
+  from { background-position: 0 -40%; }
+  to { background-position: 0 140%; }
+}
+
+@keyframes t-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
 :root {
   color-scheme: light;
 }

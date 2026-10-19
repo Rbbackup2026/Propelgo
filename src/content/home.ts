@@ -198,6 +198,27 @@ export const security = {
     { name: "RBI aligned", line: "Regulatory guidelines" },
   ],
   note: "Badges to be confirmed by PropelGo",
+  // Artwork taken from propelgo.in. Width/height are the source pixel sizes.
+  certifications: [
+    { name: "DPIIT recognised", line: "Startup India", src: "/certifications/dpiit-startup-india.png", width: 222, height: 82 },
+    { name: "Visa Global Registry", line: "Service provider, 2025", src: "/certifications/service-provider-badge-2025.png", width: 320, height: 304 },
+    { name: "PCI DSS certified", line: "Panacea InfoSec audit", src: "/certifications/pci-dss.png", width: 321, height: 140 },
+    { name: "SOC 2 Type 2", line: "AICPA standard", src: "/certifications/soc2-type2.jpg", width: 199, height: 253 },
+    { name: "ISO 27001", line: "Information security", src: "/certifications/iso-27001.jpg", width: 215, height: 215 },
+    { name: "SSL secured", line: "Encrypted in transit", src: "/certifications/ssl-secure.jpg", width: 318, height: 159 },
+  ],
+};
+
+export const network = {
+  eyebrow: "Payment network",
+  title: "Every rail. One connection.",
+  copy: "Banks, card networks and national payment systems connect through PropelGo, so money reaches the right destination over the right rail, without a new integration for every route.",
+  rails: ["UPI", "NEFT", "RTGS", "IMPS", "Cards", "Bank APIs"],
+  points: [
+    { title: "Routed by rules", line: "Each payment takes the rail your policy picks, by amount, urgency or cost." },
+    { title: "Tracked end to end", line: "Status and settlement data come back to one view for every route." },
+    { title: "Built to extend", line: "New banks and networks plug into the same layer as you grow." },
+  ],
 };
 
 export const testimonials = {

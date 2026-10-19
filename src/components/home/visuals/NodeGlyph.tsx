@@ -1,40 +1,47 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Fragment } from "react";
+import { createContext, Fragment, useContext } from "react";
 
 export type NodeKind = "connect" | "issue" | "route" | "integrate" | "automate" | "reconcile";
 
+/** BRAND is the strong colour, LIME the bright accent, MINT the fill and LINE the hairline. */
+export type GlyphPalette = { BRAND: string; LIME: string; MINT: string; LINE: string };
+
+export const GREEN: GlyphPalette = { BRAND: "#017649", LIME: "#95DE64", MINT: "#D9F7BE", LINE: "#CFE8C0" };
+
+const Palette = createContext<GlyphPalette>(GREEN);
+
 const ease = [0.16, 1, 0.3, 1] as const;
-const BRAND = "#017649";
-const LIME = "#95DE64";
-const MINT = "#D9F7BE";
-const LINE = "#CFE8C0";
 
 /** Small animated schematic for each step of the PropelGo ecosystem. Plays while `active`. */
-export function NodeGlyph({ kind, active }: { kind: NodeKind; active: boolean }) {
+export function NodeGlyph({ kind, active, palette = GREEN }: { kind: NodeKind; active: boolean; palette?: GlyphPalette }) {
   return (
-    <svg viewBox="0 0 260 140" className="h-full w-full" fill="none" aria-hidden="true">
-      {kind === "connect" && <Connect active={active} />}
-      {kind === "issue" && <Issue active={active} />}
-      {kind === "route" && <Route active={active} />}
-      {kind === "integrate" && <Integrate active={active} />}
-      {kind === "automate" && <Automate active={active} />}
-      {kind === "reconcile" && <Reconcile active={active} />}
-    </svg>
+    <Palette.Provider value={palette}>
+      <svg viewBox="0 0 260 140" className="h-full w-full" fill="none" aria-hidden="true">
+        {kind === "connect" && <Connect active={active} />}
+        {kind === "issue" && <Issue active={active} />}
+        {kind === "route" && <Route active={active} />}
+        {kind === "integrate" && <Integrate active={active} />}
+        {kind === "automate" && <Automate active={active} />}
+        {kind === "reconcile" && <Reconcile active={active} />}
+      </svg>
+    </Palette.Provider>
   );
 }
 
-function Pulse({ path, dur = 1.8, begin = 0, active, color = BRAND }: { path: string; dur?: number; begin?: number; active: boolean; color?: string }) {
+function Pulse({ path, dur = 1.8, begin = 0, active, color }: { path: string; dur?: number; begin?: number; active: boolean; color?: string }) {
+  const { BRAND } = useContext(Palette);
   if (!active) return null;
   return (
-    <circle r="4" fill={color} stroke="#fff" strokeWidth="1.5">
+    <circle r="4" fill={color ?? BRAND} stroke="#fff" strokeWidth="1.5">
       <animateMotion dur={`${dur}s`} begin={`${begin}s`} repeatCount="indefinite" path={path} />
     </circle>
   );
 }
 
 function Bank({ x, y }: { x: number; y: number }) {
+  const { BRAND, LINE } = useContext(Palette);
   return (
     <g transform={`translate(${x} ${y})`}>
       <rect x="-22" y="-18" width="44" height="36" rx="10" fill="#fff" stroke={LINE} />
@@ -46,6 +53,7 @@ function Bank({ x, y }: { x: number; y: number }) {
 }
 
 function Connect({ active }: { active: boolean }) {
+  const { BRAND, LIME, LINE } = useContext(Palette);
   const ys = [28, 70, 112];
   const paths = ys.map((y) => `M58 ${y} C 120 ${y}, 140 70, 186 70`);
   return (
@@ -67,6 +75,7 @@ function Connect({ active }: { active: boolean }) {
 }
 
 function Issue({ active }: { active: boolean }) {
+  const { BRAND, LIME, MINT } = useContext(Palette);
   const cards = [
     { fill: MINT, rot: -14, x: -34 },
     { fill: LIME, rot: 0, x: 0 },
@@ -93,6 +102,7 @@ function Issue({ active }: { active: boolean }) {
 }
 
 function Route({ active }: { active: boolean }) {
+  const { BRAND, LIME, LINE } = useContext(Palette);
   const outs = [26, 70, 114];
   const paths = outs.map((y) => `M70 70 C 130 70, 140 ${y}, 196 ${y}`);
   return (
@@ -132,6 +142,7 @@ function Route({ active }: { active: boolean }) {
 }
 
 function Integrate({ active }: { active: boolean }) {
+  const { BRAND, LIME, MINT, LINE } = useContext(Palette);
   return (
     <>
       <motion.g initial={false} animate={{ x: active ? 12 : 0 }} transition={{ type: "spring", bounce: 0.2, visualDuration: 0.6 }}>
@@ -159,6 +170,7 @@ function Integrate({ active }: { active: boolean }) {
 }
 
 function Automate({ active }: { active: boolean }) {
+  const { BRAND, MINT, LINE } = useContext(Palette);
   const xs = [34, 98, 162, 226];
   return (
     <>
@@ -201,6 +213,7 @@ function Automate({ active }: { active: boolean }) {
 const MATCH = [1, 0, 3, 2];
 
 function Reconcile({ active }: { active: boolean }) {
+  const { BRAND, MINT, LINE } = useContext(Palette);
   const ys = [28, 56, 84, 112];
   return (
     <>

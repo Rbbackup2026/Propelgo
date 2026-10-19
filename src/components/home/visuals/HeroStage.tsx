@@ -11,7 +11,7 @@ import {
   useTransform,
   type MotionValue,
 } from "motion/react";
-import { useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { LogoMark } from "@/components/ui/Logo";
 import { Check, ContactlessIcon } from "@/components/ui/icons";
 import { usePreloaderDone } from "@/lib/preloader";
@@ -36,7 +36,20 @@ const BASE = 0.45;
 
 const panel = "rounded-2xl bg-white shadow-[0_1px_2px_rgba(6,38,23,0.06),0_28px_56px_-24px_rgba(6,38,23,0.28)] ring-1 ring-black/[0.05]";
 
-export function HeroStage({ mx, my, ready, rails = true }: Pointer & { ready: boolean; rails?: boolean }) {
+const INDIGO = "#5b57d9";
+const TEAL = "#0e8ba3";
+const AMBER = "#d9822b";
+
+/** Approver avatars: [tint, ink] per position when accents are on. */
+const APPROVER_TONES = [
+  ["#e6e5fd", INDIGO],
+  ["#fdecd6", "#a85f16"],
+] as const;
+
+/** True on Direction A, which tints the small details in the wider palette; Direction B stays brand green. */
+const Accent = createContext(false);
+
+export function HeroStage({ mx, my, ready, rails = true, accents = true }: Pointer & { ready: boolean; rails?: boolean; accents?: boolean }) {
   const { ref, scale } = useStageScale<HTMLDivElement>(W);
   const inView = useInView(ref);
   const reduce = useReducedMotion();
@@ -51,45 +64,46 @@ export function HeroStage({ mx, my, ready, rails = true }: Pointer & { ready: bo
   const p = payments[index];
 
   return (
-    <div ref={ref} className="relative w-full" style={{ height: H * scale }} aria-hidden="true">
-      <div className="absolute top-0 left-0 origin-top-left" style={{ width: W, height: H, transform: `scale(${scale})` }}>
-        <div
-          className={`absolute top-[150px] left-[90px] size-[400px] rounded-full ${rails ? "bg-[radial-gradient(circle,rgba(149,222,100,0.28),transparent_65%)]" : "bg-[radial-gradient(circle,rgba(149,222,100,0.55),transparent_65%)]"}`}
-        />
-        {rails && <HeroRails animate={!reduce} ready={ready} />}
-        <Orbits animateDots={!reduce} ready={ready} />
+    <Accent.Provider value={accents}>
+      <div ref={ref} className="relative w-full" style={{ height: H * scale }} aria-hidden="true">
+        <div className="absolute top-0 left-0 origin-top-left" style={{ width: W, height: H, transform: `scale(${scale})` }}>
+          <div
+            className={`absolute top-[150px] left-[90px] size-[400px] rounded-full ${rails ? "bg-[radial-gradient(circle,rgba(149,222,100,0.28),transparent_65%)]" : "bg-[radial-gradient(circle,rgba(149,222,100,0.55),transparent_65%)]"}`}
+          />
+          {rails ? <HeroRails animate={!reduce} ready={ready} /> : <Orbits animateDots={!reduce} ready={ready} />}
 
-        <Depth mx={mx} my={my} depth={10} delay={0.35} className="absolute top-[150px] left-[150px]">
-          <div className="relative h-[226px] w-[360px] rotate-[14deg] rounded-[22px] bg-[linear-gradient(135deg,#d9f7be_0%,#95de64_55%,#5fc77d_100%)] shadow-[0_30px_60px_-30px_rgba(6,38,23,0.35)]">
-            <div className="absolute inset-0 rounded-[22px] bg-[repeating-linear-gradient(115deg,rgba(255,255,255,0.18)_0_2px,transparent_2px_14px)]" />
-          </div>
-        </Depth>
+          <Depth mx={mx} my={my} depth={10} delay={0.35} className="absolute top-[150px] left-[150px]">
+            <div className="relative h-[226px] w-[360px] rotate-[14deg] rounded-[22px] bg-[linear-gradient(135deg,#d9f7be_0%,#95de64_55%,#5fc77d_100%)] shadow-[0_30px_60px_-30px_rgba(6,38,23,0.35)]">
+              <div className="absolute inset-0 rounded-[22px] bg-[repeating-linear-gradient(115deg,rgba(255,255,255,0.18)_0_2px,transparent_2px_14px)]" />
+            </div>
+          </Depth>
 
-        <MainCard mx={mx} my={my} last4={p.last4} vendor={p.vendor} reduce={!!reduce} ready={ready} />
+          <MainCard mx={mx} my={my} last4={p.last4} vendor={p.vendor} reduce={!!reduce} ready={ready} />
 
-        <Depth mx={mx} my={my} depth={46} delay={0.75} className="absolute top-[64px] left-[328px]">
-          <PaymentToast index={index} vendor={p.vendor} amount={p.amount} run={!reduce} />
-        </Depth>
+          <Depth mx={mx} my={my} depth={46} delay={0.75} className="absolute top-[64px] left-[328px]">
+            <PaymentToast index={index} vendor={p.vendor} amount={p.amount} run={!reduce} />
+          </Depth>
 
-        <Depth mx={mx} my={my} depth={30} delay={0.95} className="absolute top-[452px] left-[16px]">
-          <Approvals index={index} approvers={p.approvers} />
-        </Depth>
+          <Depth mx={mx} my={my} depth={30} delay={0.95} className="absolute top-[452px] left-[16px]">
+            <Approvals index={index} approvers={p.approvers} />
+          </Depth>
 
-        <Depth mx={mx} my={my} depth={54} delay={1.1} className="absolute top-[438px] left-[336px]">
-          <Settlement />
-        </Depth>
+          <Depth mx={mx} my={my} depth={54} delay={1.1} className="absolute top-[438px] left-[336px]">
+            <Settlement />
+          </Depth>
 
-        <Depth mx={mx} my={my} depth={64} delay={0.6} className="absolute top-[104px] left-[28px]">
-          <div className={`${panel} flex items-center gap-2.5 rounded-full py-2 pr-4 pl-2.5`}>
-            <span className="relative grid size-6 place-items-center">
-              <span className="absolute inset-0 animate-ping-soft rounded-full bg-lime" />
-              <span className="relative size-2.5 rounded-full bg-brand" />
-            </span>
-            <span className="text-[12.5px] font-medium text-ink">Virtual card</span>
-          </div>
-        </Depth>
+          <Depth mx={mx} my={my} depth={64} delay={0.6} className="absolute top-[104px] left-[28px]">
+            <div className={`${panel} flex items-center gap-2.5 rounded-full py-2 pr-4 pl-2.5`}>
+              <span className="relative grid size-6 place-items-center">
+                <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ backgroundColor: accents ? "#a9a6f5" : "#95de64" }} />
+                <span className="relative size-2.5 rounded-full" style={{ backgroundColor: accents ? INDIGO : "#017649" }} />
+              </span>
+              <span className="text-[12.5px] font-medium text-ink">Virtual card</span>
+            </div>
+          </Depth>
+        </div>
       </div>
-    </div>
+    </Accent.Provider>
   );
 }
 
@@ -190,6 +204,7 @@ function Chip() {
 }
 
 function PaymentToast({ index, vendor, amount, run }: { index: number; vendor: string; amount: number; run: boolean }) {
+  const accents = useContext(Accent);
   return (
     <div className={`${panel} w-[236px] overflow-hidden p-4`}>
       <div className="flex items-center gap-3">
@@ -221,7 +236,7 @@ function PaymentToast({ index, vendor, amount, run }: { index: number; vendor: s
       <div className="mt-3.5 h-1 overflow-hidden rounded-full bg-surface">
         <motion.div
           key={index}
-          className="h-full origin-left rounded-full bg-gradient-to-r from-lime to-brand"
+          className={`h-full origin-left rounded-full bg-gradient-to-r ${accents ? "from-lime via-[#0e8ba3] to-[#5b57d9]" : "from-lime to-brand"}`}
           initial={run ? { scaleX: 0 } : false}
           animate={{ scaleX: 1 }}
           transition={{ duration: CYCLE_MS / 1000, ease: "linear" }}
@@ -246,34 +261,40 @@ function Amount({ value, run }: { value: number; run: boolean }) {
 }
 
 function Approvals({ index, approvers }: { index: number; approvers: string[] }) {
+  const accents = useContext(Accent);
   return (
     <div className={`${panel} w-[218px] p-4`}>
       <div className="flex items-center justify-between">
         <p className="text-[11.5px] text-sub">Approvals</p>
       </div>
       <div key={index} className="mt-3 flex items-center gap-2">
-        {approvers.map((a, i) => (
-          <motion.span
-            key={a}
-            initial={{ backgroundColor: "#fafafa", color: "#8c8c8c" }}
-            animate={{ backgroundColor: "#d9f7be", color: "#062617" }}
-            transition={{ duration: 0.4, delay: 0.5 + i * 0.6 }}
-            className="relative grid size-8 place-items-center rounded-full text-[11px] font-semibold ring-2 ring-white"
-          >
-            {a}
+        {approvers.map((a, i) => {
+          const [tint, ink] = accents ? APPROVER_TONES[i % APPROVER_TONES.length] : ["#d9f7be", "#062617"];
+          const badge = accents ? APPROVER_TONES[i % APPROVER_TONES.length][1] : "#017649";
+          return (
             <motion.span
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", bounce: 0.3, visualDuration: 0.35, delay: 0.7 + i * 0.6 }}
-              className="absolute -right-1 -bottom-1 grid size-4 place-items-center rounded-full bg-brand text-white ring-2 ring-white"
+              key={a}
+              initial={{ backgroundColor: "#fafafa", color: "#8c8c8c" }}
+              animate={{ backgroundColor: tint, color: ink }}
+              transition={{ duration: 0.4, delay: 0.5 + i * 0.6 }}
+              className="relative grid size-8 place-items-center rounded-full text-[11px] font-semibold ring-2 ring-white"
             >
-              <Check className="size-2" />
+              {a}
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", bounce: 0.3, visualDuration: 0.35, delay: 0.7 + i * 0.6 }}
+                className="absolute -right-1 -bottom-1 grid size-4 place-items-center rounded-full text-white ring-2 ring-white"
+                style={{ backgroundColor: badge }}
+              >
+                <Check className="size-2" />
+              </motion.span>
             </motion.span>
-          </motion.span>
-        ))}
+          );
+        })}
         <div className="ml-2 h-1.5 flex-1 overflow-hidden rounded-full bg-surface">
           <motion.div
-            className="h-full origin-left rounded-full bg-brand"
+            className={`h-full origin-left rounded-full ${accents ? "bg-gradient-to-r from-[#5b57d9] to-[#d9822b]" : "bg-brand"}`}
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ duration: 1.4, ease, delay: 0.5 }}
@@ -287,11 +308,13 @@ function Approvals({ index, approvers }: { index: number; approvers: string[] })
 const spark = "M0 44 C 18 40, 26 30, 42 32 S 70 18, 88 22 S 118 8, 136 14 S 168 4, 196 2";
 
 function Settlement() {
+  const accents = useContext(Accent);
+  const end = accents ? INDIGO : "#017649";
   return (
     <div className={`${panel} w-[224px] p-4`}>
       <div className="flex items-center justify-between">
         <p className="text-[11.5px] text-sub">Status</p>
-        <span className="size-1.5 animate-pulse rounded-full bg-lime" />
+        <span className="size-1.5 animate-pulse rounded-full" style={{ backgroundColor: accents ? TEAL : "#95de64" }} />
       </div>
       <p className="mt-1 flex items-center gap-1.5 text-[13.5px] font-semibold text-ink">
         <span className="grid size-4 place-items-center rounded-full bg-mint text-brand">
@@ -302,8 +325,13 @@ function Settlement() {
       <svg viewBox="0 0 196 50" className="mt-3 w-full overflow-visible" fill="none">
         <defs>
           <linearGradient id="spark-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#95DE64" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="#95DE64" stopOpacity="0" />
+            <stop offset="0%" stopColor={accents ? "#6fd0de" : "#95DE64"} stopOpacity="0.4" />
+            <stop offset="100%" stopColor={accents ? "#a9a6f5" : "#95DE64"} stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="spark-stroke" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#017649" />
+            <stop offset="55%" stopColor={accents ? TEAL : "#017649"} />
+            <stop offset="100%" stopColor={end} />
           </linearGradient>
         </defs>
         <motion.path
@@ -315,14 +343,20 @@ function Settlement() {
         />
         <motion.path
           d={spark}
-          stroke="#017649"
+          stroke="url(#spark-stroke)"
           strokeWidth="2"
           strokeLinecap="round"
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ duration: 1.6, ease, delay: 1.2 }}
         />
-        <motion.circle cx="196" cy="2" r="3.5" fill="#017649" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2.6 }} />
+        {accents && (
+          <circle cx="196" cy="2" r="3.5" fill="none" stroke={end} strokeWidth="1.5">
+            <animate attributeName="r" values="3.5;10" dur="2s" begin="2.8s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="0.7;0" dur="2s" begin="2.8s" repeatCount="indefinite" />
+          </circle>
+        )}
+        <motion.circle cx="196" cy="2" r="3.5" fill={end} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2.6 }} />
       </svg>
     </div>
   );
@@ -331,6 +365,7 @@ function Settlement() {
 const ellipse = (rx: number, ry: number) => `M ${290 - rx} 300 a ${rx} ${ry} 0 1 0 ${rx * 2} 0 a ${rx} ${ry} 0 1 0 ${-rx * 2} 0`;
 
 function Orbits({ animateDots, ready }: { animateDots: boolean; ready: boolean }) {
+  const accents = useContext(Accent);
   const outer = ellipse(278, 124);
   const inner = ellipse(214, 90);
   return (
@@ -347,13 +382,13 @@ function Orbits({ animateDots, ready }: { animateDots: boolean; ready: boolean }
         <path d={inner} stroke="#95DE64" strokeOpacity="0.7" />
         {animateDots && (
           <>
-            <circle r="5" fill="#017649">
+            <circle r="5" fill={accents ? INDIGO : "#017649"}>
               <animateMotion dur="11s" repeatCount="indefinite" path={outer} />
             </circle>
             <circle r="4" fill="#95DE64" stroke="#fff" strokeWidth="2">
               <animateMotion dur="8s" repeatCount="indefinite" path={inner} keyPoints="1;0" keyTimes="0;1" calcMode="linear" />
             </circle>
-            <circle r="3" fill="#017649" fillOpacity="0.5">
+            <circle r="3" fill={accents ? AMBER : "#017649"} fillOpacity={accents ? 0.75 : 0.5}>
               <animateMotion dur="11s" begin="-5.5s" repeatCount="indefinite" path={outer} />
             </circle>
           </>

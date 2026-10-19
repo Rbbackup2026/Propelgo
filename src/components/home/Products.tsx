@@ -12,7 +12,7 @@ import {
   type MotionValue,
   type Variants,
 } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { products, type ProductKey } from "@/content/home";
 import { SectionIntro } from "@/components/ui/Reveal";
 import { FlipIcon } from "@/components/ui/FlipCard";
@@ -21,6 +21,10 @@ import { LogoMark } from "@/components/ui/Logo";
 import { ProductGlyph } from "@/components/ui/ProductGlyph";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import { ProductArt } from "./visuals/ProductArt";
+import { PRODUCT_ACCENT, ProductIcon } from "./visuals/ProductIcon";
+
+/** Direction A tints each product in its own accent; Direction B keeps the all-green cards. */
+const Spectrum = createContext(false);
 
 type Product = (typeof products.items)[number];
 
@@ -35,7 +39,23 @@ const tone: Record<ProductKey, { bg: string; ring: string; glow: string }> = {
   orchestration: { bg: "linear-gradient(165deg,#fafde8 0%,#e9f6bd 100%)", ring: "ring-[#dcedaa]", glow: "rgba(95,191,63,0.4)" },
 };
 
-export function Products() {
+/** Flat, soft pastels; the product accents carry the colour. */
+const spectrumTone: Record<ProductKey, { bg: string; ring: string; glow: string }> = {
+  versa: { bg: "linear-gradient(165deg,#f3f8f2 0%,#e8f1e7 100%)", ring: "ring-[#dfeadd]", glow: "rgba(1,118,73,0.28)" },
+  odcc: { bg: "linear-gradient(165deg,#f3f2fb 0%,#e9e8f7 100%)", ring: "ring-[#e0dff2]", glow: "rgba(91,87,217,0.28)" },
+  orchestration: { bg: "linear-gradient(165deg,#f1f8fa 0%,#e5f1f4 100%)", ring: "ring-[#d9eaee]", glow: "rgba(14,139,163,0.28)" },
+};
+
+export function Products({ tone: mode = "spectrum" }: { tone?: "spectrum" | "brand" }) {
+  return (
+    <Spectrum.Provider value={mode === "spectrum"}>
+      <ProductsSection />
+    </Spectrum.Provider>
+  );
+}
+
+function ProductsSection() {
+  const spectrum = useContext(Spectrum);
   const sectionRef = useRef<HTMLElement>(null);
   const desktop = useMediaQuery("(min-width: 1024px)");
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
@@ -46,7 +66,7 @@ export function Products() {
       <motion.p
         aria-hidden="true"
         style={{ x: markX }}
-        className="pointer-events-none absolute top-[52%] left-0 -translate-y-1/2 text-[24vw] leading-none font-semibold tracking-[-0.06em] whitespace-nowrap text-[#f1f8ea] select-none"
+        className={`pointer-events-none absolute top-[52%] left-0 -translate-y-1/2 text-[24vw] leading-none font-semibold tracking-[-0.06em] whitespace-nowrap select-none ${spectrum ? "text-[#f4f4f6]" : "text-[#f1f8ea]"}`}
       >
         PropelGo
       </motion.p>
@@ -187,7 +207,8 @@ function StageCard({
 }
 
 function CardBody({ p, open, hover, lifted, onOpen, onClose }: { p: Product; open: boolean; hover: boolean; lifted: boolean; onOpen: () => void; onClose: () => void }) {
-  const t = tone[p.key];
+  const spectrum = useContext(Spectrum);
+  const t = (spectrum ? spectrumTone : tone)[p.key];
   return (
     <div
       className={`relative size-full overflow-hidden rounded-[30px] ring-1 ${t.ring} transition-shadow duration-500`}
@@ -206,6 +227,8 @@ function CardBody({ p, open, hover, lifted, onOpen, onClose }: { p: Product; ope
 }
 
 function Front({ p, hover, onOpen }: { p: Product; hover: boolean; onOpen: () => void }) {
+  const spectrum = useContext(Spectrum);
+  const accent = PRODUCT_ACCENT[p.key];
   return (
     <motion.div
       className="relative flex size-full flex-col p-7"
@@ -214,29 +237,43 @@ function Front({ p, hover, onOpen }: { p: Product; hover: boolean; onOpen: () =>
       exit={{ opacity: 0, y: -14 }}
       transition={{ duration: 0.3, ease }}
     >
-      <div className="flex items-center justify-between">
-        <motion.span
-          animate={{ rotate: hover ? -8 : 0, scale: hover ? 1.08 : 1 }}
-          transition={{ type: "spring", bounce: 0.4, visualDuration: 0.4 }}
-          className="grid size-12 place-items-center rounded-2xl bg-white text-forest shadow-[0_8px_20px_-12px_rgba(6,38,23,0.4)]"
-        >
-          <ProductGlyph kind={p.key} className="size-8" />
-        </motion.span>
-        <span className="rounded-full bg-white/75 px-3 py-1 text-[12.5px] font-medium text-forest ring-1 ring-white">{p.category}</span>
-      </div>
+      {spectrum ? (
+        <div className="flex items-center justify-between">
+          <ProductIcon kind={p.key} active={hover} />
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-[12.5px] font-medium ring-1 ring-white" style={{ color: accent.main }}>
+            <span className="size-1.5 rounded-full" style={{ backgroundColor: accent.main }} />
+            {p.category}
+          </span>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between">
+          <motion.span
+            animate={{ rotate: hover ? -8 : 0, scale: hover ? 1.08 : 1 }}
+            transition={{ type: "spring", bounce: 0.4, visualDuration: 0.4 }}
+            className="grid size-12 place-items-center rounded-2xl bg-white text-forest shadow-[0_8px_20px_-12px_rgba(6,38,23,0.4)]"
+          >
+            <ProductGlyph kind={p.key} className="size-8" />
+          </motion.span>
+          <span className="rounded-full bg-white/75 px-3 py-1 text-[12.5px] font-medium text-forest ring-1 ring-white">{p.category}</span>
+        </div>
+      )}
       <h3 className="mt-6 text-[34px] leading-none font-semibold tracking-[-0.04em] text-ink">{p.name}</h3>
       <p className="mt-3 text-[16px] leading-relaxed text-pretty text-copy">{p.tagline}</p>
       <div className="relative mt-6 min-h-0 flex-1 overflow-hidden rounded-2xl bg-white/65 ring-1 ring-white">
         <ProductArt kind={p.key} active={hover} />
       </div>
-      <button
-        type="button"
-        onClick={onOpen}
-        aria-label={`See more about ${p.name}`}
-        className="mt-5 flex items-center gap-2 self-start text-[15px] font-medium text-link after:absolute after:inset-0 after:content-['']"
-      >
-        See details <FlipIcon className="size-4" />
-      </button>
+      {spectrum ? (
+        <button type="button" onClick={onOpen} aria-label={`See more about ${p.name}`} className="absolute inset-0 cursor-pointer rounded-[30px]" />
+      ) : (
+        <button
+          type="button"
+          onClick={onOpen}
+          aria-label={`See more about ${p.name}`}
+          className="mt-5 flex items-center gap-2 self-start text-[15px] font-medium text-link after:absolute after:inset-0 after:content-['']"
+        >
+          See details <FlipIcon className="size-4" />
+        </button>
+      )}
     </motion.div>
   );
 }
@@ -245,17 +282,21 @@ const list: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.07
 const item: Variants = { hidden: { opacity: 0, x: -14 }, show: { opacity: 1, x: 0, transition: { duration: 0.45, ease } } };
 
 function Details({ p, onBack }: { p: Product; onBack: () => void }) {
+  const accent = useContext(Spectrum) ? PRODUCT_ACCENT[p.key].main : undefined;
   return (
     <motion.div
-      className="relative flex size-full flex-col p-7"
+      className="relative flex size-full cursor-pointer flex-col p-7"
       variants={list}
       initial="hidden"
       animate="show"
       exit={{ opacity: 0, y: 14, transition: { duration: 0.2 } }}
+      onClick={onBack}
     >
       <motion.div variants={item} className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[14px] text-brand">{p.category}</p>
+          <p className="text-[14px] text-brand" style={accent ? { color: accent } : undefined}>
+            {p.category}
+          </p>
           <h3 className="mt-1.5 text-h3 text-ink">{p.name}</h3>
         </div>
         <button
@@ -273,7 +314,7 @@ function Details({ p, onBack }: { p: Product; onBack: () => void }) {
       <ul className="mt-5 space-y-3 border-t border-white pt-5">
         {p.features.map((f) => (
           <motion.li key={f} variants={item} className="flex gap-3 text-[15px] leading-snug text-ink">
-            <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-brand text-white">
+            <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-brand text-white" style={accent ? { backgroundColor: accent } : undefined}>
               <Check className="size-2.5" />
             </span>
             {f}
@@ -283,6 +324,7 @@ function Details({ p, onBack }: { p: Product; onBack: () => void }) {
       <motion.div variants={item} className="mt-auto">
         <Link
           href={p.cta.href}
+          onClick={(e) => e.stopPropagation()}
           className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-brand text-[15px] font-medium text-white transition-colors hover:bg-brand-700"
         >
           {p.cta.label}
@@ -296,21 +338,37 @@ function Details({ p, onBack }: { p: Product; onBack: () => void }) {
 const curve = "M -40 520 C 140 470, 180 160, 360 150 S 520 470, 700 430 S 880 70, 1060 110 S 1220 380, 1290 330";
 
 function Curve({ progress }: { progress: MotionValue<number> }) {
+  const spectrum = useContext(Spectrum);
   const badge = useTransform(progress, [0.85, 1], [0, 1]);
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden="true">
       <svg viewBox="0 0 1300 720" preserveAspectRatio="none" className="absolute inset-0 size-full" fill="none">
         <defs>
           <linearGradient id="product-curve" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="#95DE64" />
-            <stop offset="100%" stopColor="#017649" />
+            {spectrum ? (
+              <>
+                <stop offset="0%" stopColor="#f0b35e" />
+                <stop offset="50%" stopColor="#e8824a" />
+                <stop offset="100%" stopColor="#d9475f" />
+              </>
+            ) : (
+              <>
+                <stop offset="0%" stopColor="#95DE64" />
+                <stop offset="100%" stopColor="#017649" />
+              </>
+            )}
           </linearGradient>
         </defs>
-        <path d={curve} stroke="#E3F3D6" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
-        <motion.path d={curve} stroke="url(#product-curve)" strokeWidth="2" strokeLinecap="round" vectorEffect="non-scaling-stroke" style={{ pathLength: progress }} />
+        <path d={curve} stroke={spectrum ? "#f6e7da" : "#E3F3D6"} strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+        <motion.path d={curve} stroke="url(#product-curve)" strokeWidth={spectrum ? 1.5 : 2} strokeLinecap="round" vectorEffect="non-scaling-stroke" style={{ pathLength: progress }} />
       </svg>
-      <motion.div style={{ opacity: badge, scale: badge }} className="absolute top-[42%] right-[0.6%] grid size-14 place-items-center rounded-full bg-white shadow-[0_12px_30px_-12px_rgba(1,118,73,0.5)] ring-2 ring-brand">
-        <span className="absolute inset-0 animate-ping-soft rounded-full ring-2 ring-lime" />
+      <motion.div
+        style={{ opacity: badge, scale: badge }}
+        className={`absolute top-[42%] right-[0.6%] grid size-14 place-items-center rounded-full bg-white ring-2 ${
+          spectrum ? "shadow-[0_12px_30px_-12px_rgba(217,71,95,0.5)] ring-[#d9475f]" : "shadow-[0_12px_30px_-12px_rgba(1,118,73,0.5)] ring-brand"
+        }`}
+      >
+        <span className={`absolute inset-0 animate-ping-soft rounded-full ring-2 ${spectrum ? "ring-[#f2a3b2]" : "ring-lime"}`} />
         <LogoMark className="size-8" />
       </motion.div>
     </div>

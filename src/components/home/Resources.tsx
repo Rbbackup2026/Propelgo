@@ -2,10 +2,13 @@ import Link from "next/link";
 import { resources } from "@/content/home";
 import { Button } from "@/components/ui/Button";
 import { Reveal, SectionIntro } from "@/components/ui/Reveal";
+import { COVER_ACCENT, SpectrumCover } from "./visuals/ResourceCovers";
 
 type Art = (typeof resources.items)[number]["art"];
 
-export function Resources() {
+/** `tone="brand"` keeps the original all-green covers for Direction B. */
+export function Resources({ tone = "spectrum" }: { tone?: "spectrum" | "brand" }) {
+  const spectrum = tone === "spectrum";
   return (
     <section className="pb-28 md:pb-36">
       <div className="container-page">
@@ -21,11 +24,13 @@ export function Resources() {
               <Link href={r.href} className="group block">
                 <div className="aspect-[4/3] overflow-hidden rounded-2xl ring-1 ring-line">
                   <div className="size-full transition-transform duration-700 ease-out-expo group-hover:scale-[1.04]">
-                    <Cover art={r.art} />
+                    {spectrum ? <SpectrumCover art={r.art} /> : <Cover art={r.art} />}
                   </div>
                 </div>
                 <p className="mt-5 flex items-center gap-2 text-[14px] text-sub">
-                  <span className="font-medium text-brand">{r.type}</span>
+                  <span className={`font-medium ${spectrum ? "" : "text-brand"}`} style={spectrum ? { color: COVER_ACCENT[r.art] } : undefined}>
+                    {r.type}
+                  </span>
                   <span aria-hidden="true">·</span>
                   {r.read}
                 </p>
