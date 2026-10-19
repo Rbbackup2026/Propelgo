@@ -99,12 +99,12 @@ export function Hero() {
           <motion.div {...rise(0.68)} className="mt-9 flex flex-wrap items-center gap-3">
             <Magnetic>
               <Button
-                href={hero.primaryCta.href}
+                href={hero.secondaryCta.href}
                 size="lg"
                 className="relative overflow-hidden shadow-[0_14px_30px_-12px_rgba(1,118,73,0.65)]"
               >
                 <span className="pointer-events-none absolute inset-y-0 left-0 w-1/3 animate-shine bg-gradient-to-r from-transparent via-white/30 to-transparent motion-reduce:hidden" />
-                <span className="relative">{hero.primaryCta.label}</span>
+                <span className="relative">{hero.secondaryCta.label}</span>
               </Button>
             </Magnetic>
           </motion.div>

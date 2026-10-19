@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion, useInView, useReducedMotion } from "motion/react";
 import { useRef } from "react";
 import { security } from "@/content/home";
-import { Eyebrow, Reveal } from "@/components/ui/Reveal";
+import { Eyebrow, HighlightTitle, Reveal } from "@/components/ui/Reveal";
 import { Check } from "@/components/ui/icons";
 import { usePhaseLoop } from "@/lib/useStageScale";
 
@@ -26,7 +26,7 @@ export function Security() {
           <Reveal>
             <Eyebrow>{security.eyebrow}</Eyebrow>
             <h2 id="security-title" className="mt-3 max-w-[22ch] text-[clamp(1.625rem,1.3rem+1vw,2.125rem)] leading-tight font-semibold tracking-[-0.022em] text-ink">
-              {security.title}
+              <HighlightTitle text={security.title} phrase={security.highlight} />
             </h2>
           </Reveal>
           <Reveal delay={0.06}>

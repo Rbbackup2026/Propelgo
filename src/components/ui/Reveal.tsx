@@ -35,17 +35,35 @@ export function Eyebrow({ children, className = "" }: { children: ReactNode; cla
   return <p className={`text-[15px] font-medium text-brand ${className}`}>{children}</p>;
 }
 
+/** Same brand gradient as the hero headline. */
+export const GRADIENT_TEXT = "bg-[linear-gradient(100deg,#017649_0%,#03a35f_45%,#5fbf3f_100%)] bg-clip-text text-transparent";
+
+/** Renders `text` with `phrase` (when present in it) set in the brand gradient. */
+export function HighlightTitle({ text, phrase }: { text: string; phrase?: string }) {
+  const at = phrase ? text.indexOf(phrase) : -1;
+  if (!phrase || at < 0) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, at)}
+      <span className={GRADIENT_TEXT}>{phrase}</span>
+      {text.slice(at + phrase.length)}
+    </>
+  );
+}
+
 /** Section heading block: eyebrow, title and optional supporting copy. */
 export function SectionIntro({
   eyebrow,
   title,
   copy,
+  highlight,
   align = "left",
   className = "",
 }: {
   eyebrow: string;
   title: string;
   copy?: string;
+  highlight?: string;
   align?: "left" | "center";
   className?: string;
 }) {
@@ -53,7 +71,9 @@ export function SectionIntro({
   return (
     <Reveal className={`${center ? "mx-auto text-center" : ""} max-w-[640px] ${className}`}>
       <Eyebrow>{eyebrow}</Eyebrow>
-      <h2 className="mt-4 text-h2 text-balance text-ink">{title}</h2>
+      <h2 className="mt-4 text-h2 text-balance text-ink">
+        <HighlightTitle text={title} phrase={highlight} />
+      </h2>
       {copy && <p className={`mt-5 text-lead text-pretty text-copy ${center ? "mx-auto" : ""} max-w-[56ch]`}>{copy}</p>}
     </Reveal>
   );

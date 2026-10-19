@@ -22,7 +22,7 @@ export function Capabilities() {
     <section className="bg-surface py-28 md:py-36">
       <div className="container-page">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <SectionIntro eyebrow={capabilities.eyebrow} title={capabilities.title} />
+          <SectionIntro eyebrow={capabilities.eyebrow} title={capabilities.title} highlight={capabilities.highlight} />
           <Button href={capabilities.cta.href} variant="secondary" className="self-start lg:self-auto">
             {capabilities.cta.label}
           </Button>

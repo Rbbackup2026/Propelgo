@@ -36,7 +36,7 @@ export default function HomePage() {
         <Security />
         <Testimonials />
         <Resources />
-        <FinalCta />
+        <FinalCta tone="spectrum" />
       </main>
       <Footer />
       {/* Review aid while the client compares directions; remove before launch. */}

@@ -34,7 +34,7 @@ export function Testimonials() {
     <section className="py-28 md:py-36">
       <div className="container-page">
         <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-          <SectionIntro eyebrow={testimonials.eyebrow} title={testimonials.title} />
+          <SectionIntro eyebrow={testimonials.eyebrow} title={testimonials.title} highlight={testimonials.highlight} />
           <div className="flex items-center gap-2">
             <NavButton label="Previous testimonial" onClick={() => go(-1)}>
               <ArrowLeft />

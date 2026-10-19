@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import { network } from "@/content/home";
-import { Eyebrow, Reveal } from "@/components/ui/Reveal";
+import { Eyebrow, HighlightTitle, Reveal } from "@/components/ui/Reveal";
 import { PaymentGlobe } from "./visuals/PaymentGlobe";
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -46,7 +46,7 @@ export function Network() {
               <Reveal>
                 <Eyebrow>{network.eyebrow}</Eyebrow>
                 <h2 id="network-title" className="mt-3 max-w-[16ch] text-[clamp(2rem,1.4rem+2vw,3.25rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-ink">
-                  {network.title}
+                  <HighlightTitle text={network.title} phrase={network.highlight} />
                 </h2>
                 <p className="mt-5 max-w-[46ch] text-[16.5px] leading-relaxed text-copy">{network.copy}</p>
               </Reveal>

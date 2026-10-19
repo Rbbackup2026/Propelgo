@@ -104,6 +104,7 @@ export type ProductKey = "versa" | "odcc" | "orchestration";
 export const products = {
   eyebrow: "Our products",
   title: "One platform. Multiple ways to power business payments.",
+  highlight: "power business payments.",
   copy: "From vendor payments and commercial credit to payment orchestration, PropelGo brings together infrastructure designed for modern enterprise payment operations.",
   hint: "Tap a card to see what's inside",
   items: [
@@ -157,6 +158,7 @@ export type CapabilityKey = "routing" | "cards" | "workflow" | "reconcile";
 export const capabilities = {
   eyebrow: "Platform capabilities",
   title: "Built to simplify complex payment operations.",
+  highlight: "complex payment operations.",
   cta: { label: "Talk to our team", href: "/contact" },
   items: [
     {
@@ -189,6 +191,7 @@ export const capabilities = {
 export const security = {
   eyebrow: "Security & compliance",
   title: "Built for trust. Designed for enterprise.",
+  highlight: "Designed for enterprise.",
   copy: "Compliance, security and accountability are embedded into the way we build, not added after.",
   // Placeholder labels until PropelGo confirms certifications and supplies badge artwork.
   badges: [
@@ -212,6 +215,7 @@ export const security = {
 export const network = {
   eyebrow: "Payment network",
   title: "Every rail. One connection.",
+  highlight: "One connection.",
   copy: "Banks, card networks and national payment systems connect through PropelGo, so money reaches the right destination over the right rail, without a new integration for every route.",
   rails: ["UPI", "NEFT", "RTGS", "IMPS", "Cards", "Bank APIs"],
   points: [
@@ -224,6 +228,7 @@ export const network = {
 export const testimonials = {
   eyebrow: "Customer stories",
   title: "Trusted by businesses building what's next.",
+  highlight: "what's next.",
   note: "Sample copy. Replace with approved quotes.",
   cta: { label: "Read customer stories", href: "/resources/customer-stories" },
   items: [
@@ -260,6 +265,7 @@ export const testimonials = {
 export const resources = {
   eyebrow: "Resources",
   title: "Explore our latest insights.",
+  highlight: "latest insights.",
   cta: { label: "View all resources", href: "/resources" },
   items: [
     {
@@ -289,6 +295,7 @@ export const resources = {
 export const finalCta = {
   eyebrow: "Get in touch",
   title: "Let's build better business payments.",
+  highlight: "better business payments.",
   copy: "Tell us what you're building, and let's explore how PropelGo can help simplify your payment infrastructure.",
   cta: { label: "Talk to Us", href: "/contact" },
   email: "support@propelgpayments.com",
