@@ -50,16 +50,6 @@ export function ShieldIcon({ className = "size-4" }: IconProps) {
   );
 }
 
-export function LockIcon({ className = "size-4" }: IconProps) {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" className={className} aria-hidden="true">
-      <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-      <path d="M5.25 7V5a2.75 2.75 0 0 1 5.5 0v2" stroke="currentColor" strokeWidth="1.3" />
-      <circle cx="8" cy="10.5" r="1" fill="currentColor" />
-    </svg>
-  );
-}
-
 export function EyeIcon({ className = "size-4" }: IconProps) {
   return (
     <svg viewBox="0 0 16 16" fill="none" className={className} aria-hidden="true">

@@ -3,11 +3,10 @@ import Link from "next/link";
 const directions = [
   { key: "a", label: "A", name: "Light hero, payment rails", href: "/" },
   { key: "b", label: "B", name: "Gradient hero, live card", href: "/options/b" },
-  { key: "c", label: "C", name: "Card-led, live controls", href: "/options/c" },
 ];
 
 /** Floating review bar so the client can compare creative directions. */
-export function DirectionSwitcher({ current }: { current: "a" | "b" | "c" }) {
+export function DirectionSwitcher({ current }: { current: "a" | "b" }) {
   const active = directions.find((d) => d.key === current)!;
   return (
     <nav
