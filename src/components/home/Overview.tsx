@@ -19,10 +19,19 @@ import { LogoMark } from "@/components/ui/Logo";
 import { Check } from "@/components/ui/icons";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import { CustomerOrbit } from "./visuals/CustomerOrbit";
+import { RealIcon, type RealIconName } from "@/components/ui/RealIcon";
 import { GREEN, NodeGlyph, type GlyphPalette, type NodeKind } from "./visuals/NodeGlyph";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const kinds: NodeKind[] = ["connect", "issue", "route", "integrate", "automate", "reconcile"];
+const NODE_ICONS: Record<NodeKind, RealIconName> = {
+  connect: "connect",
+  issue: "issue",
+  route: "route",
+  integrate: "integrate",
+  automate: "automate",
+  reconcile: "settle",
+};
 
 const INDIGO: GlyphPalette = { BRAND: "#5b57d9", LIME: "#a9a6f5", MINT: "#e6e5fd", LINE: "#d8d6f6" };
 const TEAL: GlyphPalette = { BRAND: "#0e8ba3", LIME: "#6fd0de", MINT: "#d4f1f5", LINE: "#c3e6ec" };
@@ -314,7 +323,7 @@ function Rail({ tone }: { tone: Tone }) {
               style={pinned ? { x } : undefined}
               className={pinned ? "relative flex w-max gap-5 py-16 pr-[30%] pl-[4%]" : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"}
             >
-              {pinned && <div className="absolute top-[108px] right-[30%] left-[4%] h-px bg-[repeating-linear-gradient(90deg,#95de64_0_6px,transparent_6px_12px)]" />}
+              {pinned && <div className="absolute top-[116px] right-[30%] left-[4%] h-px bg-[repeating-linear-gradient(90deg,#95de64_0_6px,transparent_6px_12px)]" />}
               {nodes.map((n, i) => (
                 <NodeCard
                   key={n.noun}
@@ -364,12 +373,15 @@ function NodeCard({
         }`}
       >
         <div className="flex items-center justify-between">
-          <span
-            className={`tabular relative z-10 grid size-10 place-items-center rounded-full text-[13px] font-semibold transition-colors duration-500 ${
-              active ? "bg-brand text-white" : "bg-mist text-forest ring-1 ring-mint"
-            }`}
-          >
-            {String(index + 1).padStart(2, "0")}
+          <span className="relative z-10 grid size-14 place-items-center rounded-2xl bg-mist ring-1 ring-mint">
+            <RealIcon name={NODE_ICONS[kind]} className="size-11" />
+            <span
+              className={`tabular absolute -top-1.5 -right-1.5 grid size-6 place-items-center rounded-full text-[10.5px] font-semibold ring-2 ring-white transition-colors duration-500 ${
+                active ? "bg-brand text-white" : "bg-mist text-forest"
+              }`}
+            >
+              {String(index + 1).padStart(2, "0")}
+            </span>
           </span>
           <span className="rounded-full bg-mist px-3 py-1 text-[12.5px] font-medium text-forest ring-1 ring-mint">{node.noun}</span>
         </div>
@@ -394,11 +406,14 @@ function NodeCard({
       }}
     >
       <div className="flex items-center justify-between">
-        <span
-          className="tabular relative z-10 grid size-10 place-items-center rounded-full text-[13px] font-semibold transition-colors duration-500"
-          style={active ? { backgroundColor: p.BRAND, color: "#fff" } : { backgroundColor: p.MINT, color: p.BRAND }}
-        >
-          {String(index + 1).padStart(2, "0")}
+        <span className="relative z-10 grid size-14 place-items-center rounded-2xl" style={{ background: `linear-gradient(160deg, ${p.MINT}, #ffffff)`, boxShadow: `inset 0 0 0 1px ${p.LINE}` }}>
+          <RealIcon name={NODE_ICONS[kind]} className="size-11" />
+          <span
+            className="tabular absolute -top-1.5 -right-1.5 grid size-6 place-items-center rounded-full text-[10.5px] font-semibold ring-2 ring-white transition-colors duration-500"
+            style={active ? { backgroundColor: p.BRAND, color: "#fff" } : { backgroundColor: p.MINT, color: p.BRAND }}
+          >
+            {String(index + 1).padStart(2, "0")}
+          </span>
         </span>
         <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12.5px] font-medium" style={{ backgroundColor: `${p.MINT}aa`, color: p.BRAND }}>
           <span className="size-1.5 rounded-full" style={{ backgroundColor: p.BRAND }} />
@@ -484,7 +499,7 @@ function StatTile({
         mx.set(-200);
         my.set(-200);
       }}
-      className={`group relative flex flex-col justify-end overflow-hidden rounded-[28px] p-7 ${orbit ? "min-h-[500px] sm:min-h-[340px] lg:min-h-[440px]" : "min-h-[200px]"} ${
+      className={`group relative flex flex-col justify-end overflow-hidden rounded-[28px] p-7 ${orbit ? "min-h-[520px] sm:min-h-[500px]" : "min-h-[200px]"} ${
         featured ? "text-white" : "bg-white ring-1 ring-mint"
       } ${className}`}
       style={{

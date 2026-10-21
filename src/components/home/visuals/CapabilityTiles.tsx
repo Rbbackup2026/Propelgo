@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import type { CapabilityKey } from "@/content/home";
 import { Check, ContactlessIcon } from "@/components/ui/icons";
+import { RealIcon } from "@/components/ui/RealIcon";
 import { usePhaseLoop } from "@/lib/useStageScale";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 
@@ -26,35 +27,8 @@ export function CapabilityTileArt({ kind, playing }: { kind: CapabilityKey; play
   return <ReconArt playing={playing} />;
 }
 
-export function CapabilityGlyph({ kind, className = "size-5" }: { kind: CapabilityKey; className?: string }) {
-  const common = { className, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-  if (kind === "routing")
-    return (
-      <svg {...common}>
-        <circle cx="5" cy="12" r="2" />
-        <path d="M7 12h4m0 0c3 0 3-6 6-6h1m-7 6c3 0 3 6 6 6h1m-7-6h7" />
-      </svg>
-    );
-  if (kind === "cards")
-    return (
-      <svg {...common}>
-        <rect x="3" y="6" width="18" height="12" rx="2.5" />
-        <path d="M3 10h18M7 15h3" />
-      </svg>
-    );
-  if (kind === "workflow")
-    return (
-      <svg {...common}>
-        <circle cx="6" cy="6" r="2.5" />
-        <circle cx="18" cy="18" r="2.5" />
-        <path d="M6 8.5V12a3 3 0 0 0 3 3h6.5M14 12.5l2.5 2.5-2.5 2.5" />
-      </svg>
-    );
-  return (
-    <svg {...common}>
-      <path d="M4 7h11m0 0-3-3m3 3-3 3M20 17H9m0 0 3-3m-3 3 3 3" />
-    </svg>
-  );
+export function CapabilityGlyph({ kind, className = "size-8" }: { kind: CapabilityKey; className?: string }) {
+  return <RealIcon name={kind} className={className} />;
 }
 
 /* ---------- 1. Orchestration: each payment is evaluated by the router and sent down its rail. ---------- */

@@ -70,8 +70,8 @@ function Tile({ item, index }: { item: (typeof capabilities.items)[number]; inde
 
       <div className="relative p-7 md:p-8">
         <div className="flex items-center justify-between">
-          <span className="grid size-11 place-items-center rounded-2xl" style={{ background: accent.soft, color: accent.solid }}>
-            <CapabilityGlyph kind={item.key} />
+          <span className="grid size-14 place-items-center rounded-2xl" style={{ background: accent.soft }}>
+            <CapabilityGlyph kind={item.key} className="size-10" />
           </span>
           <span className="tabular text-[13px] font-medium" style={{ color: accent.solid }}>
             0{index + 1}
