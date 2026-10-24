@@ -58,14 +58,29 @@ export const hero = {
 export const ecosystem = {
   caption: "Built across the payment ecosystem",
   // Placeholder logos from Wikimedia Commons; replace with client-approved files. Sizes are display px, tuned for optical balance.
-  logos: [
-    { name: "Air India Express", src: "/logos/air-india-express.svg", width: 106, height: 32 },
-    { name: "IndusInd Bank", src: "/logos/indusind-bank.svg", width: 185, height: 20 },
-    { name: "Citi", src: "/logos/citi.svg", width: 52, height: 34 },
-    { name: "IDFC FIRST Bank", src: "/logos/idfc-first-bank.svg", width: 91, height: 32 },
-    { name: "SBI", src: "/logos/sbi.svg", width: 88, height: 30 },
-    { name: "Axis Bank", src: "/logos/axis-bank.svg", width: 101, height: 26 },
-    { name: "YES BANK", src: "/logos/yes-bank.svg", width: 75, height: 28 },
+  groups: [
+    {
+      label: "Banks",
+      logos: [
+        { name: "IndusInd Bank", src: "/logos/indusind-bank.svg", width: 185, height: 20 },
+        { name: "Citi", src: "/logos/citi.svg", width: 52, height: 34 },
+        { name: "IDFC FIRST Bank", src: "/logos/idfc-first-bank.svg", width: 91, height: 32 },
+        { name: "SBI", src: "/logos/sbi.svg", width: 88, height: 30 },
+        { name: "Axis Bank", src: "/logos/axis-bank.svg", width: 101, height: 26 },
+        { name: "YES BANK", src: "/logos/yes-bank.svg", width: 75, height: 28 },
+      ],
+    },
+    {
+      label: "Partners",
+      logos: [
+        { name: "Air India Express", src: "/logos/air-india-express.svg", width: 106, height: 32 },
+        { name: "Visa", src: "/logos/visa.svg", width: 78, height: 25 },
+        { name: "Mastercard", src: "/logos/mastercard.svg", width: 44, height: 34 },
+        { name: "RuPay", src: "/logos/rupay.svg", width: 91, height: 24 },
+        { name: "NPCI", src: "/logos/npci.svg", width: 91, height: 28 },
+        { name: "UPI", src: "/logos/upi.svg", width: 79, height: 28 },
+      ],
+    },
   ],
   // Direction B renders these as text wordmarks.
   names: ["Air India Express", "IndusInd Bank", "Citi", "IDFC FIRST", "SBI", "Axis Bank", "YES BANK", "RBL Bank", "Kotak"],
@@ -165,7 +180,7 @@ export const capabilities = {
       key: "routing" as CapabilityKey,
       title: "Payment orchestration",
       copy: "Connect and manage payment flows across a complex payment ecosystem.",
-      detail: "Configured routing rules decide which bank, network or provider carries each payment.",
+      detail: "One integration. Smart routing picks the best payment gateway for every card, UPI and net banking payment, on rules, margin and success rate.",
     },
     {
       key: "cards" as CapabilityKey,
@@ -209,19 +224,6 @@ export const security = {
     { name: "SOC 2 Type 2", line: "AICPA standard", src: "/certifications/soc2-type2.jpg", width: 199, height: 253 },
     { name: "ISO 27001", line: "Information security", src: "/certifications/iso-27001.jpg", width: 215, height: 215 },
     { name: "SSL secured", line: "Encrypted in transit", src: "/certifications/ssl-secure.jpg", width: 318, height: 159 },
-  ],
-};
-
-export const network = {
-  eyebrow: "Payment network",
-  title: "Every rail. One connection.",
-  highlight: "One connection.",
-  copy: "Banks, card networks and national payment systems connect through PropelGo, so money reaches the right destination over the right rail, without a new integration for every route.",
-  rails: ["UPI", "NEFT", "RTGS", "IMPS", "Cards", "Bank APIs"],
-  points: [
-    { title: "Routed by rules", line: "Each payment takes the rail your policy picks, by amount, urgency or cost." },
-    { title: "Tracked end to end", line: "Status and settlement data come back to one view for every route." },
-    { title: "Built to extend", line: "New banks and networks plug into the same layer as you grow." },
   ],
 };
 

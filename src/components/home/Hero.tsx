@@ -5,7 +5,9 @@ import { useRef } from "react";
 import { hero } from "@/content/home";
 import { Button } from "@/components/ui/Button";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { GRADIENT_TEXT } from "@/components/ui/Reveal";
 import { usePreloaderDone } from "@/lib/preloader";
+import { useContinuousGradient } from "@/lib/useContinuousGradient";
 import { HeroStage } from "./visuals/HeroStage";
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -14,7 +16,6 @@ const HIGHLIGHT_WORDS = 4;
 
 /** Lets the preloader curtain clear the top of the screen before copy rises. */
 const BASE = 0.35;
-
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
@@ -48,6 +49,7 @@ export function Hero() {
     reduce ? {} : { initial: { opacity: 0, y: 22 }, animate: ready ? { opacity: 1, y: 0 } : undefined, transition: { duration: 0.9, ease, delay: BASE + delay } };
 
   const words = hero.headline.split(" ");
+  const titleRef = useContinuousGradient<HTMLHeadingElement>();
 
   return (
     <section
@@ -57,28 +59,18 @@ export function Hero() {
       className="relative isolate overflow-hidden pt-[124px] pb-16 md:pt-[148px] md:pb-24 lg:min-h-[100svh]"
     >
       <Aurora y={reduce ? undefined : auroraY} x={reduce ? undefined : auroraX} />
-
       <div className="container-page grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:gap-10">
         <motion.div style={reduce ? undefined : { y: copyY, opacity: copyOpacity }} className="relative max-w-[600px]">
-          <motion.p
-            {...rise(0)}
-            className="inline-flex items-center gap-2.5 rounded-full bg-white/80 py-1.5 pr-4 pl-1.5 text-[14px] font-medium text-forest shadow-[0_1px_2px_rgba(6,38,23,0.06)] ring-1 ring-mint backdrop-blur"
-          >
-            <span className="relative grid size-6 place-items-center rounded-full bg-mint">
-              <span className="absolute inset-1 animate-ping-soft rounded-full bg-lime" />
-              <span className="relative size-2 rounded-full bg-brand" />
-            </span>
-            {hero.eyebrow}
-          </motion.p>
 
-          <h1 className="mt-6 text-[clamp(2.25rem,1.4rem+2.4vw,3.5rem)] leading-[1.05] font-semibold tracking-[-0.04em] text-balance text-ink">
+          <h1 ref={titleRef} className="text-[clamp(2.25rem,1.4rem+2.4vw,3.5rem)] leading-[1.05] font-semibold tracking-[-0.04em] text-balance text-ink">
             {words.map((word, i) => {
               const highlight = i >= words.length - HIGHLIGHT_WORDS;
               return (
                 <span key={i}>
                   <span className="-mb-[0.12em] inline-block overflow-hidden pb-[0.12em] align-bottom">
                     <motion.span
-                      className={`inline-block ${highlight ? "bg-[linear-gradient(100deg,#017649_0%,#03a35f_45%,#5fbf3f_100%)] bg-clip-text text-transparent" : ""}`}
+                      data-gradient-word={highlight || undefined}
+                      className={`inline-block ${highlight ? GRADIENT_TEXT : ""}`}
                       initial={reduce ? false : { y: "110%", rotate: 6 }}
                       animate={ready ? { y: "0%", rotate: 0 } : undefined}
                       transition={{ duration: 1, ease, delay: BASE + 0.12 + i * 0.06 }}
@@ -99,12 +91,12 @@ export function Hero() {
           <motion.div {...rise(0.68)} className="mt-9 flex flex-wrap items-center gap-3">
             <Magnetic>
               <Button
-                href={hero.secondaryCta.href}
+                href={hero.primaryCta.href}
                 size="lg"
                 className="relative overflow-hidden shadow-[0_14px_30px_-12px_rgba(1,118,73,0.65)]"
               >
                 <span className="pointer-events-none absolute inset-y-0 left-0 w-1/3 animate-shine bg-gradient-to-r from-transparent via-white/30 to-transparent motion-reduce:hidden" />
-                <span className="relative">{hero.secondaryCta.label}</span>
+                <span className="relative">{hero.primaryCta.label}</span>
               </Button>
             </Magnetic>
           </motion.div>

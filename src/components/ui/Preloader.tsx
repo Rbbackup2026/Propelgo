@@ -7,8 +7,10 @@ import { markPreloaderDone } from "@/lib/preloader";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const curtain = [0.76, 0, 0.24, 1] as const;
-const COUNT_S = 2.6;
-const HOLD_MS = 350;
+/** Scales every step of the intro uniformly; lower is faster. */
+const SPEED = 0.6;
+const COUNT_S = 2.6 * SPEED;
+const HOLD_MS = 350 * SPEED;
 const MARK = 92;
 
 /** Brand intro: the mark draws itself, the wordmark unfolds, then two curtains lift off the page. */
@@ -37,7 +39,8 @@ export function Preloader() {
     };
   }, [progress, reduce]);
 
-  const at = (s: number) => (reduce ? 0 : s);
+  const at = (s: number) => (reduce ? 0 : s * SPEED);
+  const t = (s: number) => s * SPEED;
 
   return (
     <>
@@ -46,25 +49,25 @@ export function Preloader() {
       </noscript>
       <AnimatePresence onExitComplete={() => (document.documentElement.style.overflow = "")}>
         {visible && (
-          <motion.div key="preloader" id="preloader" className="fixed inset-0 z-[100]" aria-hidden="true" exit={{ opacity: 1 }} transition={{ duration: 1.1 }}>
+          <motion.div key="preloader" id="preloader" className="fixed inset-0 z-[100]" aria-hidden="true" exit={{ opacity: 1 }} transition={{ duration: t(1.1) }}>
             <motion.div
               className="absolute inset-0 bg-[linear-gradient(160deg,#95de64,#017649)]"
               initial={{ clipPath: "inset(0% 0% 0% 0%)" }}
               exit={{ clipPath: "inset(0% 0% 100% 0%)" }}
-              transition={{ duration: 0.95, ease: curtain, delay: 0.14 }}
+              transition={{ duration: t(0.95), ease: curtain, delay: t(0.14) }}
             />
             <motion.div
               className="absolute inset-0 overflow-hidden bg-[#fbfff6]"
               initial={{ clipPath: "inset(0% 0% 0% 0%)" }}
               exit={{ clipPath: "inset(0% 0% 100% 0%)" }}
-              transition={{ duration: 0.9, ease: curtain }}
+              transition={{ duration: t(0.9), ease: curtain }}
             >
               <div className="absolute inset-0 bg-[radial-gradient(rgba(1,118,73,0.12)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(circle_at_center,#000,transparent_70%)]" />
               <motion.div
                 className="absolute top-1/2 left-1/2 size-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(149,222,100,0.5),transparent)]"
                 initial={{ scale: 0.4, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 1.6, ease }}
+                transition={{ duration: t(1.6), ease }}
               />
               {!reduce &&
                 [0, 1, 2].map((i) => (
@@ -73,14 +76,14 @@ export function Preloader() {
                     className="absolute top-1/2 left-1/2 size-[180px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-brand/25"
                     initial={{ scale: 0.6, opacity: 0 }}
                     animate={{ scale: 3.2, opacity: [0, 0.8, 0] }}
-                    transition={{ duration: 2.4, ease: "easeOut", delay: 0.5 + i * 0.55, repeat: Infinity, repeatDelay: 0.6 }}
+                    transition={{ duration: t(2.4), ease: "easeOut", delay: t(0.5 + i * 0.55), repeat: Infinity, repeatDelay: t(0.6) }}
                   />
                 ))}
 
               <motion.div
                 className="absolute inset-0 flex items-center justify-center"
                 exit={{ y: -60, opacity: 0, scale: 0.94 }}
-                transition={{ duration: 0.5, ease }}
+                transition={{ duration: t(0.5), ease }}
               >
                 <svg viewBox="0 0 40.5 40" width={MARK} height={MARK} className="shrink-0 overflow-visible">
                   <motion.path
@@ -90,7 +93,7 @@ export function Preloader() {
                     strokeWidth="0.7"
                     initial={{ pathLength: 0, opacity: 1 }}
                     animate={{ pathLength: 1, opacity: 0 }}
-                    transition={{ pathLength: { duration: at(0.9), ease: "easeInOut" }, opacity: { delay: at(1.1), duration: 0.3 } }}
+                    transition={{ pathLength: { duration: at(0.9), ease: "easeInOut" }, opacity: { delay: at(1.1), duration: t(0.3) } }}
                   />
                   <motion.path
                     d={LOGO_MARK.disc}
@@ -98,7 +101,7 @@ export function Preloader() {
                     style={{ transformOrigin: "20.2px 20px" }}
                     initial={{ scale: 0.7, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: "spring", bounce: 0.35, visualDuration: 0.5, delay: at(0.7) }}
+                    transition={{ type: "spring", bounce: 0.35, visualDuration: t(0.5), delay: at(0.7) }}
                   />
                   <motion.path
                     d={LOGO_MARK.p}
@@ -108,7 +111,7 @@ export function Preloader() {
                     style={{ transformOrigin: "15px 20px" }}
                     initial={{ scale: 0.4, rotate: -120, opacity: 0 }}
                     animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                    transition={{ type: "spring", bounce: 0.25, visualDuration: 0.6, delay: at(0.95) }}
+                    transition={{ type: "spring", bounce: 0.25, visualDuration: t(0.6), delay: at(0.95) }}
                   />
                   <motion.path
                     d={LOGO_MARK.arrow}
@@ -117,7 +120,7 @@ export function Preloader() {
                     clipRule="evenodd"
                     initial={{ x: -9, y: 9, opacity: 0 }}
                     animate={{ x: 0, y: 0, opacity: 1 }}
-                    transition={{ type: "spring", bounce: 0.3, visualDuration: 0.5, delay: at(1.15) }}
+                    transition={{ type: "spring", bounce: 0.3, visualDuration: t(0.5), delay: at(1.15) }}
                   />
                   <motion.path
                     d={LOGO_MARK.dot}
@@ -127,7 +130,7 @@ export function Preloader() {
                     style={{ transformOrigin: "27.3px 17px" }}
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ type: "spring", bounce: 0.5, visualDuration: 0.4, delay: at(1.3) }}
+                    transition={{ type: "spring", bounce: 0.5, visualDuration: t(0.4), delay: at(1.3) }}
                   />
                 </svg>
 

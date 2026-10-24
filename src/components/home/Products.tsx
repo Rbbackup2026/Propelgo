@@ -58,21 +58,17 @@ function ProductsSection() {
   const spectrum = useContext(Spectrum);
   const sectionRef = useRef<HTMLElement>(null);
   const desktop = useMediaQuery("(min-width: 1024px)");
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
-  const markX = useTransform(scrollYProgress, [0, 1], ["12%", "-22%"]);
-
   return (
     <section ref={sectionRef} id="products" className="relative scroll-mt-20 overflow-hidden py-28 md:py-36">
-      <motion.p
+      <p
         aria-hidden="true"
-        style={{ x: markX }}
-        className={`pointer-events-none absolute top-[52%] left-0 -translate-y-1/2 text-[24vw] leading-none font-semibold tracking-[-0.06em] whitespace-nowrap select-none ${spectrum ? "text-[#f4f4f6]" : "text-[#f1f8ea]"}`}
+        className={`pointer-events-none absolute top-[52%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[21vw] leading-none font-semibold tracking-[-0.06em] whitespace-nowrap select-none ${spectrum ? "text-[#f4f4f6]" : "text-[#f1f8ea]"}`}
       >
         PropelGo
-      </motion.p>
+      </p>
 
       <div className="container-page relative">
-        <SectionIntro eyebrow={products.eyebrow} title={products.title} highlight={spectrum ? products.highlight : undefined} copy={products.copy} align="center" />
+        <SectionIntro title={products.title} highlight={spectrum ? products.highlight : undefined} copy={products.copy} align="center" />
         <p className="mt-6 flex items-center justify-center gap-2 text-[14px] text-sub">
           <FlipIcon className="size-4" /> {products.hint}
         </p>
@@ -229,6 +225,9 @@ function CardBody({ p, open, hover, lifted, onOpen, onClose }: { p: Product; ope
 function Front({ p, hover, onOpen }: { p: Product; hover: boolean; onOpen: () => void }) {
   const spectrum = useContext(Spectrum);
   const accent = PRODUCT_ACCENT[p.key];
+  const main = spectrum ? accent.main : "#017649";
+  const deep = spectrum ? `color-mix(in oklab, ${accent.main} 72%, #062617)` : "#04452b";
+  const glow = spectrum ? accent.glow : "rgba(1,118,73,0.55)";
   return (
     <motion.div
       className="relative flex size-full flex-col p-7"
@@ -262,18 +261,27 @@ function Front({ p, hover, onOpen }: { p: Product; hover: boolean; onOpen: () =>
       <div className="relative mt-6 min-h-0 flex-1 overflow-hidden rounded-2xl bg-white/65 ring-1 ring-white">
         <ProductArt kind={p.key} active={hover} />
       </div>
-      {spectrum ? (
-        <button type="button" onClick={onOpen} aria-label={`See more about ${p.name}`} className="absolute inset-0 cursor-pointer rounded-[30px]" />
-      ) : (
+      <button type="button" onClick={onOpen} tabIndex={-1} aria-hidden="true" className="absolute inset-0 cursor-pointer rounded-[30px]" />
+      <div className="relative z-10 mt-5 flex items-center gap-2.5">
+        <Link
+          href={p.cta.href}
+          className="group/cta inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full text-[15px] font-medium text-white transition-[filter,transform] duration-300 hover:brightness-110 active:scale-[0.98]"
+          style={{ background: `linear-gradient(135deg, ${main} 0%, ${deep} 100%)`, boxShadow: `0 14px 28px -14px ${glow}, inset 0 1px 0 rgba(255,255,255,0.18)` }}
+        >
+          {p.cta.label}
+          <ArrowRight className="size-3.5 transition-transform duration-300 group-hover/cta:translate-x-1" />
+        </Link>
         <button
           type="button"
           onClick={onOpen}
           aria-label={`See more about ${p.name}`}
-          className="mt-5 flex items-center gap-2 self-start text-[15px] font-medium text-link after:absolute after:inset-0 after:content-['']"
+          title="See details"
+          className="grid size-12 shrink-0 place-items-center rounded-full bg-white/85 ring-1 ring-white backdrop-blur transition-transform duration-300 hover:rotate-180"
+          style={{ color: main }}
         >
-          See details <FlipIcon className="size-4" />
+          <FlipIcon className="size-4" />
         </button>
-      )}
+      </div>
     </motion.div>
   );
 }
@@ -325,7 +333,8 @@ function Details({ p, onBack }: { p: Product; onBack: () => void }) {
         <Link
           href={p.cta.href}
           onClick={(e) => e.stopPropagation()}
-          className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-brand text-[15px] font-medium text-white transition-colors hover:bg-brand-700"
+          className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-brand text-[15px] font-medium text-white transition-[filter,background-color] hover:bg-brand-700 hover:brightness-110"
+          style={accent ? { background: `linear-gradient(135deg, ${accent} 0%, color-mix(in oklab, ${accent} 72%, #062617) 100%)` } : undefined}
         >
           {p.cta.label}
           <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />

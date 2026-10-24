@@ -1,6 +1,6 @@
 import { finalCta } from "@/content/home";
 import { Button } from "@/components/ui/Button";
-import { Eyebrow, HighlightTitle, Reveal } from "@/components/ui/Reveal";
+import { HighlightTitle, Reveal } from "@/components/ui/Reveal";
 
 /** Step colours for the spectrum tone: indigo, teal, amber. */
 const STEP_ACCENTS = [
@@ -17,8 +17,7 @@ export function FinalCta({ tone = "brand" }: { tone?: "spectrum" | "brand" }) {
       <div className="container-page">
         <Reveal className="grid gap-14 rounded-[32px] bg-mist px-7 py-14 ring-1 ring-mint md:px-14 md:py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:gap-20">
           <div>
-            <Eyebrow>{finalCta.eyebrow}</Eyebrow>
-            <h2 className="mt-4 max-w-[16ch] text-h2 text-balance text-ink">
+            <h2 className="max-w-[16ch] text-h2 text-balance text-ink">
               <HighlightTitle text={finalCta.title} phrase={spectrum ? finalCta.highlight : undefined} />
             </h2>
             <p className="mt-5 max-w-[46ch] text-lead text-pretty text-copy">{finalCta.copy}</p>

@@ -5,7 +5,6 @@ import { Ecosystem } from "@/components/home/Ecosystem";
 import { Overview } from "@/components/home/Overview";
 import { Products } from "@/components/home/Products";
 import { Capabilities } from "@/components/home/Capabilities";
-import { Network } from "@/components/home/Network";
 import { Security } from "@/components/home/Security";
 import { Testimonials } from "@/components/home/Testimonials";
 import { Resources } from "@/components/home/Resources";
@@ -32,7 +31,6 @@ export default function HomePage() {
         <Overview />
         <Products />
         <Capabilities />
-        <Network />
         <Security />
         <Testimonials />
         <Resources />

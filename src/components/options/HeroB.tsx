@@ -5,7 +5,9 @@ import { useRef } from "react";
 import { hero } from "@/content/home";
 import { Button } from "@/components/ui/Button";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { GRADIENT_TEXT } from "@/components/ui/Reveal";
 import { usePreloaderDone } from "@/lib/preloader";
+import { useContinuousGradient } from "@/lib/useContinuousGradient";
 import { HeroStage } from "@/components/home/visuals/HeroStage";
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -50,6 +52,7 @@ export function HeroB() {
     reduce ? {} : { initial: { opacity: 0, y: 22 }, animate: ready ? { opacity: 1, y: 0 } : undefined, transition: { duration: 0.9, ease, delay: BASE + delay } };
 
   const words = hero.headline.split(" ");
+  const titleRef = useContinuousGradient<HTMLHeadingElement>();
 
   return (
     <section
@@ -73,14 +76,15 @@ export function HeroB() {
             {hero.eyebrow}
           </motion.p>
 
-          <h1 className="mt-6 text-[clamp(2.6rem,1.5rem+3.4vw,4.4rem)] leading-[1.02] font-semibold tracking-[-0.04em] text-balance text-ink">
+          <h1 ref={titleRef} className="mt-6 text-[clamp(2.6rem,1.5rem+3.4vw,4.4rem)] leading-[1.02] font-semibold tracking-[-0.04em] text-balance text-ink">
             {words.map((word, i) => {
               const highlight = i >= words.length - HIGHLIGHT_WORDS;
               return (
                 <span key={i}>
                   <span className="-mb-[0.12em] inline-block overflow-hidden pb-[0.12em] align-bottom">
                     <motion.span
-                      className={`inline-block ${highlight ? "bg-[linear-gradient(100deg,#017649_0%,#03a35f_45%,#5fbf3f_100%)] bg-clip-text text-transparent" : ""}`}
+                      data-gradient-word={highlight || undefined}
+                      className={`inline-block ${highlight ? GRADIENT_TEXT : ""}`}
                       initial={reduce ? false : { y: "110%", rotate: 6 }}
                       animate={ready ? { y: "0%", rotate: 0 } : undefined}
                       transition={{ duration: 1, ease, delay: BASE + 0.12 + i * 0.06 }}

@@ -52,6 +52,7 @@
   --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
 
   --animate-marquee: marquee 60s linear infinite;
+  --animate-marquee-y: marquee-y 48s linear infinite;
 
   --animate-float: float 7s ease-in-out infinite;
   --animate-float-slow: float 9s ease-in-out -3s infinite;
@@ -64,6 +65,10 @@
   @keyframes marquee {
     from { transform: translate3d(0, 0, 0); }
     to { transform: translate3d(-50%, 0, 0); }
+  }
+  @keyframes marquee-y {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(0, -50%, 0); }
   }
   @keyframes float {
     0%, 100% { transform: translate3d(0, 0, 0); }
@@ -94,16 +99,6 @@
 @keyframes bar-breathe {
   0%, 100% { transform: scaleY(1); }
   50% { transform: scaleY(0.72); }
-}
-
-@keyframes chip-bob {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(0, -4px, 0); }
-}
-
-@keyframes streak {
-  from { background-position: 0 -40%; }
-  to { background-position: 0 140%; }
 }
 
 @keyframes t-progress {

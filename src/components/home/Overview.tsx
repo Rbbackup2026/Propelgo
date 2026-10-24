@@ -11,11 +11,13 @@ import {
   useTransform,
   type MotionValue,
 } from "motion/react";
+import Image from "next/image";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { overview, stats } from "@/content/home";
 import { Button } from "@/components/ui/Button";
 import { Counter } from "@/components/ui/Counter";
 import { LogoMark } from "@/components/ui/Logo";
+import { GRADIENT_TEXT } from "@/components/ui/Reveal";
 import { Check } from "@/components/ui/icons";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import { CustomerOrbit } from "./visuals/CustomerOrbit";
@@ -66,31 +68,32 @@ export function Overview({ featured = "orbit", tone = "spectrum" }: { featured?:
         style={reduce ? undefined : { scale, borderRadius: radius }}
         className={`relative origin-top overflow-clip rounded-[40px] ring-1 ${tone === "spectrum" ? "bg-[linear-gradient(180deg,#f9fef5_0%,#ffffff_22%,#fbfcff_60%,#f7fcfb_100%)] ring-[#e7f0e6]" : "bg-mist ring-mint"}`}
       >
-        {tone === "spectrum" ? <AuroraBackdrop progress={scrollYProgress} /> : <SheetBackdrop progress={scrollYProgress} />}
+        {tone === "spectrum" ? <AuroraBackdrop /> : <SheetBackdrop />}
         <Statement tone={tone} />
-        <Rail tone={tone} />
-        <Stats featured={featured} tone={tone} />
+        {tone === "spectrum" ? (
+          <EcosystemStats />
+        ) : (
+          <>
+            <Rail tone={tone} />
+            <Stats featured={featured} tone={tone} />
+          </>
+        )}
       </motion.div>
     </section>
   );
 }
 
-function SheetBackdrop({ progress }: { progress: MotionValue<number> }) {
-  const rotate = useTransform(progress, [0, 1], [-30, 0]);
+function SheetBackdrop() {
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden="true">
       <div className="absolute inset-0 bg-[radial-gradient(rgba(1,118,73,0.13)_1px,transparent_1px)] bg-[size:22px_22px] [mask-image:linear-gradient(to_bottom,#000,transparent_45%)]" />
       <div className="absolute -top-40 left-1/2 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(149,222,100,0.45),transparent)]" />
-      <motion.div style={{ rotate }} className="absolute -top-24 -right-24 opacity-[0.05]">
-        <LogoMark className="size-[420px]" />
-      </motion.div>
     </div>
   );
 }
 
 /** Light, slow-drifting washes in the site palette; radial gradients rather than blur filters keep it cheap over a tall sheet. */
-function AuroraBackdrop({ progress }: { progress: MotionValue<number> }) {
-  const rotate = useTransform(progress, [0, 1], [-30, 0]);
+function AuroraBackdrop() {
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden="true">
       <div className="absolute inset-x-0 top-0 h-[900px] bg-[radial-gradient(rgba(1,118,73,0.09)_1px,transparent_1px)] bg-[size:22px_22px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,#000,transparent)]" />
@@ -99,10 +102,6 @@ function AuroraBackdrop({ progress }: { progress: MotionValue<number> }) {
       <div className="absolute top-[38%] left-[18%] size-[900px] animate-blob-c rounded-full bg-[radial-gradient(closest-side,rgba(149,222,100,0.2),transparent)] motion-reduce:animate-none" />
       <div className="absolute top-[58%] -right-[10%] size-[780px] animate-blob-a rounded-full bg-[radial-gradient(closest-side,rgba(217,130,43,0.11),transparent)] [animation-delay:-8s] motion-reduce:animate-none" />
       <div className="absolute bottom-[2%] -left-[8%] size-[820px] animate-blob-b rounded-full bg-[radial-gradient(closest-side,rgba(47,111,216,0.12),transparent)] [animation-delay:-12s] motion-reduce:animate-none" />
-
-      <motion.div style={{ rotate }} className="absolute -top-24 -right-24 opacity-[0.05]">
-        <LogoMark className="size-[420px]" />
-      </motion.div>
     </div>
   );
 }
@@ -111,13 +110,6 @@ function Statement({ tone }: { tone: Tone }) {
   const [founded, first] = overview.milestone.split(/(?<=\.)\s+/);
   return (
     <div className="container-page relative pt-24 pb-20 md:pt-36 md:pb-28 lg:pb-4">
-      <ClipReveal className="flex justify-center">
-        <p className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-[14px] font-medium text-brand shadow-[0_1px_2px_rgba(6,38,23,0.06)] ring-1 ring-mint">
-          <span className="size-1.5 rounded-full bg-lime" />
-          {overview.eyebrow}
-        </p>
-      </ClipReveal>
-
       <ScrollFillTitle text={overview.title} id="about-title" />
 
       <div className="mx-auto mt-16 grid max-w-[1040px] items-start gap-10 md:mt-24 md:grid-cols-[1.15fr_1fr] md:gap-16">
@@ -165,7 +157,7 @@ function ScrollFillTitle({ text, id }: { text: string; id: string }) {
     <h2
       ref={ref}
       id={id}
-      className="mx-auto mt-8 max-w-[19ch] text-center text-[clamp(2.25rem,1.1rem+3.6vw,4.5rem)] leading-[1.04] font-semibold tracking-[-0.04em] text-balance text-ink"
+      className="mx-auto max-w-[19ch] text-center text-[clamp(2.25rem,1.4rem+2.4vw,3.5rem)] leading-[1.05] font-semibold tracking-[-0.04em] text-balance text-ink"
     >
       {words.map((w, i) => (
         <span key={i}>
@@ -185,7 +177,7 @@ function FillWord({ progress, range, still, accent, children }: { progress: Moti
   return (
     <motion.span
       style={still ? undefined : { opacity, y }}
-      className={`inline-block ${accent ? "bg-[linear-gradient(100deg,#017649,#03a35f_55%,#5fbf3f)] bg-clip-text text-transparent" : ""}`}
+      className={`inline-block ${accent ? GRADIENT_TEXT : ""}`}
     >
       {children}
     </motion.span>
@@ -429,34 +421,190 @@ function NodeCard({
   );
 }
 
+const PHOTOS: Record<NodeKind, { src: string; alt: string }> = {
+  connect: { src: "/ecosystem/connect.jpg", alt: "A banker and a finance head shaking hands in a bank lobby" },
+  issue: { src: "/ecosystem/issue.jpg", alt: "A corporate card held over a laptop, with an approval on a phone" },
+  route: { src: "/ecosystem/route.jpg", alt: "A card tapped on a payment terminal at a hotel reception" },
+  integrate: { src: "/ecosystem/integrate.jpg", alt: "An engineer looking at an ERP dashboard and an integration flow" },
+  automate: { src: "/ecosystem/automate.jpg", alt: "A finance manager approving a payment on a tablet" },
+  reconcile: { src: "/ecosystem/reconcile.jpg", alt: "A finance team reviewing reconciled payment reports" },
+};
+
+/** Direction A: the ecosystem steps as photo cards travelling vertically on the left, stats on the right. */
+function EcosystemStats() {
+  return (
+    <div className="container-page relative pt-8 pb-20 md:pb-28 lg:pt-28">
+      <div className="grid items-stretch gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-16">
+        <div className="order-2 flex flex-col lg:order-1">
+          <VerticalRail />
+        </div>
+        <div className="order-1 flex flex-col lg:order-2 lg:py-10">
+          <ClipReveal>
+            <h3 className="max-w-[16ch] text-[clamp(2.25rem,1.4rem+2.6vw,4rem)] leading-[1.04] font-bold tracking-[-0.035em] text-balance text-ink">{stats.title}</h3>
+          </ClipReveal>
+          <ClipReveal delay={0.08}>
+            <p className="mt-6 max-w-[46ch] text-[clamp(1.05rem,0.95rem+0.3vw,1.2rem)] leading-[1.6] text-pretty text-copy">{overview.body}</p>
+          </ClipReveal>
+          <PlainStats />
+          <p className="mt-8 text-[13px] text-sub">{stats.note}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Thin flowing strands behind the card stream; fixed coordinates so server and client match. */
+const STRANDS = Array.from({ length: 28 }, (_, k) => {
+  const t = k / 27;
+  const x0 = 30 + t * 140;
+  const x1 = 170 + t * 210;
+  return `M ${x0.toFixed(1)} -20 C ${(x0 + 190).toFixed(1)} 230, ${(x1 - 200).toFixed(1)} 560, ${x1.toFixed(1)} 820`;
+});
+
+/** Horizontal offsets that make the stream zig-zag. */
+const OFFSETS = ["ml-[4%]", "ml-[30%]", "ml-[14%]", "ml-[2%]", "ml-[26%]", "ml-[10%]"];
+
+type StreamItem = { type: "note" | "photo"; step: number };
+
+/** Each step as a notification card, with a photo tile from another step between them. */
+const STREAM: StreamItem[] = kinds.flatMap((_, i) => [
+  { type: "note" as const, step: i },
+  { type: "photo" as const, step: (i + 3) % kinds.length },
+]);
+
+/** Small notification cards and photo tiles drifting upward, after the reference "network" stream. */
+function VerticalRail() {
+  const loop = [...STREAM, ...STREAM];
+  return (
+    <div className="relative mt-6 h-[560px] overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,#000_6%,#000_94%,transparent)] lg:h-auto lg:min-h-[600px] lg:flex-1">
+      <svg viewBox="0 0 400 800" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 size-full" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="strand" x1="0" y1="0" x2="0" y2="800" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#95de64" />
+            <stop offset="50%" stopColor="#0e8ba3" />
+            <stop offset="100%" stopColor="#5b57d9" />
+          </linearGradient>
+        </defs>
+        {STRANDS.map((d, i) => (
+          <path key={i} d={d} stroke="url(#strand)" strokeOpacity={0.22} strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        ))}
+      </svg>
+      <div className="group/stream absolute inset-x-0 top-0">
+        {/* Per-item padding rather than gap keeps the -50% loop seamless. */}
+        <ul className="animate-marquee-y group-hover/stream:[animation-play-state:paused] motion-reduce:animate-none">
+          {loop.map((it, i) => (
+            <li key={i} aria-hidden={i >= STREAM.length} className={`pb-4 ${OFFSETS[i % OFFSETS.length]}`}>
+              {it.type === "note" ? <NoteCard step={it.step} /> : <PhotoTile step={it.step} />}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function NoteCard({ step }: { step: number }) {
+  const node = overview.nodes[step];
+  const kind = kinds[step];
+  const p = NODE_PALETTES[step % NODE_PALETTES.length];
+  return (
+    <article className="flex w-[300px] max-w-[92%] items-center gap-3 rounded-2xl bg-white/95 p-3 pr-4 shadow-[0_18px_40px_-24px_rgba(6,38,23,0.35)] ring-1 ring-black/[0.05] backdrop-blur transition-transform duration-300 hover:-translate-y-0.5">
+      <span className="relative size-12 shrink-0 overflow-hidden rounded-xl">
+        <Image src={PHOTOS[kind].src} alt="" fill sizes="48px" className="object-cover" />
+        <span className="absolute inset-0 rounded-xl ring-1 ring-black/5 ring-inset" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-[16px] leading-tight font-semibold tracking-[-0.02em] text-ink">{node.verb}</h3>
+          <span className="tabular text-[11px] font-medium" style={{ color: p.BRAND }}>
+            {node.noun}
+          </span>
+        </div>
+        <p className="mt-0.5 line-clamp-2 text-[12.5px] leading-snug text-copy">{node.line}</p>
+      </div>
+    </article>
+  );
+}
+
+function PhotoTile({ step }: { step: number }) {
+  const kind = kinds[step];
+  const p = NODE_PALETTES[step % NODE_PALETTES.length];
+  return (
+    <div className="relative h-[84px] w-[220px] max-w-[70%] overflow-hidden rounded-2xl shadow-[0_18px_40px_-26px_rgba(6,38,23,0.45)]">
+      <Image src={PHOTOS[kind].src} alt={PHOTOS[kind].alt} fill sizes="220px" className="object-cover" />
+      <div className="absolute inset-0" style={{ background: `linear-gradient(100deg, ${p.BRAND}cc 0%, ${p.LIME}66 38%, transparent 70%)` }} />
+    </div>
+  );
+}
+
 function Stats({ featured, tone }: { featured: FeaturedDecor; tone: Tone }) {
   return (
     <div className="container-page relative pt-8 pb-20 md:pb-28 lg:pt-0">
       <ClipReveal>
         <h3 className="max-w-[20ch] text-[clamp(1.75rem,1.2rem+1.6vw,2.75rem)] leading-[1.1] font-semibold tracking-[-0.03em] text-balance text-ink">{stats.title}</h3>
       </ClipReveal>
-      <dl className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
-        {stats.items.map((s, i) => (
-          <StatTile
-            key={s.label}
-            index={i}
-            featured={i === 0}
-            decor={featured}
-            palette={tone === "spectrum" && i > 0 ? STAT_PALETTES[(i - 1) % STAT_PALETTES.length] : undefined}
-            className={i === 0 ? "sm:col-span-2 lg:row-span-2" : i === 1 ? "lg:col-span-2" : ""}>
-            <dt className={`text-[15px] ${i === 0 ? "text-white/75" : "text-copy"}`}>{s.label}</dt>
-            <dd
-              className={`mt-3 leading-none font-semibold tracking-[-0.04em] whitespace-nowrap ${
-                i === 0 ? "text-[clamp(3.5rem,2rem+5vw,6.5rem)] text-white" : "text-[clamp(2rem,1.5rem+1.6vw,2.9rem)] text-ink"
-              }`}
-            >
-              <Counter value={s.value} prefix={s.prefix} suffix={s.suffix} suffixClassName={s.suffix.length > 2 ? "text-[0.55em] tracking-[-0.01em]" : ""} />
-            </dd>
-          </StatTile>
-        ))}
-      </dl>
+      <StatsGrid featured={featured} tone={tone} />
       <p className="mt-6 text-[13px] text-sub">{stats.note}</p>
     </div>
+  );
+}
+
+/** Open, unboxed figures: a light gradient numeral over a bold label, one palette per stat. */
+function PlainStats() {
+  const reduce = useReducedMotion();
+  return (
+    <dl className="mt-12 grid grid-cols-2 gap-x-10 gap-y-10 md:mt-16 lg:mt-auto lg:gap-x-14 lg:pt-16">
+      {stats.items.map((s, i) => {
+        const p = [GREEN, INDIGO, AMBER, TEAL][i];
+        return (
+          <motion.div
+            key={s.label}
+            className="@container flex min-w-0 flex-col"
+            initial={reduce ? false : { opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px -8% 0px" }}
+            transition={{ duration: 0.8, ease, delay: i * 0.08 }}
+          >
+            <dt className="order-2 mt-3 max-w-[14ch] text-[clamp(1.05rem,0.95rem+0.4vw,1.3rem)] leading-[1.2] font-bold tracking-[-0.015em] text-ink">{s.label}</dt>
+            <dd className="order-1">
+              <span
+                className="inline-block bg-clip-text pb-1 text-[clamp(2.25rem,20cqi,4.5rem)] leading-none font-light tracking-[-0.045em] whitespace-nowrap text-transparent"
+                style={{ backgroundImage: `linear-gradient(90deg, ${p.BRAND}, color-mix(in srgb, ${p.BRAND} 55%, ${p.LIME}))` }}
+              >
+                <Counter value={s.value} prefix={s.prefix} suffix={s.suffix} suffixClassName={s.suffix.length > 2 ? "ml-[0.12em] text-[0.6em] tracking-[-0.01em]" : ""} />
+              </span>
+            </dd>
+          </motion.div>
+        );
+      })}
+    </dl>
+  );
+}
+
+function StatsGrid({ featured, tone }: { featured: FeaturedDecor; tone: Tone }) {
+  const span = (i: number) => (i === 0 ? "sm:col-span-2 lg:row-span-2" : i === 1 ? "lg:col-span-2" : "");
+  return (
+    <dl className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+      {stats.items.map((s, i) => (
+        <StatTile
+          key={s.label}
+          index={i}
+          featured={i === 0}
+          decor={featured}
+          palette={tone === "spectrum" && i > 0 ? STAT_PALETTES[(i - 1) % STAT_PALETTES.length] : undefined}
+          className={span(i)}
+        >
+          <dt className={`text-[15px] ${i === 0 ? "text-white/75" : "text-copy"}`}>{s.label}</dt>
+          <dd
+            className={`mt-3 leading-none font-semibold tracking-[-0.04em] whitespace-nowrap ${
+              i === 0 ? "text-[clamp(3.5rem,2rem+5vw,6.5rem)] text-white" : "text-[clamp(2rem,1.5rem+1.6vw,2.9rem)] text-ink"
+            }`}
+          >
+            <Counter value={s.value} prefix={s.prefix} suffix={s.suffix} suffixClassName={s.suffix.length > 2 ? "text-[0.55em] tracking-[-0.01em]" : ""} />
+          </dd>
+        </StatTile>
+      ))}
+    </dl>
   );
 }
 
@@ -499,7 +647,7 @@ function StatTile({
         mx.set(-200);
         my.set(-200);
       }}
-      className={`group relative flex flex-col justify-end overflow-hidden rounded-[28px] p-7 ${orbit ? "min-h-[520px] sm:min-h-[500px]" : "min-h-[200px]"} ${
+      className={`group relative flex flex-col justify-end overflow-hidden rounded-[28px] p-7 ${orbit ? "min-h-[500px] sm:min-h-[340px] lg:min-h-[440px]" : "min-h-[200px]"} ${
         featured ? "text-white" : "bg-white ring-1 ring-mint"
       } ${className}`}
       style={{

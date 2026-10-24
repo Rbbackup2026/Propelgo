@@ -34,7 +34,7 @@ export function Testimonials() {
     <section className="py-28 md:py-36">
       <div className="container-page">
         <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-          <SectionIntro eyebrow={testimonials.eyebrow} title={testimonials.title} highlight={testimonials.highlight} />
+          <SectionIntro title={testimonials.title} highlight={testimonials.highlight} />
           <div className="flex items-center gap-2">
             <NavButton label="Previous testimonial" onClick={() => go(-1)}>
               <ArrowLeft />
@@ -153,7 +153,7 @@ export function Testimonials() {
           </motion.div>
 
           <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="grid flex-1 grid-cols-3 gap-3 sm:max-w-[460px]" role="tablist" aria-label="Testimonials">
+            <div className="grid flex-1 grid-cols-3 gap-3 sm:max-w-[320px]" role="tablist" aria-label="Testimonials">
               {testimonials.items.map((item, i) => {
                 const c = THEMES[item.product]?.accent ?? THEMES.Versa.accent;
                 const done = i < index;
@@ -166,12 +166,9 @@ export function Testimonials() {
                     aria-selected={current}
                     aria-label={`Testimonial ${i + 1}: ${item.product}`}
                     onClick={() => jump(i)}
-                    className="group text-left"
+                    className="group py-3"
                   >
-                    <span className={`block truncate text-[12.5px] font-medium transition-colors duration-300 ${current ? "text-ink" : "text-sub group-hover:text-copy"}`}>
-                      {item.product}
-                    </span>
-                    <span className="mt-2 block h-[3px] overflow-hidden rounded-full bg-black/[0.07]">
+                    <span className="block h-[3px] overflow-hidden rounded-full bg-black/[0.07] transition-colors group-hover:bg-black/[0.12]">
                       {current ? (
                         <span
                           key={index}

@@ -13,7 +13,7 @@ export function Resources({ tone = "spectrum" }: { tone?: "spectrum" | "brand" }
     <section className="pb-28 md:pb-36">
       <div className="container-page">
         <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-          <SectionIntro eyebrow={resources.eyebrow} title={resources.title} highlight={spectrum ? resources.highlight : undefined} />
+          <SectionIntro title={resources.title} highlight={spectrum ? resources.highlight : undefined} />
           <Button href={resources.cta.href} variant="text" className="self-start md:self-auto">
             {resources.cta.label}
           </Button>

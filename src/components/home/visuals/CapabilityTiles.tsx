@@ -31,22 +31,25 @@ export function CapabilityGlyph({ kind, className = "size-8" }: { kind: Capabili
   return <RealIcon name={kind} className={className} />;
 }
 
-/* ---------- 1. Orchestration: each payment is evaluated by the router and sent down its rail. ---------- */
+/* ---------- 1. Orchestration: checkout sends each payment once; smart routing picks the gateway. ---------- */
 
 const R = ACCENTS.routing;
 const HUB = { x: 262, y: 120 };
 const LANE_X = 404;
 const lanes = [
-  { label: "Bank A", y: 48, base: 128 },
-  { label: "Bank B", y: 120, base: 342 },
-  { label: "Card network", y: 192, base: 96 },
+  { label: "PayU", y: 32, base: 412 },
+  { label: "Razorpay", y: 76, base: 286 },
+  { label: "Easebuzz", y: 120, base: 158 },
+  { label: "PhonePe", y: 164, base: 337 },
+  { label: "JioPay", y: 208, base: 121 },
 ];
+/** Reasons follow the guide's routing order: must-follow rules, preference rules, margin, then success rate. */
 const routed = [
-  { amount: "₹14.2L", lane: 0, rule: "Above ₹10L  →  Bank A" },
-  { amount: "₹86K", lane: 1, rule: "Under ₹1L  →  Bank B" },
-  { amount: "₹2.4L", lane: 2, rule: "Card spend  →  Network" },
-  { amount: "₹22.7L", lane: 0, rule: "Above ₹10L  →  Bank A" },
-  { amount: "₹48K", lane: 1, rule: "Under ₹1L  →  Bank B" },
+  { method: "Card", amount: "₹10,000", lane: 0, rule: "Bank rule  →  PayU" },
+  { method: "UPI", amount: "₹2,450", lane: 3, rule: "Best success rate  →  PhonePe" },
+  { method: "Card", amount: "₹48,000", lane: 1, rule: "Best margin  →  Razorpay" },
+  { method: "NB", amount: "₹1.2L", lane: 2, rule: "Above ₹1L  →  Easebuzz" },
+  { method: "UPI QR", amount: "₹860", lane: 4, rule: "UPI QR  →  JioPay" },
 ];
 
 const lanePath = (y: number) => `M ${HUB.x + 34} ${HUB.y} C ${HUB.x + 92} ${HUB.y}, ${LANE_X - 62} ${y}, ${LANE_X} ${y}`;
@@ -72,8 +75,8 @@ function routedCount(lane: number, upTo: number) {
 }
 
 function RouterArt({ playing }: { playing: boolean }) {
-  // phase 0: payment travels into the router, 1: routed down its lane
-  const { phase, cycle } = usePhaseLoop(2, 1400, playing);
+  // phase 0: payment travels into the router, 1: routed down its lane, 2: gateway confirms
+  const { phase, cycle } = usePhaseLoop(3, 1200, playing);
   const p = routed[cycle % routed.length];
   const out = laneSamples(lanes[p.lane].y);
   // Phones crop to router and lanes so labels stay legible; payments then enter from the edge.
@@ -85,7 +88,7 @@ function RouterArt({ playing }: { playing: boolean }) {
       {lanes.map((l) => (
         <path key={l.label} d={lanePath(l.y)} stroke="#e8e8e8" strokeWidth="2" />
       ))}
-      {phase === 1 && (
+      {phase >= 1 && (
         <motion.path
           key={`lane-${cycle}`}
           d={lanePath(lanes[p.lane].y)}
@@ -101,10 +104,10 @@ function RouterArt({ playing }: { playing: boolean }) {
       <g>
         <rect x="16" y="98" width="94" height="44" rx="12" fill="#fff" stroke="#e8e8e8" />
         <text x="63" y="117" textAnchor="middle" className="fill-ink text-[13px] font-semibold">
-          ERP
+          Checkout
         </text>
-        <text x="63" y="133" textAnchor="middle" className="fill-sub text-[10.5px]">
-          Payables
+        <text x="63" y="133" textAnchor="middle" className="fill-sub text-[10px]">
+          Card · UPI · NB
         </text>
       </g>
 
@@ -140,16 +143,17 @@ function RouterArt({ playing }: { playing: boolean }) {
       </AnimatePresence>
 
       {lanes.map((l, i) => {
-        const on = phase === 1 && p.lane === i;
-        const count = l.base + routedCount(i, cycle) + (on ? 1 : 0);
+        const on = phase >= 1 && p.lane === i;
+        const confirmed = on && phase === 2;
+        const count = l.base + routedCount(i, cycle) + (confirmed ? 1 : 0);
         return (
           <g key={l.label}>
             <rect
               x={LANE_X}
-              y={l.y - 20}
+              y={l.y - 16}
               width="140"
-              height="40"
-              rx="12"
+              height="32"
+              rx="10"
               fill={on ? R.soft : "#fff"}
               stroke={on ? R.solid : "#e8e8e8"}
               className="transition-[fill,stroke] duration-300"
@@ -157,28 +161,56 @@ function RouterArt({ playing }: { playing: boolean }) {
             <text x={LANE_X + 14} y={l.y + 4.5} className="fill-ink text-[12.5px] font-medium">
               {l.label}
             </text>
-            <text x={LANE_X + 126} y={l.y + 4.5} textAnchor="end" className="tabular text-[12.5px] font-semibold" style={{ fill: on ? R.solid : "#8c8c8c" }}>
-              {count}
-            </text>
+            <AnimatePresence mode="wait" initial={false}>
+              {confirmed ? (
+                <motion.g
+                  key="ok"
+                  initial={{ opacity: 0, scale: 0.6 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ type: "spring", bounce: 0.5, visualDuration: 0.35 }}
+                  style={{ transformOrigin: `${LANE_X + 118}px ${l.y}px` }}
+                >
+                  <circle cx={LANE_X + 118} cy={l.y} r="8" fill={R.solid} />
+                  <path d={`M ${LANE_X + 114} ${l.y} l 3 3 l 5 -6`} stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </motion.g>
+              ) : (
+                <motion.text
+                  key="count"
+                  x={LANE_X + 126}
+                  y={l.y + 4.5}
+                  textAnchor="end"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="tabular text-[12.5px] font-semibold"
+                  style={{ fill: on ? R.solid : "#8c8c8c" }}
+                >
+                  {count}
+                </motion.text>
+              )}
+            </AnimatePresence>
           </g>
         );
       })}
 
-      <motion.g
-        key={`chip-${cycle}-${phase}`}
-        initial={phase === 0 ? { x: 70, y: HUB.y, opacity: 0, scale: 0.9 } : { x: out.xs[0], y: out.ys[0], opacity: 0, scale: 0.7 }}
-        animate={
-          phase === 0
-            ? { x: [70, 160, HUB.x - 6], y: HUB.y, opacity: [0, 1, 0], scale: [0.9, 1, 0.6] }
-            : { x: out.xs, y: out.ys, opacity: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.6, 0], scale: [0.7, 1, 1] }
-        }
-        transition={{ duration: 1.15, ease: "easeInOut" }}
-      >
-        <rect x="-32" y="-13" width="64" height="26" rx="13" fill="#fff" stroke={R.solid} strokeOpacity="0.5" />
-        <text y="4.5" textAnchor="middle" className="tabular fill-ink text-[12px] font-semibold">
-          {p.amount}
-        </text>
-      </motion.g>
+      {phase < 2 && (
+        <motion.g
+          key={`chip-${cycle}-${phase}`}
+          initial={phase === 0 ? { x: 70, y: HUB.y, opacity: 0, scale: 0.9 } : { x: out.xs[0], y: out.ys[0], opacity: 0, scale: 0.7 }}
+          animate={
+            phase === 0
+              ? { x: [70, 160, HUB.x - 6], y: HUB.y, opacity: [0, 1, 0], scale: [0.9, 1, 0.6] }
+              : { x: out.xs, y: out.ys, opacity: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.6, 0], scale: [0.7, 1, 1] }
+          }
+          transition={{ duration: 1.05, ease: "easeInOut" }}
+        >
+          <rect x="-46" y="-13" width="92" height="26" rx="13" fill="#fff" stroke={R.solid} strokeOpacity="0.5" />
+          <text y="4.5" textAnchor="middle" className="tabular fill-ink text-[11.5px] font-semibold">
+            <tspan style={{ fill: R.solid }}>{p.method}</tspan> {p.amount}
+          </text>
+        </motion.g>
+      )}
     </svg>
   );
 }

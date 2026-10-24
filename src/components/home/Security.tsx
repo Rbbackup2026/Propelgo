@@ -4,8 +4,7 @@ import Image from "next/image";
 import { motion, useInView, useReducedMotion } from "motion/react";
 import { useRef } from "react";
 import { security } from "@/content/home";
-import { Eyebrow, HighlightTitle, Reveal } from "@/components/ui/Reveal";
-import { Check } from "@/components/ui/icons";
+import { HighlightTitle, Reveal } from "@/components/ui/Reveal";
 import { usePhaseLoop } from "@/lib/useStageScale";
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -24,8 +23,7 @@ export function Security() {
       <div className="container-page">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:items-end lg:gap-16">
           <Reveal>
-            <Eyebrow>{security.eyebrow}</Eyebrow>
-            <h2 id="security-title" className="mt-3 max-w-[22ch] text-[clamp(1.625rem,1.3rem+1vw,2.125rem)] leading-tight font-semibold tracking-[-0.022em] text-ink">
+            <h2 id="security-title" className="max-w-[22ch] text-[clamp(1.625rem,1.3rem+1vw,2.125rem)] leading-tight font-semibold tracking-[-0.022em] text-ink">
               <HighlightTitle text={security.title} phrase={security.highlight} />
             </h2>
           </Reveal>
@@ -51,16 +49,6 @@ export function Security() {
                   className={`pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-brand/35 transition-opacity duration-500 group-hover:opacity-100 ${on ? "opacity-100" : "opacity-0"}`}
                   aria-hidden="true"
                 />
-                <motion.span
-                  className="absolute top-3 right-3 grid size-5 place-items-center rounded-full bg-brand text-white"
-                  initial={false}
-                  animate={{ scale: on ? 1 : 0, opacity: on ? 1 : 0 }}
-                  transition={{ type: "spring", bounce: 0.5, visualDuration: 0.35 }}
-                  aria-hidden="true"
-                >
-                  <Check className="size-2.5" />
-                </motion.span>
-
                 <div className="relative grid h-[112px] place-items-center px-5 pt-4">
                   <Image
                     src={c.src}
