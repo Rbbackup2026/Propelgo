@@ -354,30 +354,19 @@ function Curve({ progress }: { progress: MotionValue<number> }) {
       <svg viewBox="0 0 1300 720" preserveAspectRatio="none" className="absolute inset-0 size-full" fill="none">
         <defs>
           <linearGradient id="product-curve" x1="0" x2="1" y1="0" y2="0">
-            {spectrum ? (
-              <>
-                <stop offset="0%" stopColor="#f0b35e" />
-                <stop offset="50%" stopColor="#e8824a" />
-                <stop offset="100%" stopColor="#d9475f" />
-              </>
-            ) : (
-              <>
-                <stop offset="0%" stopColor="#95DE64" />
-                <stop offset="100%" stopColor="#017649" />
-              </>
-            )}
+            <stop offset="0%" stopColor="#95DE64" />
+            <stop offset="55%" stopColor="#03a35f" />
+            <stop offset="100%" stopColor="#017649" />
           </linearGradient>
         </defs>
-        <path d={curve} stroke={spectrum ? "#f6e7da" : "#E3F3D6"} strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+        <path d={curve} stroke="#E3F3D6" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
         <motion.path d={curve} stroke="url(#product-curve)" strokeWidth={spectrum ? 1.5 : 2} strokeLinecap="round" vectorEffect="non-scaling-stroke" style={{ pathLength: progress }} />
       </svg>
       <motion.div
         style={{ opacity: badge, scale: badge }}
-        className={`absolute top-[42%] right-[0.6%] grid size-14 place-items-center rounded-full bg-white ring-2 ${
-          spectrum ? "shadow-[0_12px_30px_-12px_rgba(217,71,95,0.5)] ring-[#d9475f]" : "shadow-[0_12px_30px_-12px_rgba(1,118,73,0.5)] ring-brand"
-        }`}
+        className="absolute top-[42%] right-[0.6%] grid size-14 place-items-center rounded-full bg-white ring-2 ring-brand shadow-[0_12px_30px_-12px_rgba(1,118,73,0.5)]"
       >
-        <span className={`absolute inset-0 animate-ping-soft rounded-full ring-2 ${spectrum ? "ring-[#f2a3b2]" : "ring-lime"}`} />
+        <span className="absolute inset-0 animate-ping-soft rounded-full ring-2 ring-lime" />
         <LogoMark className="size-8" />
       </motion.div>
     </div>
