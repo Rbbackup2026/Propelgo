@@ -8,7 +8,7 @@ import { Magnetic } from "@/components/ui/Magnetic";
 import { GRADIENT_TEXT } from "@/components/ui/Reveal";
 import { usePreloaderDone } from "@/lib/preloader";
 import { useContinuousGradient } from "@/lib/useContinuousGradient";
-import { HeroStage } from "./visuals/HeroStage";
+import { HeroStage, type StageVariant } from "./visuals/HeroStage";
 const ease = [0.16, 1, 0.3, 1] as const;
 
 /** Trailing words of the headline set in the brand gradient. */
@@ -16,7 +16,7 @@ const HIGHLIGHT_WORDS = 4;
 
 /** Lets the preloader curtain clear the top of the screen before copy rises. */
 const BASE = 0.35;
-export function Hero() {
+export function Hero({ stage = "payments" }: { stage?: StageVariant }) {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const ready = usePreloaderDone();
@@ -103,7 +103,7 @@ export function Hero() {
         </motion.div>
 
         <motion.div style={reduce ? undefined : { y: stageY, scale: stageScale }} className="relative">
-          <HeroStage mx={mx} my={my} ready={ready} />
+          <HeroStage mx={mx} my={my} ready={ready} variant={stage} />
         </motion.div>
       </div>
 

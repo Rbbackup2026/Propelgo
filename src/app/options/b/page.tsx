@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { Hero } from "@/components/home/Hero";
+import { Ecosystem } from "@/components/home/Ecosystem";
 import { Overview } from "@/components/home/Overview";
 import { Products } from "@/components/home/Products";
-import { CapabilitiesB } from "@/components/options/CapabilitiesB";
-import { SecurityB } from "@/components/options/SecurityB";
-import { TestimonialsB } from "@/components/options/TestimonialsB";
+import { Capabilities } from "@/components/home/Capabilities";
+import { Security } from "@/components/home/Security";
+import { Testimonials } from "@/components/home/Testimonials";
 import { Resources } from "@/components/home/Resources";
 import { FinalCta } from "@/components/home/FinalCta";
-import { HeroB } from "@/components/options/HeroB";
-import { EcosystemB } from "@/components/options/EcosystemB";
 import { DirectionSwitcher } from "@/components/options/DirectionSwitcher";
 
 export const metadata: Metadata = {
@@ -22,15 +22,15 @@ export default function DirectionB() {
     <>
       <Header />
       <main>
-        <HeroB />
-        <EcosystemB />
-        <Overview featured="rings" tone="brand" />
-        <Products tone="brand" />
-        <CapabilitiesB />
-        <SecurityB />
-        <TestimonialsB />
-        <Resources tone="brand" />
-        <FinalCta />
+        <Hero stage="dashboard" />
+        <Ecosystem />
+        <Overview />
+        <Products />
+        <Capabilities />
+        <Security />
+        <Testimonials />
+        <Resources />
+        <FinalCta tone="spectrum" />
       </main>
       <Footer />
       <DirectionSwitcher current="b" />

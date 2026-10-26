@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const directions = [
   { key: "a", label: "A", name: "Light hero, payment rails", href: "/" },
-  { key: "b", label: "B", name: "Gradient hero, live card", href: "/options/b" },
+  { key: "b", label: "B", name: "Versa dashboard details", href: "/options/b" },
 ];
 
 /** Floating review bar so the client can compare creative directions. */
