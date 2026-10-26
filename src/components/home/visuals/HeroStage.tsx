@@ -11,7 +11,6 @@ import {
   useTransform,
   type MotionValue,
 } from "motion/react";
-import Image from "next/image";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { LogoMark } from "@/components/ui/Logo";
 import { Check, ContactlessIcon } from "@/components/ui/icons";
@@ -86,7 +85,7 @@ export function HeroStage({
             <ParentCard />
           </Depth>
 
-          <MainCard mx={mx} my={my} last4={v.last4} vendor={v.name} reduce={!!reduce} ready={ready} virtual network={v.network} />
+          <MainCard mx={mx} my={my} last4={v.last4} vendor={v.name} reduce={!!reduce} ready={ready} virtual />
 
           <Depth mx={mx} my={my} depth={46} delay={0.75} className="absolute top-[64px] left-[328px]">
             <VendorSpend index={index} run={!reduce} />
@@ -187,8 +186,7 @@ function MainCard({
   reduce,
   ready,
   virtual = false,
-  network = "visa",
-}: Pointer & { last4: string; vendor: string; reduce: boolean; ready: boolean; virtual?: boolean; network?: Network }) {
+}: Pointer & { last4: string; vendor: string; reduce: boolean; ready: boolean; virtual?: boolean }) {
   const rotateX = useTransform(my, [-0.5, 0.5], [16, -16]);
   const rotateY = useTransform(mx, [-0.5, 0.5], [-20, 20]);
   const x = useTransform(mx, [-0.5, 0.5], [-22, 22]);
@@ -208,7 +206,7 @@ function MainCard({
         <div className="animate-float motion-reduce:animate-none">
           <motion.div style={{ rotateX, rotateY }} className="preserve-3d">
             {virtual ? (
-              <VirtualCardFace vendor={vendor} last4={last4} network={network} sheen={sheen} />
+              <VirtualCardFace vendor={vendor} last4={last4} sheen={sheen} />
             ) : (
             <div
               className="relative h-[226px] w-[360px] overflow-hidden rounded-[22px] p-6 text-white shadow-[0_50px_90px_-30px_rgba(6,38,23,0.65)]"
@@ -431,23 +429,13 @@ function Settlement() {
 
 /* ---------- Direction B: details from the Versa dashboard (vendor spend summary, approvals, spend overview). ---------- */
 
-type Network = "visa" | "mastercard";
-
-const vendors: { name: string; category: string; spend: number; last4: string; network: Network }[] = [
-  { name: "RoadRider Fleet Management", category: "Ground transport", spend: 1840000, last4: "5678", network: "mastercard" },
-  { name: "StayEase Hospitality Solutions", category: "Hospitality", spend: 1670000, last4: "4021", network: "visa" },
-  { name: "AirLink Booking Services", category: "Travel bookings", spend: 1520000, last4: "7713", network: "mastercard" },
+const vendors: { name: string; category: string; spend: number; last4: string }[] = [
+  { name: "RoadRider Fleet Management", category: "Ground transport", spend: 1840000, last4: "5678" },
+  { name: "StayEase Hospitality Solutions", category: "Hospitality", spend: 1670000, last4: "4021" },
+  { name: "AirLink Booking Services", category: "Travel bookings", spend: 1520000, last4: "7713" },
 ];
 
-function NetworkMark({ network }: { network: Network }) {
-  return network === "visa" ? (
-    <Image src="/logos/visa.svg" alt="" width={54} height={18} className="h-[17px] w-auto brightness-0 invert" />
-  ) : (
-    <Image src="/logos/mastercard.svg" alt="" width={36} height={28} className="h-[26px] w-auto" />
-  );
-}
-
-function VirtualCardFace({ vendor, last4, network, sheen }: { vendor: string; last4: string; network: Network; sheen: MotionValue<string> }) {
+function VirtualCardFace({ vendor, last4, sheen }: { vendor: string; last4: string; sheen: MotionValue<string> }) {
   return (
     <div
       className="relative h-[226px] w-[360px] overflow-hidden rounded-[22px] p-6 text-white shadow-[0_50px_90px_-30px_rgba(0,0,0,0.7)] ring-1 ring-white/10"
@@ -480,11 +468,6 @@ function VirtualCardFace({ vendor, last4, network, sheen }: { vendor: string; la
           </AnimatePresence>
           <p className="tabular mt-1.5 text-[15px] tracking-[0.12em] text-white/85">•••• {last4}</p>
         </div>
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.span key={network} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
-            <NetworkMark network={network} />
-          </motion.span>
-        </AnimatePresence>
       </div>
     </div>
   );
