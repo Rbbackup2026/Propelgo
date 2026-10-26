@@ -3,6 +3,7 @@
 import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform, type MotionValue } from "motion/react";
 import { useRef } from "react";
 import { hero } from "@/content/home";
+import { BrandRibbon } from "@/components/ui/BrandRibbon";
 import { Button } from "@/components/ui/Button";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { GRADIENT_TEXT } from "@/components/ui/Reveal";
@@ -16,7 +17,7 @@ const HIGHLIGHT_WORDS = 4;
 
 /** Lets the preloader curtain clear the top of the screen before copy rises. */
 const BASE = 0.35;
-export function Hero({ stage = "payments" }: { stage?: StageVariant }) {
+export function Hero({ stage = "payments", ribbon = false }: { stage?: StageVariant; ribbon?: boolean }) {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const ready = usePreloaderDone();
@@ -59,6 +60,13 @@ export function Hero({ stage = "payments" }: { stage?: StageVariant }) {
       className="relative isolate overflow-hidden pt-[124px] pb-16 md:pt-[148px] md:pb-24 lg:min-h-[100svh]"
     >
       <Aurora y={reduce ? undefined : auroraY} x={reduce ? undefined : auroraX} />
+      {ribbon && (
+        <BrandRibbon
+          light
+          play={ready}
+          className="absolute top-0 left-0 -z-10 h-[78%] w-[min(34vw,420px)] [mask-image:radial-gradient(115%_100%_at_0%_0%,#000_35%,transparent_80%)] max-md:w-[55vw] max-md:h-[45%]"
+        />
+      )}
       <div className="container-page grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:gap-10">
         <motion.div style={reduce ? undefined : { y: copyY, opacity: copyOpacity }} className="relative max-w-[600px]">
 

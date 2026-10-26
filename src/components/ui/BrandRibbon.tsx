@@ -55,10 +55,23 @@ const SHAPES: Record<RibbonVariant, { box: [number, number]; grad: [number, numb
 };
 
 /** PropelGo's line ribbon: a bundle of thin brand-gradient strands that draws in once, then sways slowly. */
-export function BrandRibbon({ variant = "twist", play = true, className = "" }: { variant?: RibbonVariant; play?: boolean; className?: string }) {
+export function BrandRibbon({
+  variant = "twist",
+  play = true,
+  light = false,
+  className = "",
+}: {
+  variant?: RibbonVariant;
+  play?: boolean;
+  /** Every other strand at lower opacity, for quiet corner accents. */
+  light?: boolean;
+  className?: string;
+}) {
   const reduce = useReducedMotion();
   const id = `ribbon${useId().replace(/[^\w-]/g, "")}`;
-  const { box, grad, paths } = SHAPES[variant];
+  const { box, grad } = SHAPES[variant];
+  const paths = light ? SHAPES[variant].paths.filter((_, i) => i % 2 === 0) : SHAPES[variant].paths;
+  const [base, peak] = light ? [0.1, 0.14] : [0.16, 0.18];
   return (
     <svg viewBox={`0 0 ${box[0]} ${box[1]}`} preserveAspectRatio="none" className={`pointer-events-none ${className}`} fill="none" aria-hidden="true">
       <defs>
@@ -79,7 +92,7 @@ export function BrandRibbon({ variant = "twist", play = true, className = "" }: 
             key={i}
             d={d}
             stroke={`url(#${id})`}
-            strokeOpacity={0.16 + 0.18 * Math.sin((i / (paths.length - 1)) * Math.PI)}
+            strokeOpacity={base + peak * Math.sin((i / (paths.length - 1)) * Math.PI)}
             strokeWidth="1"
             vectorEffect="non-scaling-stroke"
             initial={reduce ? false : { pathLength: 0 }}

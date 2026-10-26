@@ -26,7 +26,7 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
       <Header />
       <main>
-        <Hero />
+        <Hero ribbon />
         <Ecosystem />
         <Overview />
         <Products />
@@ -36,7 +36,7 @@ export default function HomePage() {
         <Resources />
         <FinalCta tone="spectrum" />
       </main>
-      <Footer />
+      <Footer ribbon />
       {/* Review aid while the client compares directions; remove before launch. */}
       <DirectionSwitcher current="a" />
     </>

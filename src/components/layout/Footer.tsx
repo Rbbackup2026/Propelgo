@@ -1,10 +1,17 @@
 import Link from "next/link";
 import { finalCta, footer } from "@/content/home";
+import { BrandRibbon } from "@/components/ui/BrandRibbon";
 import { Logo } from "@/components/ui/Logo";
 
-export function Footer() {
+export function Footer({ ribbon = false }: { ribbon?: boolean }) {
   return (
-    <footer className="border-t border-line bg-surface">
+    <footer className="relative isolate overflow-hidden border-t border-line bg-surface">
+      {ribbon && (
+        <BrandRibbon
+          light
+          className="absolute top-0 right-0 -z-10 h-[340px] w-[min(30vw,380px)] -scale-x-100 [mask-image:radial-gradient(115%_100%_at_0%_0%,#000_35%,transparent_80%)] max-md:h-[240px] max-md:w-[55vw]"
+        />
+      )}
       <div className="container-page pt-20 pb-10">
         <div className="grid gap-14 lg:grid-cols-[1.1fr_2fr]">
           <div>
