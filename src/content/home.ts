@@ -50,7 +50,7 @@ export const nav = {
 export const hero = {
   eyebrow: "Enterprise payment infrastructure",
   headline: "Powering the way businesses move and manage money.",
-  copy: "From vendor payments and commercial credit to payment orchestration and cards, PropelGo helps businesses manage modern payment operations from one platform.",
+  copy: "A unified platform connecting financial institutions, businesses and payment ecosystems to enable scalable commercial payments, credit-led solutions and smarter financial operations.",
   primaryCta: { label: "Talk to Us", href: "/contact" },
   secondaryCta: { label: "Explore our products", href: "#products" },
 };

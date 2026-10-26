@@ -97,25 +97,25 @@ function OdccArt({ active }: { active: boolean }) {
   );
 }
 
-/** One integration in, many connections out: a light line schematic. */
+/** One checkout integration in, routed out to many payment gateways: a light line schematic. */
 function OrchestrationArt({ active }: { active: boolean }) {
   const outs = [
-    { y: 30, label: "Bank A" },
-    { y: 72, label: "Bank B" },
-    { y: 114, label: "Network A" },
-    { y: 156, label: "Network B" },
+    { y: 30, label: "PayU" },
+    { y: 72, label: "Razorpay" },
+    { y: 114, label: "Easebuzz" },
+    { y: 156, label: "PhonePe" },
   ];
   return (
     <div className="relative grid h-full place-items-center">
       <svg viewBox="0 0 280 186" className="w-full max-w-[290px]" fill="none" aria-hidden="true">
         <rect x="6" y="75" width="64" height="36" rx="8" fill="#fff" stroke="#E8E8E8" />
         <text x="38" y="97" textAnchor="middle" fontSize="11" fontWeight="600" fill="#1F1F1F">
-          ERP
+          Checkout
         </text>
         <path d="M70 93h34" stroke="#CFCFCF" strokeWidth="1.5" />
         <rect x="104" y="60" width="62" height="66" rx="12" fill="#017649" />
         <text x="135" y="97" textAnchor="middle" fontSize="10.5" fontWeight="600" fill="#fff">
-          Layer
+          Router
         </text>
         {outs.map((o, i) => (
           <g key={o.label}>
