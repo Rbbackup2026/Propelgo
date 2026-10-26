@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { finalCta, footer } from "@/content/home";
-import { BrandRibbon } from "@/components/ui/BrandRibbon";
+import { BrandRibbon, type RibbonVariant } from "@/components/ui/BrandRibbon";
 import { Logo } from "@/components/ui/Logo";
 
-export function Footer({ ribbon = false }: { ribbon?: boolean }) {
+export function Footer({ ribbon }: { ribbon?: RibbonVariant }) {
   return (
     <footer className="relative isolate overflow-hidden border-t border-line bg-surface">
       {ribbon && (
         <BrandRibbon
+          variant={ribbon}
           light
+          pulse={ribbon !== "twist"}
           className="absolute top-0 right-0 -z-10 h-[340px] w-[min(30vw,380px)] -scale-x-100 [mask-image:radial-gradient(115%_100%_at_0%_0%,#000_35%,transparent_80%)] max-md:h-[240px] max-md:w-[55vw]"
         />
       )}

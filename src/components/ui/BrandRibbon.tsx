@@ -59,12 +59,15 @@ export function BrandRibbon({
   variant = "twist",
   play = true,
   light = false,
+  pulse = false,
   className = "",
 }: {
   variant?: RibbonVariant;
   play?: boolean;
   /** Every other strand at lower opacity, for quiet corner accents. */
   light?: boolean;
+  /** Short highlights that travel along a few strands after the draw-in. */
+  pulse?: boolean;
   className?: string;
 }) {
   const reduce = useReducedMotion();
@@ -100,6 +103,25 @@ export function BrandRibbon({
             transition={{ duration: 1.8, ease, delay: 0.3 + i * 0.025 }}
           />
         ))}
+        {pulse &&
+          !reduce &&
+          play &&
+          paths
+            .filter((_, i) => i % 4 === 2)
+            .map((d, k) => (
+              <motion.path
+                key={`p${k}`}
+                d={d}
+                stroke="#03a35f"
+                strokeOpacity={0.55}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+                initial={{ pathLength: 0.14, pathOffset: -0.14 }}
+                animate={{ pathOffset: 1 }}
+                transition={{ duration: 4.2, ease: "easeInOut", repeat: Infinity, repeatDelay: 2.6, delay: 2.4 + k * 0.7 }}
+              />
+            ))}
       </motion.g>
     </svg>
   );

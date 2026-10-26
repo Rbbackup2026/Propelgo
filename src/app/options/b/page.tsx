@@ -22,7 +22,7 @@ export default function DirectionB() {
     <>
       <Header />
       <main>
-        <Hero stage="dashboard" />
+        <Hero stage="dashboard" ribbon="fan" />
         <Ecosystem />
         <Overview />
         <Products />
@@ -32,7 +32,7 @@ export default function DirectionB() {
         <Resources />
         <FinalCta tone="spectrum" />
       </main>
-      <Footer />
+      <Footer ribbon="loop" />
       <DirectionSwitcher current="b" />
     </>
   );
