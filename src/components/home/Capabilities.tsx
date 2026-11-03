@@ -5,7 +5,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { capabilities, type CapabilityKey } from "@/content/home";
 import { Button } from "@/components/ui/Button";
 import { SectionIntro } from "@/components/ui/Reveal";
-import { ACCENTS, CapabilityGlyph, CapabilityTileArt } from "./visuals/CapabilityTiles";
+import { ACCENTS, CapabilityTileArt } from "./visuals/CapabilityTiles";
 
 const DWELL = 7000;
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -70,17 +70,16 @@ export function Capabilities() {
                     </span>
                     <span className="flex items-center gap-4">
                       <span
-                        className="grid size-12 shrink-0 place-items-center rounded-2xl transition-[background-color,box-shadow,transform] duration-300 group-hover:scale-105"
-                        style={{ background: on ? accent.soft : "#ffffff", boxShadow: on ? `0 10px 22px -14px ${accent.solid}` : "inset 0 0 0 1px #ececec" }}
+                        className="tabular grid size-12 shrink-0 place-items-center rounded-full text-[15px] font-semibold tracking-[-0.01em] transition-[background,box-shadow,color,transform] duration-300 group-hover:scale-105"
+                        style={
+                          on
+                            ? { background: `linear-gradient(145deg, ${accent.solid}, ${accent.deep})`, color: "#fff", boxShadow: `0 12px 24px -12px ${accent.solid}, inset 0 1px 0 rgba(255,255,255,0.25)` }
+                            : { background: "#fff", color: "#8c8c8c", boxShadow: "inset 0 0 0 1px #e4e4e4" }
+                        }
                       >
-                        <CapabilityGlyph kind={c.key} className="size-9" />
+                        {String(i + 1).padStart(2, "0")}
                       </span>
-                      <span className="min-w-0 flex-1">
-                        <span className={`tabular block text-[13px] font-medium transition-colors ${on ? "" : "text-sub"}`} style={on ? { color: accent.solid } : undefined}>
-                          0{i + 1}
-                        </span>
-                        <span className={`block text-[19px] font-semibold tracking-[-0.015em] transition-colors ${on ? "text-ink" : "text-copy"}`}>{c.title}</span>
-                      </span>
+                      <span className={`min-w-0 flex-1 text-[19px] font-semibold tracking-[-0.015em] transition-colors ${on ? "text-ink" : "text-copy"}`}>{c.title}</span>
                     </span>
                     <AnimatePresence initial={false}>
                       {on && (
@@ -138,10 +137,8 @@ function Panel({ kind, index, playing, reduce }: { kind: CapabilityKey; index: n
           <div className="absolute inset-0 bg-[radial-gradient(rgba(31,31,31,0.07)_1px,transparent_1px)] bg-[size:22px_22px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_45%,#000,transparent)]" aria-hidden="true" />
 
           <div className="absolute top-6 right-6 left-6 flex items-center justify-between">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/85 py-1.5 pr-3.5 pl-1.5 text-[13px] font-medium ring-1 ring-white backdrop-blur" style={{ color: accent.deep }}>
-              <span className="grid size-7 place-items-center rounded-full" style={{ background: accent.soft }}>
-                <CapabilityGlyph kind={kind} className="size-5" />
-              </span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/85 py-1.5 pr-3.5 pl-3 text-[13px] font-medium ring-1 ring-white backdrop-blur" style={{ color: accent.deep }}>
+              <span className="size-2 rounded-full" style={{ background: accent.solid, boxShadow: `0 0 0 3px ${accent.soft}` }} />
               {title}
             </span>
             <span className="tabular text-[13px] font-medium text-sub">

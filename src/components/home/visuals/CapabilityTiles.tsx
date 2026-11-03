@@ -4,7 +4,6 @@ import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { Fragment } from "react";
 import type { CapabilityKey } from "@/content/home";
 import { Check, ContactlessIcon } from "@/components/ui/icons";
-import { RealIcon } from "@/components/ui/RealIcon";
 import { usePhaseLoop } from "@/lib/useStageScale";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 
@@ -27,11 +26,6 @@ export function CapabilityTileArt({ kind, playing }: { kind: CapabilityKey; play
   if (kind === "workflow") return <ApprovalArt playing={playing} />;
   return <ReconArt playing={playing} />;
 }
-
-export function CapabilityGlyph({ kind, className = "size-8" }: { kind: CapabilityKey; className?: string }) {
-  return <RealIcon name={kind} className={className} />;
-}
-
 /* ---------- 1. Orchestration: checkout sends each payment once; smart routing picks the gateway. ---------- */
 
 const R = ACCENTS.routing;
