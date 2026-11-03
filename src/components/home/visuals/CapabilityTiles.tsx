@@ -1,6 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
+import { Fragment } from "react";
 import type { CapabilityKey } from "@/content/home";
 import { Check, ContactlessIcon } from "@/components/ui/icons";
 import { RealIcon } from "@/components/ui/RealIcon";
@@ -286,99 +287,185 @@ function DeckArt({ playing }: { playing: boolean }) {
   );
 }
 
-/* ---------- 3. Workflow: approvals tick off in order, then the payment is stamped released. ---------- */
+/* ---------- 3. Workflow: a request moves from maker to checker to approved. Deliberately high-level: no rules, roles or amounts. ---------- */
 
 const W = ACCENTS.workflow;
-const approvers = [
-  { who: "RK", role: "Maker" },
-  { who: "AS", role: "Checker" },
-  { who: "PV", role: "Finance" },
-  { who: "₹", role: "Release" },
+const APPROVED = "#05945b";
+const stages = [
+  { label: "Maker", caption: "Creates" },
+  { label: "Checker", caption: "Reviews" },
+  { label: "Approved", caption: "Released" },
 ];
-const statuses = ["Draft", "Awaiting checker", "Awaiting finance", "Releasing", "Paid"];
+/** Status shown on the request card at each phase; phases past the last hold the approved state. */
+const reqStatus = ["Draft", "Submitted", "In review", "Checked", "Approved"];
+const stageOf = (p: number) => (p < 2 ? 0 : p < 4 ? 1 : 2);
+const stageDone = (i: number, p: number) => p >= [1, 3, 4][i];
 
 function ApprovalArt({ playing }: { playing: boolean }) {
-  const { phase } = usePhaseLoop(approvers.length + 3, 900, playing);
-  const done = playing ? Math.min(phase, approvers.length) : approvers.length;
-  const released = done === approvers.length;
+  const { phase: raw, cycle } = usePhaseLoop(8, 850, playing);
+  const phase = playing ? Math.min(raw, reqStatus.length - 1) : reqStatus.length - 1;
+  const at = stageOf(phase);
+  const approved = phase === reqStatus.length - 1;
 
   return (
-    <div className="absolute inset-0 flex flex-col justify-center gap-6 px-10 md:px-12">
-      <div className="relative">
-        <span className="absolute top-5 right-5 left-5 h-[2px] rounded-full bg-line" aria-hidden="true" />
-        <motion.span
-          className="absolute top-5 left-5 h-[2px] origin-left rounded-full"
-          style={{ background: W.solid, right: 20 }}
-          initial={false}
-          animate={{ scaleX: Math.max(done - 1, 0) / (approvers.length - 1) }}
-          transition={{ duration: 0.6, ease }}
-          aria-hidden="true"
-        />
-        <ol className="relative flex justify-between">
-          {approvers.map((a, i) => {
-            const ok = i < done;
-            const current = i === done;
+    <div className="absolute inset-0 flex flex-col justify-center gap-5 px-6 sm:px-10 md:px-14">
+      <LayoutGroup id="workflow">
+        <div className="flex items-stretch">
+          {stages.map((s, i) => {
+            const done = stageDone(i, phase);
+            const here = i === at;
+            const tint = i === 2 ? APPROVED : W.solid;
             return (
-              <li key={a.role} className="flex flex-col items-center gap-2">
-                <span className="relative grid size-10 place-items-center">
-                  {current && playing && <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ background: W.glow }} />}
-                  <motion.span
-                    className="relative grid size-10 place-items-center rounded-full text-[12px] font-semibold"
-                    initial={false}
-                    animate={ok ? { backgroundColor: W.solid, color: "#ffffff", scale: [0.85, 1.12, 1] } : { backgroundColor: "#ffffff", color: current ? W.deep : "#8c8c8c", scale: 1 }}
-                    transition={{ duration: 0.45, ease }}
-                    style={{ boxShadow: ok ? "none" : `inset 0 0 0 1px ${current ? W.solid : "#e8e8e8"}` }}
-                  >
-                    {ok ? <Check className="size-3.5" /> : a.who}
-                  </motion.span>
-                </span>
-                <span className={`text-[11.5px] font-medium ${ok || current ? "text-ink" : "text-sub"}`}>{a.role}</span>
-              </li>
+              <Fragment key={s.label}>
+                {i > 0 && <Connector lit={at >= i} moving={playing && at === i && phase === [2, 4][i - 1]} />}
+                <div
+                  className="flex min-w-0 flex-1 flex-col rounded-2xl bg-white/90 p-1.5 transition-shadow duration-500 sm:p-2.5 md:p-3"
+                  style={{ boxShadow: here ? `0 18px 34px -22px ${tint}, inset 0 0 0 1px ${tint}55` : "inset 0 0 0 1px #ececec" }}
+                >
+                  <div className="flex flex-col items-center gap-1.5 text-center sm:flex-row sm:gap-2 sm:text-left">
+                    <motion.span
+                      className="relative grid size-8 shrink-0 place-items-center rounded-full"
+                      initial={false}
+                      animate={{ backgroundColor: done ? tint : here ? `${tint}1f` : "#f4f4f4" }}
+                      transition={{ duration: 0.35 }}
+                    >
+                      {here && !done && playing && <span className="absolute inset-0 animate-ping-soft rounded-full" style={{ background: `${tint}33` }} />}
+                      <motion.span
+                        className="absolute inset-0 grid place-items-center"
+                        style={{ color: here ? tint : "#a3a3a3" }}
+                        initial={false}
+                        animate={{ opacity: done ? 0 : 1, scale: done ? 0.5 : 1 }}
+                        transition={{ duration: 0.25 }}
+                      >
+                        <StageIcon index={i} />
+                      </motion.span>
+                      <motion.span
+                        className="absolute inset-0 grid place-items-center text-white"
+                        initial={false}
+                        animate={{ opacity: done ? 1 : 0, scale: done ? 1 : 0.5 }}
+                        transition={{ type: "spring", bounce: 0.45, visualDuration: 0.3 }}
+                      >
+                        <Check className="size-3.5" />
+                      </motion.span>
+                    </motion.span>
+                    <span className="min-w-0 max-w-full">
+                      <span className={`block truncate text-[11.5px] font-semibold sm:text-[12.5px] ${done || here ? "text-ink" : "text-sub"}`}>{s.label}</span>
+                      <span className="hidden truncate text-[11px] text-sub sm:block">{s.caption}</span>
+                    </span>
+                  </div>
+                  <div className="relative mt-3 h-[92px] rounded-xl border border-dashed border-[#e6e6e6]">
+                    {here && <RequestCard key="req" phase={phase} cycle={cycle} playing={playing} approved={approved} />}
+                  </div>
+                </div>
+              </Fragment>
             );
           })}
-        </ol>
-      </div>
+        </div>
+      </LayoutGroup>
 
-      <div className="relative rounded-2xl bg-white p-4 shadow-[0_14px_30px_-20px_rgba(31,31,31,0.3)] ring-1 ring-line">
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-[11.5px] text-sub">Payment to</p>
-            <p className="truncate text-[14px] font-semibold text-ink">Meridian Supplies Co.</p>
-          </div>
-          <p className="tabular text-[17px] font-semibold tracking-[-0.01em] text-ink">₹4,12,000</p>
-        </div>
-        <div className="mt-3 flex items-center gap-2">
-          <span className="size-1.5 rounded-full" style={{ background: released ? "#05945b" : W.solid }} />
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span
-              key={done}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.25 }}
-              className="text-[12.5px] font-medium text-copy"
-            >
-              {statuses[done]}
-            </motion.span>
-          </AnimatePresence>
-        </div>
-        <AnimatePresence>
-          {released && (
-            <motion.span
-              key="stamp"
-              className="absolute right-4 bottom-3 rounded-md border-2 px-2 py-0.5 text-[11px] font-bold tracking-[0.16em] uppercase"
-              style={{ borderColor: W.solid, color: W.solid, background: "rgba(255,255,255,0.92)" }}
-              initial={playing ? { opacity: 0, scale: 1.9, rotate: -4 } : false}
-              animate={{ opacity: 1, scale: 1, rotate: -10 }}
-              exit={{ opacity: 0, transition: { duration: 0.2 } }}
-              transition={{ type: "spring", bounce: 0.45, visualDuration: 0.35 }}
-            >
-              Released
-            </motion.span>
-          )}
-        </AnimatePresence>
+      <div className="flex items-center justify-center gap-2.5 text-[11.5px] text-sub">
+        <span className="font-medium text-copy">Audit trail</span>
+        {stages.map((s, i) => (
+          <motion.span
+            key={s.label}
+            className="h-1.5 w-8 rounded-full"
+            initial={false}
+            animate={{ backgroundColor: stageDone(i, phase) ? (i === 2 ? APPROVED : W.solid) : "#e8e8e8" }}
+            transition={{ duration: 0.4 }}
+          />
+        ))}
       </div>
     </div>
+  );
+}
+
+/** The request itself: abstract lines rather than real fields, so nothing about the form is revealed. */
+function RequestCard({ phase, cycle, playing, approved }: { phase: number; cycle: number; playing: boolean; approved: boolean }) {
+  const tint = approved ? APPROVED : W.solid;
+  return (
+    <motion.div
+      layoutId="workflow-request"
+      className="absolute inset-1 flex flex-col rounded-lg bg-white p-1.5 shadow-[0_12px_24px_-14px_rgba(31,31,31,0.35)] ring-1 ring-black/[0.06] sm:inset-1.5 sm:p-2 md:p-2.5"
+      transition={{ type: "spring", bounce: 0.2, visualDuration: 0.6 }}
+    >
+      <div className="flex items-center gap-1.5">
+        <span className="grid size-5 shrink-0 place-items-center rounded-md" style={{ background: `${tint}1f`, color: tint }}>
+          <svg viewBox="0 0 16 16" className="size-3" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+            <path d="M4 1.75h5.5L12.25 4.5v9.75H4z" strokeLinejoin="round" />
+            <path d="M6.25 7.5h3.5M6.25 10h3.5" strokeLinecap="round" />
+          </svg>
+        </span>
+        <span className="h-1.5 flex-1 rounded-full bg-[#ededed]" />
+      </div>
+      <div className="mt-2 space-y-1.5">
+        {[0.9, 0.62].map((w, i) => (
+          <motion.span
+            key={`${cycle}-${i}`}
+            className="block h-1.5 origin-left rounded-full bg-[#f1f1f1]"
+            style={{ width: `${w * 100}%` }}
+            initial={playing && phase === 0 ? { scaleX: 0 } : false}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.6, ease, delay: 0.15 + i * 0.15 }}
+          />
+        ))}
+      </div>
+      <div className="mt-auto flex items-center gap-1.5">
+        <span className="hidden size-1.5 shrink-0 rounded-full sm:block" style={{ background: tint }} />
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={phase}
+            className="truncate text-[10.5px] font-semibold"
+            style={{ color: approved ? APPROVED : W.deep }}
+            initial={{ opacity: 0, y: 3 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -3 }}
+            transition={{ duration: 0.2 }}
+          >
+            {reqStatus[phase]}
+          </motion.span>
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
+
+function Connector({ lit, moving }: { lit: boolean; moving: boolean }) {
+  return (
+    <div className="relative flex w-4 shrink-0 items-center md:w-7" aria-hidden="true">
+      <span className="h-px w-full transition-colors duration-500" style={{ background: lit ? W.solid : "#e2e2e2" }} />
+      {moving && (
+        <motion.span
+          className="absolute size-1.5 rounded-full"
+          style={{ background: W.solid }}
+          initial={{ left: "0%", opacity: 0 }}
+          animate={{ left: "100%", opacity: [0, 1, 0] }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+        />
+      )}
+    </div>
+  );
+}
+
+function StageIcon({ index }: { index: number }) {
+  const common = { viewBox: "0 0 16 16", className: "size-4", fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
+  if (index === 0)
+    return (
+      <svg {...common}>
+        <path d="M10.5 2.5l3 3L6 13H3v-3z" />
+      </svg>
+    );
+  if (index === 1)
+    return (
+      <svg {...common}>
+        <path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8 12.1 12.5 8 12.5 1.5 8 1.5 8z" />
+        <circle cx="8" cy="8" r="2" />
+      </svg>
+    );
+  return (
+    <svg {...common}>
+      <path d="M8 1.75l5.25 2v4c0 3.25-2.25 5.5-5.25 6.5-3-1-5.25-3.25-5.25-6.5v-4z" />
+      <path d="M5.75 8l1.6 1.6L10.5 6.5" />
+    </svg>
   );
 }
 

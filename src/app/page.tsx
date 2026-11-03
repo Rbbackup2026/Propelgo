@@ -1,8 +1,9 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Hero } from "@/components/home/Hero";
+import { HeroC } from "@/components/options/c/HeroC";
 import { Ecosystem } from "@/components/home/Ecosystem";
-import { Overview } from "@/components/home/Overview";
+import { ExperienceStats, Overview } from "@/components/home/Overview";
+import { Leadership } from "@/components/home/Leadership";
 import { Products } from "@/components/home/Products";
 import { Capabilities } from "@/components/home/Capabilities";
 import { Security } from "@/components/home/Security";
@@ -26,11 +27,13 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
       <Header />
       <main>
-        <Hero ribbon="twist" />
+        <HeroC />
         <Ecosystem />
-        <Overview />
+        <ExperienceStats />
         <Products />
         <Capabilities />
+        <Overview withStats={false} />
+        <Leadership />
         <Security />
         <Testimonials />
         <Resources />

@@ -4,11 +4,13 @@ import { AnimatePresence, animate, motion, useInView, useMotionValue, useReduced
 import { useEffect, useState } from "react";
 import { hero } from "@/content/home";
 import { Button } from "@/components/ui/Button";
+import { BrandRibbon } from "@/components/ui/BrandRibbon";
 import { LogoMark } from "@/components/ui/Logo";
 import { GRADIENT_TEXT } from "@/components/ui/Reveal";
-import { Check, ContactlessIcon, ShieldIcon } from "@/components/ui/icons";
+import { Check, ContactlessIcon } from "@/components/ui/icons";
 import { usePreloaderDone } from "@/lib/preloader";
 import { useStageScale } from "@/lib/useStageScale";
+import { OdccScene, RoutingScene } from "./HeroScenes";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 /** Lets the preloader curtain clear before copy rises. */
@@ -17,8 +19,6 @@ const HIGHLIGHT_WORDS = 4;
 const STAGE_W = 640;
 const STAGE_H = 590;
 const inr = new Intl.NumberFormat("en-IN");
-
-const TRUST = ["PCI DSS certified", "SOC 2 Type 2", "ISO 27001"];
 
 /** Figures and vendors mirror the Versa dashboard screens. */
 const TXNS = [
@@ -59,6 +59,13 @@ export function HeroC() {
       className="relative isolate overflow-hidden pt-[112px] pb-12 md:pt-[136px] md:pb-16 lg:flex lg:min-h-[88svh] lg:items-center"
     >
       <Backdrop />
+      {/* The same ribbon treatment as the team section, falling down the left edge as the earlier hero did. */}
+      <BrandRibbon
+        variant="twist"
+        play={ready}
+        pulse
+        className="absolute top-0 left-0 -z-10 h-[78%] w-[min(34vw,420px)] opacity-90 [mask-image:radial-gradient(115%_100%_at_0%_0%,#000_35%,transparent_80%)] max-md:h-[45%] max-md:w-[55vw]"
+      />
       <div className="container-page grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,600px)] lg:gap-8">
         <div className="relative max-w-[560px]">
           <h1 className="text-[clamp(2rem,1.5rem+1.7vw,3rem)] leading-[1.07] font-semibold tracking-[-0.035em] text-balance text-ink">
@@ -86,15 +93,6 @@ export function HeroC() {
               {hero.primaryCta.label}
             </Button>
           </motion.div>
-
-          <motion.ul {...rise(0.55)} className="mt-10 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line/80 pt-5">
-            {TRUST.map((t) => (
-              <li key={t} className="flex items-center gap-1.5 text-[13px] text-sub">
-                <ShieldIcon className="size-3.5 text-brand" />
-                {t}
-              </li>
-            ))}
-          </motion.ul>
         </div>
 
         <Stage ready={ready} mx={mx} my={my} />
@@ -104,31 +102,24 @@ export function HeroC() {
 }
 
 function Backdrop() {
-  const reduce = useReducedMotion();
   return (
     <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(6,38,23,0.055)_1px,transparent_1px),linear-gradient(to_bottom,rgba(6,38,23,0.055)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(ellipse_75%_70%_at_68%_32%,#000_30%,transparent_75%)]" />
       <div className="absolute -top-[20%] right-[-12%] size-[780px] animate-blob-a rounded-full bg-[radial-gradient(closest-side,rgba(149,222,100,0.34),transparent)] motion-reduce:animate-none" />
       <div className="absolute top-[18%] right-[18%] size-[560px] animate-blob-b rounded-full bg-[radial-gradient(closest-side,rgba(14,139,163,0.14),transparent)] motion-reduce:animate-none" />
       <div className="absolute top-[-10%] left-[-10%] size-[520px] rounded-full bg-[radial-gradient(closest-side,rgba(217,247,190,0.6),transparent)]" />
-      {!reduce && (
-        <>
-          <motion.span
-            className="absolute top-[224px] left-0 h-px w-48 bg-gradient-to-r from-transparent via-brand/60 to-transparent"
-            animate={{ x: ["-20vw", "110vw"] }}
-            transition={{ duration: 7, repeat: Infinity, ease: "linear", repeatDelay: 2 }}
-          />
-          <motion.span
-            className="absolute top-0 left-[calc(56px*14)] h-40 w-px bg-gradient-to-b from-transparent via-[#0e8ba3]/50 to-transparent max-lg:hidden"
-            animate={{ y: ["-20vh", "110vh"] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "linear", repeatDelay: 3.5, delay: 2 }}
-          />
-        </>
-      )}
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-white" />
     </div>
   );
 }
+
+type Parallax = { nearX: MotionValue<number>; nearY: MotionValue<number>; farX: MotionValue<number> };
+
+/** Each product scene stays up for one full run of its own story before the next slides in. */
+const SCENES = [
+  { key: "versa", ms: 9400 },
+  { key: "odcc", ms: 7800 },
+  { key: "routing", ms: 8700 },
+] as const;
 
 function Stage({ ready, mx, my }: { ready: boolean; mx: MotionValue<number>; my: MotionValue<number> }) {
   const { ref, scale } = useStageScale<HTMLDivElement>(STAGE_W);
@@ -141,6 +132,49 @@ function Stage({ ready, mx, my }: { ready: boolean; mx: MotionValue<number>; my:
   const nearX = useTransform(mx, [-0.5, 0.5], [-14, 14]);
   const nearY = useTransform(my, [-0.5, 0.5], [-10, 10]);
   const farX = useTransform(mx, [-0.5, 0.5], [8, -8]);
+  const parallax = { nearX, nearY, farX };
+
+  const [scene, setScene] = useState(0);
+  useEffect(() => {
+    if (!live) return;
+    const id = setTimeout(() => setScene((s) => (s + 1) % SCENES.length), SCENES[scene].ms);
+    return () => clearTimeout(id);
+  }, [live, scene]);
+
+  return (
+    <div ref={ref} className="relative w-full" style={{ height: STAGE_H * scale }}>
+      <div className="absolute top-0 left-0 origin-top-left" style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}>
+        <AnimatePresence initial={false}>
+          <motion.div
+            key={SCENES[scene].key}
+            className="absolute inset-0"
+            initial={{ opacity: 0, x: 70, scale: 0.95, filter: "blur(8px)" }}
+            animate={{ opacity: 1, x: 0, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, x: -70, scale: 0.95, filter: "blur(8px)" }}
+            transition={{ duration: 0.8, ease }}
+          >
+            {scene === 0 && <VersaScene ready={ready} live={live} rotateX={rotateX} rotateY={rotateY} {...parallax} />}
+            {scene === 1 && <OdccScene live={live} {...parallax} />}
+            {scene === 2 && <RoutingScene live={live} {...parallax} />}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+function VersaScene({
+  ready,
+  live,
+  rotateX,
+  rotateY,
+  nearX,
+  nearY,
+  farX,
+}: Parallax & { ready: boolean; live: boolean; rotateX: MotionValue<number>; rotateY: MotionValue<number> }) {
+  const reduce = useReducedMotion();
+  const [phase, round] = useIssueCycle(live);
+  const shown: Phase = reduce ? 2 : phase;
 
   const pop = (delay: number, y = 30) =>
     reduce
@@ -148,35 +182,39 @@ function Stage({ ready, mx, my }: { ready: boolean; mx: MotionValue<number>; my:
       : { initial: { opacity: 0, y, scale: 0.96 }, animate: ready ? { opacity: 1, y: 0, scale: 1 } : undefined, transition: { type: "spring" as const, bounce: 0.22, visualDuration: 0.9, delay: BASE + delay } };
 
   return (
-    <div ref={ref} className="relative w-full" style={{ height: STAGE_H * scale }}>
-      <div className="absolute top-0 left-0 origin-top-left" style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}>
-        <div className="absolute inset-0 [perspective:1400px]">
-          <motion.div style={reduce ? undefined : { rotateX, rotateY }} className="absolute inset-0 preserve-3d">
-            <motion.div {...pop(0.15, 50)} className="absolute top-[40px] left-[30px]">
-              <Console live={live} ready={ready} />
-            </motion.div>
-          </motion.div>
-        </div>
-
-        <motion.div style={reduce ? undefined : { x: farX }} className="absolute top-0 right-0">
-          <motion.div {...pop(0.75, -16)}>
-            <ApprovalPill live={live} />
-          </motion.div>
-        </motion.div>
-
-        <motion.div style={reduce ? undefined : { x: nearX, y: nearY }} className="absolute right-[-6px] bottom-[34px]">
-          <motion.div {...pop(0.6)}>
-            <VirtualCard />
-          </motion.div>
-        </motion.div>
-
-        <motion.div style={reduce ? undefined : { x: nearX }} className="absolute bottom-0 left-0">
-          <motion.div {...pop(0.9)}>
-            <ApiCard live={live} />
+    <>
+      <div className="absolute inset-0 [perspective:1400px]">
+        <motion.div style={reduce ? undefined : { rotateX, rotateY }} className="absolute inset-0 preserve-3d">
+          <motion.div {...pop(0.15, 50)} className="absolute top-[40px] left-[30px]">
+            <Console live={live} ready={ready} />
           </motion.div>
         </motion.div>
       </div>
-    </div>
+
+      <motion.div style={reduce ? undefined : { x: farX }} className="absolute top-0 right-0">
+        <motion.div {...pop(0.75, -16)}>
+          <ApprovalPill live={live} />
+        </motion.div>
+      </motion.div>
+
+      <motion.div style={reduce ? undefined : { x: nearX }} className="pointer-events-none absolute inset-0">
+        <motion.div {...pop(1)} className="absolute inset-0">
+          <Wire phase={shown} round={round} />
+        </motion.div>
+      </motion.div>
+
+      <motion.div style={reduce ? undefined : { x: nearX, y: nearY }} className="absolute right-[-6px] bottom-[34px]">
+        <motion.div {...pop(0.6)}>
+          <VirtualCard phase={shown} round={round} />
+        </motion.div>
+      </motion.div>
+
+      <motion.div style={reduce ? undefined : { x: nearX }} className="absolute bottom-0 left-0">
+        <motion.div {...pop(0.9)}>
+          <ApiCard phase={shown} round={round} />
+        </motion.div>
+      </motion.div>
+    </>
   );
 }
 
@@ -418,32 +456,164 @@ function Status({ fresh }: { fresh: boolean }) {
 
 /* ---------------- Floating cards ---------------- */
 
-function VirtualCard() {
+/* ---------------- Card issuing flow ---------------- */
+
+type Phase = 0 | 1 | 2;
+const ISSUE_CYCLE_MS = 9000;
+const CARD_NUMBER = "•••• •••• •••• 5678";
+const WIRE = "M 288 486 C 330 486, 352 498, 404 492";
+const ISSUE_STEPS = ["Vendor verified", "Limit check passed", "Card tokenised"];
+
+/** Request (0) → backend processing (1) → card created (2), on a loop. */
+function useIssueCycle(live: boolean): [Phase, number] {
+  const [state, setState] = useState<{ phase: Phase; round: number }>({ phase: 0, round: 0 });
+  useEffect(() => {
+    if (!live) return;
+    let steps: ReturnType<typeof setTimeout>[] = [];
+    const run = () => {
+      setState((s) => ({ phase: 0, round: s.round + 1 }));
+      steps = [setTimeout(() => setState((s) => ({ ...s, phase: 1 })), 1500), setTimeout(() => setState((s) => ({ ...s, phase: 2 })), 3000)];
+    };
+    const first = setTimeout(run, 200);
+    const id = setInterval(run, ISSUE_CYCLE_MS);
+    return () => {
+      clearTimeout(first);
+      clearInterval(id);
+      steps.forEach(clearTimeout);
+    };
+  }, [live]);
+  return [state.phase, state.round];
+}
+
+function Wire({ phase, round }: { phase: Phase; round: number }) {
+  return (
+    <svg viewBox={`0 0 ${STAGE_W} ${STAGE_H}`} width={STAGE_W} height={STAGE_H} className="absolute inset-0" fill="none" aria-hidden="true">
+      <path d={WIRE} stroke="#03a35f" strokeOpacity={0.4} strokeWidth={1.5} strokeDasharray="3 4" strokeLinecap="round" />
+      {phase === 1 && (
+        <motion.path
+          key={round}
+          d={WIRE}
+          stroke="#03a35f"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          style={{ filter: "drop-shadow(0 0 4px rgba(3,163,95,0.7))" }}
+          initial={{ pathLength: 0.28, pathOffset: 0, opacity: 0 }}
+          animate={{ pathOffset: 0.72, opacity: [0, 1, 1, 0] }}
+          transition={{ delay: 0.85, duration: 0.65, ease: "easeInOut" }}
+        />
+      )}
+      <circle cx="288" cy="486" r="3.5" fill="#fff" stroke="#03a35f" strokeWidth="1.5" />
+      <circle cx="404" cy="492" r="3.5" fill="#fff" stroke="#03a35f" strokeWidth="1.5" />
+      {phase === 2 && (
+        <motion.circle
+          key={`ping-${round}`}
+          cx="404"
+          cy="492"
+          fill="#03a35f"
+          initial={{ r: 3.5, opacity: 0.5 }}
+          animate={{ r: 14, opacity: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        />
+      )}
+    </svg>
+  );
+}
+
+function VirtualCard({ phase, round }: { phase: Phase; round: number }) {
+  const reduce = useReducedMotion();
+  const made = phase === 2;
   return (
     <div className="animate-float motion-reduce:animate-none">
-      <div
-        className="relative h-[146px] w-[232px] rotate-[5deg] overflow-hidden rounded-[18px] p-4 text-white shadow-[0_30px_60px_-24px_rgba(6,38,23,0.6)]"
-        style={{ background: "linear-gradient(135deg, #03b468 0%, #017649 40%, #04452b 78%, #062617 100%)" }}
-      >
-        <svg viewBox="0 0 232 146" className="pointer-events-none absolute inset-0" fill="none" aria-hidden="true">
-          {[0, 1, 2, 3, 4].map((i) => (
-            <circle key={i} cx="220" cy="-6" r={46 + i * 26} stroke="white" strokeOpacity={0.08} />
-          ))}
-        </svg>
-        <span className="pointer-events-none absolute inset-y-0 left-0 w-1/3 animate-shine bg-gradient-to-r from-transparent via-white/20 to-transparent motion-reduce:hidden" />
-        <div className="relative flex items-center justify-between">
-          <span className="flex items-center gap-1.5">
-            <LogoMark tone="dark" className="size-5" />
-            <span className="text-[11px] font-semibold">PropelGo</span>
+      <div className="relative h-[146px] w-[232px] rotate-[5deg]">
+        <div className="absolute inset-0 rounded-[18px] border-[1.5px] border-dashed border-brand/40 bg-white/90 p-4 shadow-[0_20px_40px_-24px_rgba(6,38,23,0.35)] backdrop-blur">
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1.5">
+              <LogoMark className="size-5 opacity-50" />
+              <span className="h-2 w-14 rounded-full bg-line" />
+            </span>
+            <span className="flex items-center gap-1 text-[9.5px] font-medium text-brand">
+              {phase === 1 && <span className="size-2.5 animate-spin rounded-full border border-mint border-t-brand" />}
+              {phase === 1 ? "Issuing card" : "Awaiting request"}
+            </span>
+          </div>
+          <span className="mt-7 block h-2 w-28 animate-pulse rounded-full bg-line/80" />
+          <span className="mt-2 block h-2.5 w-40 animate-pulse rounded-full bg-line" />
+          <span className="mt-3 flex justify-between">
+            <span className="h-2 w-16 animate-pulse rounded-full bg-line/80" />
+            <span className="h-2 w-8 animate-pulse rounded-full bg-line/80" />
           </span>
-          <ContactlessIcon className="size-4 text-white/75" />
         </div>
-        <p className="relative mt-6 text-[9.5px] text-white/60">Virtual card · RoadRider Fleet</p>
-        <p className="tabular relative mt-0.5 text-[13px] tracking-[0.14em]">•••• •••• •••• 5678</p>
-        <div className="relative mt-2 flex items-center justify-between text-[9px] text-white/70">
-          <span>Limit ₹1,00,000</span>
-          <span>12/26</span>
-        </div>
+
+        <motion.div
+          initial={reduce ? false : { clipPath: "inset(0% 0% 0% 100% round 18px)" }}
+          animate={
+            made
+              ? { clipPath: ["inset(0% 100% 0% 0% round 18px)", "inset(0% 0% 0% 0% round 18px)"] }
+              : { clipPath: "inset(0% 0% 0% 100% round 18px)" }
+          }
+          transition={{ duration: made ? 0.8 : 0.45, ease }}
+          className="absolute inset-0 overflow-hidden rounded-[18px] p-4 text-white shadow-[0_30px_60px_-24px_rgba(6,38,23,0.6)]"
+          style={{ background: "linear-gradient(135deg, #03b468 0%, #017649 40%, #04452b 78%, #062617 100%)" }}
+        >
+          <svg viewBox="0 0 232 146" className="pointer-events-none absolute inset-0" fill="none" aria-hidden="true">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <circle key={i} cx="220" cy="-6" r={46 + i * 26} stroke="white" strokeOpacity={0.08} />
+            ))}
+          </svg>
+          <span className="pointer-events-none absolute inset-y-0 left-0 w-1/3 animate-shine bg-gradient-to-r from-transparent via-white/20 to-transparent motion-reduce:hidden" />
+          <div className="relative flex items-center justify-between">
+            <span className="flex items-center gap-1.5">
+              <LogoMark tone="dark" className="size-5" />
+              <span className="text-[11px] font-semibold">PropelGo</span>
+            </span>
+            <ContactlessIcon className="size-4 text-white/75" />
+          </div>
+          <p className="relative mt-6 text-[9.5px] text-white/60">Virtual card · RoadRider Fleet</p>
+          <p key={round} className="tabular relative mt-0.5 text-[13px] tracking-[0.14em]">
+            <span className="sr-only">Card ending 5678</span>
+            {CARD_NUMBER.split("").map((ch, i) => (
+              <motion.span
+                key={i}
+                aria-hidden="true"
+                initial={reduce ? false : { opacity: 0 }}
+                animate={made ? { opacity: 1 } : undefined}
+                transition={{ duration: 0.15, delay: 0.45 + i * 0.025 }}
+              >
+                {ch}
+              </motion.span>
+            ))}
+          </p>
+          <div className="relative mt-2 flex items-center justify-between text-[9px] text-white/70">
+            <span>Limit ₹1,00,000</span>
+            <span>12/26</span>
+          </div>
+        </motion.div>
+
+        {made && !reduce && (
+          <motion.span
+            key={`edge-${round}`}
+            className="absolute inset-y-2 w-[2px] rounded-full bg-white shadow-[0_0_14px_4px_rgba(149,222,100,0.85)]"
+            initial={{ left: "0%", opacity: 1 }}
+            animate={{ left: "100%", opacity: [1, 1, 0] }}
+            transition={{ duration: 0.8, ease }}
+          />
+        )}
+
+        <AnimatePresence>
+          {made && (
+            <motion.span
+              key={`badge-${round}`}
+              initial={reduce ? false : { scale: 0.6, opacity: 0, y: 4 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ type: "spring", bounce: 0.45, visualDuration: 0.35, delay: reduce ? 0 : 0.9 }}
+              className="absolute -top-3 -left-2 flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[9.5px] font-semibold text-forest shadow-[0_8px_18px_-8px_rgba(6,38,23,0.45)] ring-1 ring-mint"
+            >
+              <span className="size-1.5 rounded-full bg-brand" />
+              Card active
+            </motion.span>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
@@ -496,50 +666,95 @@ const API_LINES: { k?: string; v: string; tone?: "str" | "num" | "arr" }[] = [
   { v: "}" },
 ];
 
-function ApiCard({ live }: { live: boolean }) {
-  const [cycle, setCycle] = useState(0);
+function ApiCard({ phase, round }: { phase: Phase; round: number }) {
   const reduce = useReducedMotion();
-  useEffect(() => {
-    if (!live) return;
-    const id = setInterval(() => setCycle((c) => c + 1), 9000);
-    return () => clearInterval(id);
-  }, [live]);
   const step = 0.16;
+  const fade = { initial: reduce ? false : { opacity: 0, y: 4 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -4 }, transition: { duration: 0.25 } } as const;
   return (
     <div className="w-[284px] overflow-hidden rounded-2xl bg-white/95 shadow-[0_24px_50px_-24px_rgba(6,38,23,0.38)] ring-1 ring-black/[0.06] backdrop-blur">
       <div className="flex items-center gap-2 border-b border-line/70 px-3.5 py-2">
         <span className="rounded bg-mint px-1.5 py-0.5 font-mono text-[9px] font-bold text-forest">POST</span>
         <span className="font-mono text-[10.5px] text-ink">/v1/cards/virtual</span>
-      </div>
-      <div key={cycle} className="px-3.5 py-2.5 font-mono text-[10.5px] leading-[1.65]">
-        {API_LINES.map((l, i) => (
-          <motion.div
-            key={i}
-            initial={reduce ? false : { opacity: 0, x: -6 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 1.4 + i * step }}
-            className={l.k ? "pl-3.5" : ""}
-          >
-            {l.k && <span className="text-[#5b57d9]">&quot;{l.k}&quot;</span>}
-            {l.k && <span className="text-sub">: </span>}
-            <span className={l.tone === "num" ? "text-[#d9822b]" : l.tone ? "text-brand" : "text-sub"}>{l.v}</span>
-            {l.k && i < API_LINES.length - 2 && <span className="text-sub">,</span>}
-          </motion.div>
-        ))}
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 1.4 + API_LINES.length * step + 0.35 }}
-          className="mt-2 flex items-center justify-between rounded-lg bg-mist px-2.5 py-1.5 ring-1 ring-mint"
-        >
-          <span className="flex items-center gap-1.5 text-forest">
-            <span className="grid size-3.5 place-items-center rounded-full bg-brand text-white">
-              <Check className="size-2" />
-            </span>
-            201 · card_live
+        <span className="ml-auto flex items-center gap-1 text-[9px] font-medium text-sub">
+          <span className="relative flex size-1.5">
+            <span className="absolute inset-0 animate-ping-soft rounded-full bg-lime motion-reduce:hidden" />
+            <span className="relative size-1.5 rounded-full bg-brand" />
           </span>
-          <span className="text-copy">•••• 5678</span>
-        </motion.div>
+          api.propelgo.in
+        </span>
+      </div>
+      <div className="px-3.5 py-2.5 font-mono text-[10.5px] leading-[1.65]">
+        <div key={round}>
+          {API_LINES.map((l, i) => (
+            <motion.div
+              key={i}
+              initial={reduce ? false : { opacity: 0, x: -6 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: 0.15 + i * step }}
+              className={l.k ? "pl-3.5" : ""}
+            >
+              {l.k && <span className="text-[#5b57d9]">&quot;{l.k}&quot;</span>}
+              {l.k && <span className="text-sub">: </span>}
+              <span className={l.tone === "num" ? "text-[#d9822b]" : l.tone ? "text-brand" : "text-sub"}>{l.v}</span>
+              {l.k && i < API_LINES.length - 2 && <span className="text-sub">,</span>}
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-2 h-[62px] text-[10px] leading-[16px]">
+          <AnimatePresence mode="wait" initial={false}>
+            {phase === 0 && (
+              <motion.div key="send" {...fade} className="flex h-full items-center gap-2 rounded-lg bg-surface px-2.5 text-sub">
+                <span className="flex gap-0.5">
+                  {[0, 1, 2].map((d) => (
+                    <span key={d} className="size-1 animate-pulse rounded-full bg-sub" style={{ animationDelay: `${d * 160}ms` }} />
+                  ))}
+                </span>
+                Sending request to PropelGo
+              </motion.div>
+            )}
+            {phase === 1 && (
+              <motion.ul key="process" {...fade} className="h-full rounded-lg bg-surface px-2.5 py-[7px]">
+                {ISSUE_STEPS.map((s, i) => (
+                  <motion.li
+                    key={s}
+                    initial={reduce ? false : { opacity: 0, x: -4 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.25, delay: i * 0.4 }}
+                    className="flex items-center gap-1.5 text-copy"
+                  >
+                    <span className="relative grid size-3 place-items-center">
+                      <span className="absolute inset-0 animate-spin rounded-full border border-line border-t-brand" />
+                      <motion.span
+                        initial={reduce ? false : { scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", bounce: 0.4, visualDuration: 0.3, delay: 0.3 + i * 0.4 }}
+                        className="relative grid size-3 place-items-center rounded-full bg-brand text-white"
+                      >
+                        <Check className="size-2" />
+                      </motion.span>
+                    </span>
+                    {s}
+                  </motion.li>
+                ))}
+              </motion.ul>
+            )}
+            {phase === 2 && (
+              <motion.div key="done" {...fade} className="flex h-full flex-col justify-center gap-0.5 rounded-lg bg-mist px-2.5 ring-1 ring-mint">
+                <span className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 text-forest">
+                    <span className="grid size-3.5 place-items-center rounded-full bg-brand text-white">
+                      <Check className="size-2" />
+                    </span>
+                    201 · card_live
+                  </span>
+                  <span className="text-copy">•••• 5678</span>
+                </span>
+                <span className="pl-5 text-sub">Issued in 1.4 s · webhook sent</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

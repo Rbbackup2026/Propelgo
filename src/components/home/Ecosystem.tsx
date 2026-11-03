@@ -16,7 +16,9 @@ export function Ecosystem() {
             return (
               <div key={group.label} className="flex flex-col items-center gap-3 py-5 md:flex-row md:gap-8">
                 <p className="flex shrink-0 items-center gap-2 text-[13px] font-semibold tracking-[0.08em] text-ink uppercase md:w-32">
-                  <span className="size-1.5 rounded-full bg-brand" />
+                  <span className="grid size-7 place-items-center rounded-lg bg-mist text-forest ring-1 ring-mint">
+                    {g === 0 ? <BankIcon /> : <PartnerIcon />}
+                  </span>
                   {group.label}
                 </p>
                 <div className="group relative w-full min-w-0 flex-1 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]">
@@ -45,5 +47,27 @@ export function Ecosystem() {
         </div>
       </div>
     </section>
+  );
+}
+
+function BankIcon() {
+  return (
+    <svg viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M2 6.2 8 2.5l6 3.7" />
+      <path d="M2.5 6.5h11" />
+      <path d="M4 8.5v3.5M8 8.5v3.5M12 8.5v3.5" />
+      <path d="M2 13.5h12" />
+    </svg>
+  );
+}
+
+function PartnerIcon() {
+  return (
+    <svg viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="8" cy="3.5" r="1.8" />
+      <circle cx="3.5" cy="12" r="1.8" />
+      <circle cx="12.5" cy="12" r="1.8" />
+      <path d="M7.1 5.1 4.4 10.4M8.9 5.1l2.7 5.3M5.3 12h5.4" />
+    </svg>
   );
 }

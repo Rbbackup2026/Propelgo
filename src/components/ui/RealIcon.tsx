@@ -21,11 +21,22 @@ export type RealIconName =
   | "hospitality"
   | "aviation";
 
+/** Icons re-rendered in the photoreal style; each revision gets its own folder so cached copies of older art aren't served. */
+const REVISION: Partial<Record<RealIconName, string>> = {
+  versa: "v2",
+  odcc: "v2",
+  orchestration: "v2",
+  cards: "v2",
+  workflow: "v2",
+  routing: "v3",
+  reconcile: "v3",
+};
+
 /** Rendered 3D icon from /public/icons; decorative, so it carries no alt text. */
 export function RealIcon({ name, className = "size-8" }: { name: RealIconName; className?: string }) {
   return (
     <Image
-      src={`/icons/${name}.png`}
+      src={REVISION[name] ? `/icons/${REVISION[name]}/${name}.png` : `/icons/${name}.png`}
       alt=""
       aria-hidden="true"
       width={256}

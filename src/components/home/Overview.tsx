@@ -54,7 +54,8 @@ const ACCENT_WORD = 2;
 type FeaturedDecor = "orbit" | "rings";
 
 /** `featured` picks the decoration on the headline stat and `tone` the colouring; Direction B keeps rings and brand green. */
-export function Overview({ featured = "orbit", tone = "spectrum" }: { featured?: FeaturedDecor; tone?: Tone }) {
+/** `withStats={false}` renders the statement alone, for pages that show `ExperienceStats` as its own section. */
+export function Overview({ featured = "orbit", tone = "spectrum", withStats = true }: { featured?: FeaturedDecor; tone?: Tone; withStats?: boolean }) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: sheetRef, offset: ["start end", "start 0.1"] });
@@ -70,7 +71,9 @@ export function Overview({ featured = "orbit", tone = "spectrum" }: { featured?:
       >
         {tone === "spectrum" ? <AuroraBackdrop /> : <SheetBackdrop />}
         <Statement tone={tone} />
-        {tone === "spectrum" ? (
+        {!withStats ? (
+          <div className="pb-16 md:pb-24" />
+        ) : tone === "spectrum" ? (
           <EcosystemStats />
         ) : (
           <>
@@ -79,6 +82,14 @@ export function Overview({ featured = "orbit", tone = "spectrum" }: { featured?:
           </>
         )}
       </motion.div>
+    </section>
+  );
+}
+
+export function ExperienceStats() {
+  return (
+    <section aria-label={stats.title} className="relative pt-8 md:pt-16">
+      <EcosystemStats standalone />
     </section>
   );
 }
@@ -422,23 +433,23 @@ function NodeCard({
 }
 
 const PHOTOS: Record<NodeKind, { src: string; alt: string }> = {
-  connect: { src: "/ecosystem/connect.jpg", alt: "A banker and a finance head shaking hands in a bank lobby" },
-  issue: { src: "/ecosystem/issue.jpg", alt: "A corporate card held over a laptop, with an approval on a phone" },
-  route: { src: "/ecosystem/route.jpg", alt: "A card tapped on a payment terminal at a hotel reception" },
-  integrate: { src: "/ecosystem/integrate.jpg", alt: "An engineer looking at an ERP dashboard and an integration flow" },
-  automate: { src: "/ecosystem/automate.jpg", alt: "A finance manager approving a payment on a tablet" },
-  reconcile: { src: "/ecosystem/reconcile.jpg", alt: "A finance team reviewing reconciled payment reports" },
+  connect: { src: "/ecosystem/connect-real.jpg", alt: "Two business partners shaking hands across a desk" },
+  issue: { src: "/ecosystem/issue-real.jpg", alt: "A professional holding a card while working on a laptop" },
+  route: { src: "/ecosystem/route-real.jpg", alt: "A card tapped on a contactless payment terminal" },
+  integrate: { src: "/ecosystem/integrate-real.jpg", alt: "A developer working on code at a desktop computer" },
+  automate: { src: "/ecosystem/automate-real.jpg", alt: "A manager reviewing approvals on a tablet" },
+  reconcile: { src: "/ecosystem/reconcile-real.jpg", alt: "A spreadsheet of payment data on a laptop beside a calculator" },
 };
 
 /** Direction A: the ecosystem steps as photo cards travelling vertically on the left, stats on the right. */
-function EcosystemStats() {
+function EcosystemStats({ standalone = false }: { standalone?: boolean }) {
   return (
-    <div className="container-page relative pt-8 pb-20 md:pb-28 lg:pt-28">
+    <div className={`container-page relative ${standalone ? "" : "pt-8 pb-20 md:pb-28 lg:pt-28"}`}>
       <div className="grid items-stretch gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-16">
         <div className="order-2 flex flex-col lg:order-1">
           <VerticalRail />
         </div>
-        <div className="order-1 flex flex-col lg:order-2 lg:py-10">
+        <div className={`order-1 flex flex-col lg:order-2 ${standalone ? "" : "lg:py-10"}`}>
           <ClipReveal>
             <h3 className="max-w-[16ch] text-[clamp(2.25rem,1.4rem+2.6vw,4rem)] leading-[1.04] font-bold tracking-[-0.035em] text-balance text-ink">{stats.title}</h3>
           </ClipReveal>
@@ -466,10 +477,10 @@ const OFFSETS = ["ml-[4%]", "ml-[30%]", "ml-[14%]", "ml-[2%]", "ml-[26%]", "ml-[
 
 type StreamItem = { type: "note" | "photo"; step: number };
 
-/** Each step as a notification card, with a photo tile from another step between them. */
+/** Each step as a photo tile followed by its notification card. */
 const STREAM: StreamItem[] = kinds.flatMap((_, i) => [
+  { type: "photo" as const, step: i },
   { type: "note" as const, step: i },
-  { type: "photo" as const, step: (i + 3) % kinds.length },
 ]);
 
 /** Small notification cards and photo tiles drifting upward, after the reference "network" stream. */
@@ -528,11 +539,10 @@ function NoteCard({ step }: { step: number }) {
 
 function PhotoTile({ step }: { step: number }) {
   const kind = kinds[step];
-  const p = NODE_PALETTES[step % NODE_PALETTES.length];
   return (
-    <div className="relative h-[84px] w-[220px] max-w-[70%] overflow-hidden rounded-2xl shadow-[0_18px_40px_-26px_rgba(6,38,23,0.45)]">
+    <div className="relative h-[96px] w-[220px] max-w-[70%] overflow-hidden rounded-2xl shadow-[0_18px_40px_-26px_rgba(6,38,23,0.45)] ring-1 ring-black/5">
       <Image src={PHOTOS[kind].src} alt={PHOTOS[kind].alt} fill sizes="220px" className="object-cover" />
-      <div className="absolute inset-0" style={{ background: `linear-gradient(100deg, ${p.BRAND}cc 0%, ${p.LIME}66 38%, transparent 70%)` }} />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,rgba(6,38,23,0.18))]" />
     </div>
   );
 }

@@ -103,6 +103,20 @@ export const overview = {
   ],
 };
 
+export const leadership = {
+  title: "A shared vision for a smarter",
+  highlight: "financial future.",
+  copy: "Meet the founders and leadership team behind PropelGo, bringing together expertise in payments, banking and technology to build a more connected B2B payments ecosystem.",
+  cta: { label: "About PropelGo", href: "/about" },
+  people: [
+    { name: "Sandeep Aggarwal", role: "Co-Founder", photo: "/team/sandeep-aggarwal.jpg" },
+    { name: "Arvind Singh", role: "Co-Founder", photo: "/team/arvind-singh.jpg" },
+    { name: "Sumanta Kumar Panda", role: "Chief Institutional Partnership Officer (CIPO)", photo: "/team/sumanta-kumar-panda-2.jpg" },
+    { name: "Vishal Garg", role: "Chief Financial Officer (CFO)", photo: "/team/vishal-garg-2.jpg" },
+    { name: "Vivek Yadav", role: "Head of Operations", photo: "/team/vivek-yadav.jpg" },
+  ],
+};
+
 export const stats = {
   title: "Built on experience. Growing with every milestone.",
   note: "Illustrative figures. Final numbers to be supplied by PropelGo.",
