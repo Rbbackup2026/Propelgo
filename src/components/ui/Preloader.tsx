@@ -8,8 +8,11 @@ import { isPreloaderDone, markPreloaderDone } from "@/lib/preloader";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const inOut = [0.65, 0, 0.35, 1] as const;
-/** Length of the card sequence before the overlay lifts. */
-const SCENE_S = 3.4;
+/** The logo plays alone for this long before the cards begin. */
+const INTRO_S = 1.1;
+/** Length of the card sequence after the logo intro. */
+const CARDS_S = 3.4;
+const SCENE_S = INTRO_S + CARDS_S;
 const CARD_W = 300;
 const CARD_H = 190;
 
@@ -95,6 +98,17 @@ export function Preloader() {
             />
 
             <div className="absolute inset-0 flex items-center justify-center [perspective:1400px]">
+              {!reduce && (
+                <motion.div
+                  className="absolute"
+                  initial={{ opacity: 0, scale: 0.86, filter: "blur(8px)" }}
+                  animate={{ opacity: [0, 1, 1, 0], scale: [0.86, 1, 1.04, 0.55], filter: ["blur(8px)", "blur(0px)", "blur(0px)", "blur(6px)"] }}
+                  transition={{ duration: INTRO_S + 0.25, times: [0, 0.4, 0.75, 1], ease: inOut }}
+                >
+                  <Logo tone="dark" className="h-12 w-auto drop-shadow-[0_0_24px_rgba(149,222,100,0.45)] md:h-14" />
+                </motion.div>
+              )}
+
               {!reduce && <Rays />}
 
               {!reduce &&
@@ -112,7 +126,7 @@ export function Preloader() {
                       scale: [0.2 * cardScale, 0.82 * cardScale, 0.78 * cardScale, 0.92 * cardScale, 0.92 * cardScale],
                       opacity: [0, 1, 1, 1, 0],
                     }}
-                    transition={{ duration: 2.3, delay: 0.75 + i * 0.03, times: [0, 0.28, 0.5, 0.82, 1], ease: inOut }}
+                    transition={{ duration: 2.3, delay: INTRO_S + 0.75 + i * 0.03, times: [0, 0.28, 0.5, 0.82, 1], ease: inOut }}
                   >
                     <Card finish={FINISHES[i]} />
                   </motion.div>
@@ -132,14 +146,14 @@ export function Preloader() {
                         scale: [0.45 * cardScale, 0.8 * cardScale, 0.8 * cardScale, 1.05 * cardScale, 1.05 * cardScale],
                       }
                 }
-                transition={{ duration: SCENE_S - 0.2, times: [0, 0.22, 0.72, 0.92, 1], ease }}
+                transition={{ duration: CARDS_S - 0.2, delay: reduce ? 0 : INTRO_S - 0.15, times: [0, 0.22, 0.72, 0.92, 1], ease }}
                 exit={{ scale: 1.6 * cardScale, opacity: 0, transition: { duration: 0.55, ease: inOut } }}
               >
                 <motion.div
                   className="pointer-events-none absolute -inset-1 rounded-[22px]"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: [0, 1, 0.55, 1, 1] }}
-                  transition={{ duration: SCENE_S, times: [0, 0.22, 0.6, 0.9, 1] }}
+                  transition={{ duration: CARDS_S, delay: reduce ? 0 : INTRO_S - 0.15, times: [0, 0.22, 0.6, 0.9, 1] }}
                   style={{ boxShadow: "0 0 0 1.5px rgba(149,222,100,0.9), 0 0 28px 6px rgba(149,222,100,0.55), 0 0 90px 20px rgba(3,163,95,0.35)" }}
                 />
                 <Card finish={{ bg: "linear-gradient(135deg,#0c8a52 0%,#062617 78%)", ink: "light" }} hero />
@@ -197,7 +211,7 @@ function Rays() {
           style={{ rotate: i * 36 + 8 }}
           initial={{ scaleX: 0, opacity: 0 }}
           animate={{ scaleX: [0, 1, 1.1], opacity: [0, 0.9, 0] }}
-          transition={{ duration: 1.1, delay: 0.62 + (i % 3) * 0.05, ease: "easeOut" }}
+          transition={{ duration: 1.1, delay: INTRO_S + 0.62 + (i % 3) * 0.05, ease: "easeOut" }}
         />
       ))}
     </>
@@ -220,8 +234,10 @@ function Card({ finish, hero = false }: { finish: Finish; hero?: boolean }) {
         <div className="absolute inset-x-0 top-1/2 h-px bg-black/20" />
         <div className="absolute inset-y-0 left-1/2 w-px bg-black/20" />
       </div>
-      <div className={`tabular absolute bottom-5 left-5 text-[15px] tracking-[0.18em] ${light ? "text-white/85" : "text-black/60"}`}>•••• •••• •••• 4021</div>
-      {hero && <div className="absolute right-5 bottom-5 text-[11px] font-medium tracking-[0.14em] text-lime uppercase">Business</div>}
+      <div className="absolute inset-x-5 bottom-5 flex items-end justify-between gap-3">
+        <span className={`tabular truncate text-[15px] leading-none tracking-[0.18em] ${light ? "text-white/85" : "text-black/60"}`}>{hero ? "•••• 4021" : "•••• •••• •••• 4021"}</span>
+        {hero && <span className="shrink-0 text-[11px] leading-none font-medium tracking-[0.14em] text-lime uppercase">Business</span>}
+      </div>
     </div>
   );
 }
