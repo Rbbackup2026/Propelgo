@@ -1,9 +1,10 @@
 "use client";
 
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from "motion/react";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LOGO_GREEN, LOGO_MARK, LOGO_WORD } from "./Logo";
-import { markPreloaderDone } from "@/lib/preloader";
+import { isPreloaderDone, markPreloaderDone } from "@/lib/preloader";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const curtain = [0.76, 0, 0.24, 1] as const;
@@ -15,29 +16,37 @@ const MARK = 92;
 
 /** Brand intro: the mark draws itself, the wordmark unfolds, then two curtains lift off the page. */
 export function Preloader() {
+  const isHome = usePathname() === "/";
   const reduce = useReducedMotion();
-  const [visible, setVisible] = useState(true);
+  const [finished, setFinished] = useState(isPreloaderDone);
+  const visible = isHome && !finished && !isPreloaderDone();
   const progress = useMotionValue(0);
   const pct = useTransform(() => String(Math.round(progress.get())).padStart(3, "0"));
   const bar = useTransform(() => progress.get() / 100);
 
   useEffect(() => {
     const root = document.documentElement;
+    if (!isHome || isPreloaderDone()) {
+      markPreloaderDone();
+      root.style.overflow = "";
+      return;
+    }
     root.style.overflow = "hidden";
     let cancelled = false;
     const count = animate(progress, 100, { duration: reduce ? 0.4 : COUNT_S, ease: [0.65, 0, 0.35, 1] });
     Promise.all([count, document.fonts?.ready])
       .then(() => new Promise((r) => setTimeout(r, reduce ? 0 : HOLD_MS)))
       .then(() => {
-      if (cancelled) return;
-      markPreloaderDone();
-      setVisible(false);
-    });
+        if (cancelled) return;
+        markPreloaderDone();
+        setFinished(true);
+      });
     return () => {
       cancelled = true;
       count.stop();
+      root.style.overflow = "";
     };
-  }, [progress, reduce]);
+  }, [isHome, progress, reduce]);
 
   const at = (s: number) => (reduce ? 0 : s * SPEED);
   const t = (s: number) => s * SPEED;

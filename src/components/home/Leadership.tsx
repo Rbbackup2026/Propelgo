@@ -25,7 +25,6 @@ export function Leadership() {
         <BrandRibbon
           variant="twist"
           play={inView}
-          pulse
           className="absolute -top-10 -right-24 -z-10 h-[520px] w-[min(52vw,640px)] -scale-x-100 opacity-90 [mask-image:radial-gradient(110%_100%_at_100%_0%,#000_40%,transparent_85%)] max-md:h-[320px] max-md:w-[80vw]"
         />
         <BrandRibbon

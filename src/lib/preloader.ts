@@ -5,6 +5,10 @@ import { useSyncExternalStore } from "react";
 let done = false;
 const listeners = new Set<() => void>();
 
+export function isPreloaderDone() {
+  return done;
+}
+
 export function markPreloaderDone() {
   if (done) return;
   done = true;

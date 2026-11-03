@@ -21,7 +21,7 @@ import { LogoMark } from "@/components/ui/Logo";
 import { ProductGlyph } from "@/components/ui/ProductGlyph";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import { ProductArt } from "./visuals/ProductArt";
-import { PRODUCT_ACCENT, ProductIcon } from "./visuals/ProductIcon";
+import { PRODUCT_ACCENT } from "./visuals/ProductIcon";
 
 /** Direction A tints each product in its own accent; Direction B keeps the all-green cards. */
 const Spectrum = createContext(false);
@@ -39,11 +39,12 @@ const tone: Record<ProductKey, { bg: string; ring: string; glow: string }> = {
   orchestration: { bg: "linear-gradient(165deg,#fafde8 0%,#e9f6bd 100%)", ring: "ring-[#dcedaa]", glow: "rgba(95,191,63,0.4)" },
 };
 
-/** Flat, soft pastels; the product accents carry the colour. */
+/** One flat, soft brand-green pastel shared by every product so the fan reads as a set. */
+const sharedTone = { bg: "linear-gradient(165deg,#f3f8f2 0%,#e8f1e7 100%)", ring: "ring-[#dfeadd]", glow: "rgba(1,118,73,0.28)" };
 const spectrumTone: Record<ProductKey, { bg: string; ring: string; glow: string }> = {
-  versa: { bg: "linear-gradient(165deg,#f3f8f2 0%,#e8f1e7 100%)", ring: "ring-[#dfeadd]", glow: "rgba(1,118,73,0.28)" },
-  odcc: { bg: "linear-gradient(165deg,#f3f2fb 0%,#e9e8f7 100%)", ring: "ring-[#e0dff2]", glow: "rgba(91,87,217,0.28)" },
-  orchestration: { bg: "linear-gradient(165deg,#f1f8fa 0%,#e5f1f4 100%)", ring: "ring-[#d9eaee]", glow: "rgba(14,139,163,0.28)" },
+  versa: sharedTone,
+  odcc: sharedTone,
+  orchestration: sharedTone,
 };
 
 export function Products({ tone: mode = "spectrum" }: { tone?: "spectrum" | "brand" }) {
@@ -238,7 +239,14 @@ function Front({ p, hover, onOpen }: { p: Product; hover: boolean; onOpen: () =>
     >
       {spectrum ? (
         <div className="flex items-center justify-between">
-          <ProductIcon kind={p.key} active={hover} />
+          <motion.span
+            animate={{ rotate: hover ? -6 : 0, scale: hover ? 1.08 : 1 }}
+            transition={{ type: "spring", bounce: 0.35, visualDuration: 0.45 }}
+            className="tabular grid size-12 place-items-center rounded-2xl bg-[linear-gradient(145deg,#ffffff_0%,#e3f8d6_100%)] text-[18px] font-semibold tracking-[-0.02em] shadow-[0_10px_22px_-12px_rgba(1,118,73,0.45)] ring-1 ring-white"
+            style={{ color: accent.main }}
+          >
+            {String(products.items.findIndex((item) => item.key === p.key) + 1).padStart(2, "0")}
+          </motion.span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-[12.5px] font-medium ring-1 ring-white" style={{ color: accent.main }}>
             <span className="size-1.5 rounded-full" style={{ backgroundColor: accent.main }} />
             {p.category}

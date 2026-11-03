@@ -2,7 +2,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroC } from "@/components/options/c/HeroC";
 import { Ecosystem } from "@/components/home/Ecosystem";
-import { ExperienceStats, Overview } from "@/components/home/Overview";
+import { ExperienceStats } from "@/components/home/Overview";
 import { Leadership } from "@/components/home/Leadership";
 import { Products } from "@/components/home/Products";
 import { Capabilities } from "@/components/home/Capabilities";
@@ -32,7 +32,6 @@ export default function HomePage() {
         <ExperienceStats />
         <Products />
         <Capabilities />
-        <Overview withStats={false} />
         <Leadership />
         <Security />
         <Testimonials />

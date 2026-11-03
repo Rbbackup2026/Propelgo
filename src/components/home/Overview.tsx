@@ -492,8 +492,8 @@ function VerticalRail() {
         <defs>
           <linearGradient id="strand" x1="0" y1="0" x2="0" y2="800" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#95de64" />
-            <stop offset="50%" stopColor="#0e8ba3" />
-            <stop offset="100%" stopColor="#5b57d9" />
+            <stop offset="50%" stopColor="#03a35f" />
+            <stop offset="100%" stopColor="#017649" />
           </linearGradient>
         </defs>
         {STRANDS.map((d, i) => (
@@ -514,20 +514,31 @@ function VerticalRail() {
   );
 }
 
+/** Soft two-tone gradient behind each step's icon, so the stream isn't a single tint. */
+const TILE_GRADIENTS: Record<NodeKind, { bg: string; ring: string; glow: string }> = {
+  connect: { bg: "linear-gradient(140deg,#e6f9ec 0%,#c9efe6 100%)", ring: "#cdeedd", glow: "rgba(1,118,73,0.4)" },
+  issue: { bg: "linear-gradient(140deg,#e9f0ff 0%,#dcd6fb 100%)", ring: "#dcdcf7", glow: "rgba(91,87,217,0.35)" },
+  route: { bg: "linear-gradient(140deg,#e2f6fb 0%,#d6e3fb 100%)", ring: "#d3e8f2", glow: "rgba(14,139,163,0.35)" },
+  integrate: { bg: "linear-gradient(140deg,#fff3e2 0%,#fde0cc 100%)", ring: "#f7e1cc", glow: "rgba(217,130,43,0.35)" },
+  automate: { bg: "linear-gradient(140deg,#f3eaff 0%,#fbdfee 100%)", ring: "#eadff5", glow: "rgba(150,90,200,0.3)" },
+  reconcile: { bg: "linear-gradient(140deg,#f2fbdc 0%,#fff1c9 100%)", ring: "#ebf0cc", glow: "rgba(149,170,40,0.35)" },
+};
+
 function NoteCard({ step }: { step: number }) {
   const node = overview.nodes[step];
   const kind = kinds[step];
-  const p = NODE_PALETTES[step % NODE_PALETTES.length];
   return (
     <article className="flex w-[300px] max-w-[92%] items-center gap-3 rounded-2xl bg-white/95 p-3 pr-4 shadow-[0_18px_40px_-24px_rgba(6,38,23,0.35)] ring-1 ring-black/[0.05] backdrop-blur transition-transform duration-300 hover:-translate-y-0.5">
-      <span className="relative size-12 shrink-0 overflow-hidden rounded-xl">
-        <Image src={PHOTOS[kind].src} alt="" fill sizes="48px" className="object-cover" />
-        <span className="absolute inset-0 rounded-xl ring-1 ring-black/5 ring-inset" />
+      <span
+        className="grid size-12 shrink-0 place-items-center rounded-xl"
+        style={{ background: TILE_GRADIENTS[kind].bg, boxShadow: `0 8px 18px -12px ${TILE_GRADIENTS[kind].glow}, inset 0 0 0 1px ${TILE_GRADIENTS[kind].ring}` }}
+      >
+        <RealIcon name={NODE_ICONS[kind]} className="size-[42px]" />
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-[16px] leading-tight font-semibold tracking-[-0.02em] text-ink">{node.verb}</h3>
-          <span className="tabular text-[11px] font-medium" style={{ color: p.BRAND }}>
+          <span className="shrink-0 rounded-full bg-mist px-2 py-0.5 text-[11px] font-medium text-brand ring-1 ring-mint">
             {node.noun}
           </span>
         </div>

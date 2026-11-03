@@ -1,8 +1,8 @@
 "use client";
 
-import createGlobe, { type Arc, type Marker } from "cobe";
 import { useInView, useReducedMotion } from "motion/react";
 import { useEffect, useRef } from "react";
+import { LAND } from "./landDots";
 
 type LatLng = [number, number];
 
@@ -14,132 +14,162 @@ const HUBS: Record<string, LatLng> = {
   hyderabad: [17.39, 78.49],
   kolkata: [22.57, 88.36],
   ahmedabad: [23.02, 72.57],
-  pune: [18.52, 73.86],
   jaipur: [26.91, 75.79],
-  kochi: [9.93, 76.27],
 };
 
-const rgb = (hex: string): [number, number, number] => {
-  const n = parseInt(hex.slice(1), 16);
-  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
-};
+const BRAND = "#017649";
+const LEAF = "#5fbf3f";
 
-const BRAND = rgb("#017649");
-const INDIGO = rgb("#5b57d9");
-const TEAL = rgb("#0e8ba3");
-const ROSE = rgb("#c8507a");
-const AMBER = rgb("#d9822b");
-
-const MARKERS: Marker[] = Object.entries(HUBS).map(([id, location], i) => ({
-  id,
-  location,
-  size: id === "mumbai" ? 0.07 : 0.035,
-  color: [BRAND, INDIGO, TEAL, ROSE, AMBER][i % 5],
-}));
-
-const route = (a: string, b: string, color: [number, number, number]): Arc => ({ from: HUBS[a], to: HUBS[b], color });
-
-const ARCS: Arc[] = [
-  route("mumbai", "delhi", INDIGO),
-  route("mumbai", "bengaluru", TEAL),
-  route("mumbai", "kolkata", ROSE),
-  route("mumbai", "chennai", BRAND),
-  route("delhi", "hyderabad", AMBER),
-  route("bengaluru", "kolkata", INDIGO),
-  route("ahmedabad", "chennai", ROSE),
-  route("jaipur", "kochi", TEAL),
+const ARCS: [string, string][] = [
+  ["mumbai", "delhi"],
+  ["mumbai", "bengaluru"],
+  ["mumbai", "kolkata"],
+  ["delhi", "hyderabad"],
+  ["ahmedabad", "chennai"],
+  ["jaipur", "kolkata"],
 ];
 
-/** Longitude/latitude to cobe's phi/theta so a location faces the viewer. */
-const facing = ([lat, lng]: LatLng): [number, number] => [Math.PI - ((lng * Math.PI) / 180 - Math.PI / 2), (lat * Math.PI) / 180];
+const RAD = Math.PI / 180;
+const TILT = 18 * RAD;
+const START = -80 * RAD;
 
-const [START_PHI, START_THETA] = facing([20, 80]);
+type Vec = [number, number, number];
 
-/** Dotted WebGL globe with payment routes across India. Rotates slowly; drag to spin. */
+const toVec = ([lat, lng]: LatLng): Vec => [Math.cos(lat * RAD) * Math.sin(lng * RAD), Math.sin(lat * RAD), Math.cos(lat * RAD) * Math.cos(lng * RAD)];
+
+const LAND_VECS: Vec[] = [];
+for (let i = 0; i < LAND.length; i += 2) LAND_VECS.push(toVec([LAND[i], LAND[i + 1]]));
+
+/** Great-circle points between two hubs, lifted off the surface towards the middle. */
+const ARC_VECS: Vec[][] = ARCS.map(([a, b]) => {
+  const p = toVec(HUBS[a]);
+  const q = toVec(HUBS[b]);
+  const omega = Math.acos(Math.min(1, p[0] * q[0] + p[1] * q[1] + p[2] * q[2]));
+  return Array.from({ length: 25 }, (_, k) => {
+    const t = k / 24;
+    const s = Math.sin(omega) || 1;
+    const wa = Math.sin((1 - t) * omega) / s;
+    const wb = Math.sin(t * omega) / s;
+    const lift = 1 + 0.06 * Math.sin(Math.PI * t);
+    return [(wa * p[0] + wb * q[0]) * lift, (wa * p[1] + wb * q[1]) * lift, (wa * p[2] + wb * q[2]) * lift] as Vec;
+  });
+});
+
+const HUB_VECS = Object.values(HUBS).map(toVec);
+
+/** Rotate about the vertical axis by `rot`, then tilt towards the viewer. */
+function project([x, y, z]: Vec, rot: number): Vec {
+  const c = Math.cos(rot);
+  const s = Math.sin(rot);
+  const x1 = x * c + z * s;
+  const z1 = -x * s + z * c;
+  const ct = Math.cos(TILT);
+  const st = Math.sin(TILT);
+  return [x1, y * ct - z1 * st, y * st + z1 * ct];
+}
+
+/**
+ * Dotted globe with payment routes across India, drawn on a 2D canvas.
+ * It keeps one canvas for its whole life and only pauses off-screen, so it never blanks while cards flip or scroll.
+ */
 export function PaymentGlobe({ className = "" }: { className?: string }) {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(wrapRef, { margin: "10% 0px" });
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const inView = useInView(canvasRef, { margin: "20% 0px" });
   const reduce = useReducedMotion();
-  const drag = useRef<{ x: number; phi: number } | null>(null);
-  const offset = useRef(0);
+  const rot = useRef(START);
 
   useEffect(() => {
-    const wrap = wrapRef.current;
-    if (!wrap || !inView) return;
-    // A fresh canvas per mount: a destroyed WebGL context cannot be reused.
-    const canvas = document.createElement("canvas");
-    canvas.className = "absolute inset-0 size-full opacity-0 transition-opacity duration-1000";
-    wrap.appendChild(canvas);
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let size = canvas.offsetWidth;
-    let phi = START_PHI;
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+    let size = 0;
     let raf = 0;
+    let last = 0;
 
-    const globe = createGlobe(canvas, {
-      devicePixelRatio: dpr,
-      width: size * dpr,
-      height: size * dpr,
-      phi,
-      theta: START_THETA,
-      dark: 0,
-      diffuse: 1.15,
-      mapSamples: 22000,
-      mapBrightness: 6,
-      mapBaseBrightness: 0.04,
-      baseColor: [0.97, 0.98, 1],
-      markerColor: BRAND,
-      glowColor: [0.94, 0.95, 1],
-      markers: MARKERS,
-      arcs: ARCS,
-      arcColor: INDIGO,
-      arcWidth: 0.6,
-      arcHeight: 0.18,
-      markerElevation: 0.01,
-      opacity: 0.92,
-    });
+    const fit = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      size = canvas.clientWidth || 148;
+      canvas.width = Math.round(size * dpr);
+      canvas.height = Math.round(size * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
 
+    const draw = () => {
+      const r = size / 2 - 2;
+      const c = size / 2;
+      ctx.clearRect(0, 0, size, size);
+
+      const body = ctx.createRadialGradient(c - r * 0.35, c - r * 0.4, r * 0.1, c, c, r);
+      body.addColorStop(0, "#ffffff");
+      body.addColorStop(1, "#eef6ee");
+      ctx.fillStyle = body;
+      ctx.beginPath();
+      ctx.arc(c, c, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(1,118,73,0.14)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      const dot = Math.max(0.7, size / 150);
+      for (const v of LAND_VECS) {
+        const [x, y, z] = project(v, rot.current);
+        if (z <= 0.02) continue;
+        ctx.fillStyle = `rgba(16,72,62,${(0.18 + 0.62 * z).toFixed(3)})`;
+        ctx.fillRect(c + x * r - dot / 2, c - y * r - dot / 2, dot, dot);
+      }
+
+      ctx.lineCap = "round";
+      ctx.lineWidth = 1.1;
+      ARC_VECS.forEach((arc, i) => {
+        ctx.strokeStyle = i % 2 ? LEAF : BRAND;
+        ctx.beginPath();
+        let pen = false;
+        for (const v of arc) {
+          const [x, y, z] = project(v, rot.current);
+          if (z <= 0) {
+            pen = false;
+            continue;
+          }
+          if (pen) ctx.lineTo(c + x * r, c - y * r);
+          else ctx.moveTo(c + x * r, c - y * r);
+          pen = true;
+        }
+        ctx.stroke();
+      });
+
+      for (const v of HUB_VECS) {
+        const [x, y, z] = project(v, rot.current);
+        if (z <= 0) continue;
+        ctx.fillStyle = BRAND;
+        ctx.beginPath();
+        ctx.arc(c + x * r, c - y * r, Math.max(1.4, size / 90), 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
+
+    fit();
+    draw();
     const ro = new ResizeObserver(() => {
-      size = canvas.offsetWidth;
-      globe.update({ width: size * dpr, height: size * dpr });
+      fit();
+      draw();
     });
     ro.observe(canvas);
 
-    const tick = () => {
-      if (!drag.current && !reduce) phi += 0.0022;
-      globe.update({ phi: phi + offset.current });
+    if (inView && !reduce) {
+      const tick = (t: number) => {
+        if (last) rot.current += Math.min(t - last, 50) * 0.00012;
+        last = t;
+        draw();
+        raf = requestAnimationFrame(tick);
+      };
       raf = requestAnimationFrame(tick);
-    };
-    tick();
-    requestAnimationFrame(() => {
-      canvas.style.opacity = "1";
-    });
+    }
 
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
-      globe.destroy();
-      canvas.remove();
     };
   }, [inView, reduce]);
 
-  const release = () => {
-    drag.current = null;
-  };
-
-  return (
-    <div
-      ref={wrapRef}
-      className={`relative aspect-square cursor-grab touch-pan-y active:cursor-grabbing ${className}`}
-      onPointerDown={(e) => {
-        drag.current = { x: e.clientX, phi: offset.current };
-        e.currentTarget.setPointerCapture(e.pointerId);
-      }}
-      onPointerMove={(e) => {
-        if (drag.current) offset.current = drag.current.phi + (e.clientX - drag.current.x) / 180;
-      }}
-      onPointerUp={release}
-      onPointerCancel={release}
-      aria-hidden="true"
-    />
-  );
+  return <canvas ref={canvasRef} className={`block aspect-square ${className}`} aria-hidden="true" />;
 }

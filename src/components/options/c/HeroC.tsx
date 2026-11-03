@@ -63,16 +63,15 @@ export function HeroC() {
       <BrandRibbon
         variant="twist"
         play={ready}
-        pulse
         className="absolute top-0 left-0 -z-10 h-[78%] w-[min(34vw,420px)] opacity-90 [mask-image:radial-gradient(115%_100%_at_0%_0%,#000_35%,transparent_80%)] max-md:h-[45%] max-md:w-[55vw]"
       />
       <div className="container-page grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,600px)] lg:gap-8">
         <div className="relative max-w-[560px]">
           <h1 className="text-[clamp(2rem,1.5rem+1.7vw,3rem)] leading-[1.07] font-semibold tracking-[-0.035em] text-balance text-ink">
             {words.map((w, i) => (
-              <span key={i} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
+              <span key={i} className="-mb-[0.1em] inline-block overflow-hidden pb-[0.18em] align-bottom">
                 <motion.span
-                  className={`inline-block ${i >= words.length - HIGHLIGHT_WORDS ? GRADIENT_TEXT : ""}`}
+                  className={`inline-block pb-[0.1em] ${i >= words.length - HIGHLIGHT_WORDS ? GRADIENT_TEXT : ""}`}
                   initial={reduce ? false : { y: "105%" }}
                   animate={ready ? { y: 0 } : undefined}
                   transition={{ duration: 0.9, ease, delay: BASE + 0.08 + i * 0.045 }}

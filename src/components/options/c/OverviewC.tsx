@@ -60,9 +60,9 @@ function Statement() {
         <div>
           <h2 id="about-c-title" className="text-[clamp(1.875rem,1.4rem+1.5vw,2.75rem)] leading-[1.12] font-semibold tracking-[-0.03em] text-balance text-ink">
             {words.map((w, i) => (
-              <span key={i} className="inline-block overflow-hidden pb-[0.08em] align-bottom">
+              <span key={i} className="-mb-[0.1em] inline-block overflow-hidden pb-[0.18em] align-bottom">
                 <motion.span
-                  className={`inline-block ${w === ACCENT_WORD ? GRADIENT_TEXT : ""}`}
+                  className={`inline-block pb-[0.1em] ${w === ACCENT_WORD ? GRADIENT_TEXT : ""}`}
                   initial={reduce ? false : { y: "105%" }}
                   whileInView={{ y: 0 }}
                   viewport={{ once: true, margin: "0px 0px -10% 0px" }}

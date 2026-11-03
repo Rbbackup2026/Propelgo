@@ -6,8 +6,8 @@ import { RealIcon } from "@/components/ui/RealIcon";
 
 export const PRODUCT_ACCENT: Record<ProductKey, { main: string; light: string; tint: string; glow: string }> = {
   versa: { main: "#017649", light: "#2fc47f", tint: "#e3f8d6", glow: "rgba(1,118,73,0.45)" },
-  odcc: { main: "#5b57d9", light: "#8f8bf2", tint: "#e9e8fd", glow: "rgba(91,87,217,0.45)" },
-  orchestration: { main: "#0e8ba3", light: "#4fc6d8", tint: "#d9f3f7", glow: "rgba(14,139,163,0.45)" },
+  odcc: { main: "#017649", light: "#2fc47f", tint: "#e3f8d6", glow: "rgba(1,118,73,0.45)" },
+  orchestration: { main: "#017649", light: "#2fc47f", tint: "#e3f8d6", glow: "rgba(1,118,73,0.45)" },
 };
 
 const spring = { type: "spring", bounce: 0.35, visualDuration: 0.45 } as const;

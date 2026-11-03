@@ -30,6 +30,12 @@ const REVISION: Partial<Record<RealIconName, string>> = {
   workflow: "v2",
   routing: "v3",
   reconcile: "v3",
+  connect: "eco2",
+  issue: "eco2",
+  route: "eco2",
+  integrate: "eco2",
+  automate: "eco2",
+  settle: "eco2",
 };
 
 /** Rendered 3D icon from /public/icons; decorative, so it carries no alt text. */

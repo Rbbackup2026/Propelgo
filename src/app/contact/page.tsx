@@ -13,37 +13,37 @@ export default function ContactPage() {
   return (
     <>
       <Header />
-      <main className="bg-[linear-gradient(180deg,#f7fbf4_0%,#ffffff_28%)] pt-[112px] pb-20 md:pt-[128px] md:pb-28">
-        <div className="container-page grid items-start gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,460px)] lg:gap-20">
+      <main className="bg-[linear-gradient(180deg,#f7fbf4_0%,#ffffff_28%)] pt-[100px] pb-16 md:pt-[104px] md:pb-20">
+        <div className="container-page grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] lg:gap-14">
           <div>
             <p className="text-[13px] font-semibold tracking-[0.14em] text-brand uppercase">{contact.eyebrow}</p>
-            <h1 className="mt-4 max-w-[14ch] text-[clamp(2.25rem,1.6rem+2vw,3.5rem)] leading-[1.05] font-semibold tracking-[-0.035em] text-balance text-ink">
+            <h1 className="mt-3 max-w-[16ch] text-[clamp(2rem,1.5rem+1.6vw,2.875rem)] leading-[1.07] font-semibold tracking-[-0.035em] text-balance text-ink">
               {contact.title}
             </h1>
             {contact.paragraphs.map((paragraph) => (
-              <p key={paragraph} className="mt-5 max-w-[52ch] text-[16.5px] leading-[1.65] text-pretty text-copy">
+              <p key={paragraph} className="mt-3 max-w-[56ch] text-[15px] leading-[1.55] text-pretty text-copy">
                 {paragraph}
               </p>
             ))}
 
-            <h2 className="mt-12 text-[13px] font-semibold tracking-[0.14em] text-ink uppercase">{contact.next.eyebrow}</h2>
-            <ol className="mt-6 space-y-6">
+            <h2 className="mt-6 text-[12.5px] font-semibold tracking-[0.14em] text-ink uppercase">{contact.next.eyebrow}</h2>
+            <ol className="mt-3 space-y-3">
               {contact.next.steps.map((step, i) => (
-                <li key={step.title} className="flex gap-4">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-mist text-[13px] font-semibold text-brand ring-1 ring-mint">
+                <li key={step.title} className="flex gap-3.5">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-mist text-[12px] font-semibold text-brand ring-1 ring-mint">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span>
-                    <span className="block text-[16.5px] font-semibold tracking-[-0.01em] text-ink">{step.title}</span>
-                    <span className="mt-1 block max-w-[46ch] text-[15px] leading-relaxed text-copy">{step.copy}</span>
+                    <span className="block text-[15.5px] font-semibold tracking-[-0.01em] text-ink">{step.title}</span>
+                    <span className="mt-0.5 block max-w-[60ch] text-[13.5px] leading-[1.5] text-copy">{step.copy}</span>
                   </span>
                 </li>
               ))}
             </ol>
 
-            <div className="mt-12 border-t border-line pt-8">
-              <h2 className="text-[16.5px] font-semibold tracking-[-0.01em] text-ink">{contact.direct.title}</h2>
-              <ul className="mt-4 space-y-3">
+            <div className="mt-5 border-t border-line pt-5">
+              <h2 className="text-[15.5px] font-semibold tracking-[-0.01em] text-ink">{contact.direct.title}</h2>
+              <ul className="mt-3 flex flex-wrap gap-x-8 gap-y-2">
                 <li>
                   <a href={`mailto:${contact.direct.email}`} className="inline-flex items-center gap-3 text-[15px] text-ink hover:text-brand">
                     <MailIcon />
@@ -57,7 +57,7 @@ export default function ContactPage() {
                   </a>
                 </li>
               </ul>
-              <p className="mt-4 text-[13.5px] text-sub">{contact.direct.note}</p>
+              <p className="mt-2 text-[13px] text-sub">{contact.direct.note}</p>
             </div>
           </div>
 

@@ -10,7 +10,6 @@ export function Footer({ ribbon }: { ribbon?: RibbonVariant }) {
         <BrandRibbon
           variant={ribbon}
           light
-          pulse={ribbon !== "twist"}
           className="absolute top-0 right-0 -z-10 h-[340px] w-[min(30vw,380px)] -scale-x-100 [mask-image:radial-gradient(115%_100%_at_0%_0%,#000_35%,transparent_80%)] max-md:h-[240px] max-md:w-[55vw]"
         />
       )}

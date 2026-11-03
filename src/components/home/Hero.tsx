@@ -69,7 +69,7 @@ export function Hero({ stage = "payments", ribbon }: { stage?: StageVariant; rib
       className="relative isolate overflow-hidden pt-[124px] pb-16 md:pt-[148px] md:pb-24 lg:min-h-[100svh]"
     >
       <Aurora y={reduce ? undefined : auroraY} x={reduce ? undefined : auroraX} />
-      {ribbon && <BrandRibbon variant={ribbon} light pulse={ribbon !== "twist"} play={ready} className={HERO_RIBBON[ribbon]} />}
+      {ribbon && <BrandRibbon variant={ribbon} light play={ready} className={HERO_RIBBON[ribbon]} />}
       <div className="container-page grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:gap-10">
         <motion.div style={reduce ? undefined : { y: copyY, opacity: copyOpacity }} className="relative max-w-[600px]">
 

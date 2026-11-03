@@ -5,7 +5,7 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { contact } from "@/content/contact";
 
 const input =
-  "mt-2 w-full rounded-xl bg-white px-3.5 text-[15px] text-ink ring-1 ring-line outline-none transition-[box-shadow] placeholder:text-sub focus:ring-2 focus:ring-brand";
+  "mt-1.5 w-full rounded-xl bg-white px-3.5 text-[15px] text-ink ring-1 ring-line outline-none transition-[box-shadow] placeholder:text-sub focus:ring-2 focus:ring-brand";
 
 type Errors = Partial<Record<"name" | "email" | "company" | "interest" | "message", string>>;
 
@@ -54,26 +54,26 @@ export function EnquiryForm() {
     <form
       onSubmit={onSubmit}
       noValidate
-      className="rounded-[28px] bg-white p-6 ring-1 ring-line shadow-[0_30px_60px_-40px_rgba(31,31,31,0.3)] md:p-8"
+      className="rounded-[28px] bg-white p-6 ring-1 ring-line shadow-[0_30px_60px_-40px_rgba(31,31,31,0.3)] md:p-7"
     >
-      <h2 className="text-[28px] leading-tight font-semibold tracking-[-0.03em] text-ink">{form.title}</h2>
-      <p className="mt-2 text-[15px] leading-relaxed text-copy">{form.copy}</p>
+      <h2 className="text-[24px] leading-tight font-semibold tracking-[-0.03em] text-ink">{form.title}</h2>
+      <p className="mt-1.5 text-[14.5px] leading-relaxed text-copy">{form.copy}</p>
 
-      <div className="mt-7 space-y-5">
+      <div className="mt-5 grid gap-x-4 gap-y-4 sm:grid-cols-2">
         <Field label="Full name" name="name" error={errors.name} required>
-          <input id="name" name="name" autoComplete="name" placeholder="Enter your name" aria-invalid={!!errors.name} className={`${input} h-12`} />
+          <input id="name" name="name" autoComplete="name" placeholder="Enter your name" aria-invalid={!!errors.name} className={`${input} h-11`} />
         </Field>
         <Field label="Work email" name="email" error={errors.email} required>
-          <input id="email" name="email" type="email" autoComplete="email" placeholder="Enter your work email" aria-invalid={!!errors.email} className={`${input} h-12`} />
+          <input id="email" name="email" type="email" autoComplete="email" placeholder="Enter your work email" aria-invalid={!!errors.email} className={`${input} h-11`} />
         </Field>
         <Field label="Company name" name="company" error={errors.company} required>
-          <input id="company" name="company" autoComplete="organization" placeholder="Enter your company name" aria-invalid={!!errors.company} className={`${input} h-12`} />
+          <input id="company" name="company" autoComplete="organization" placeholder="Enter your company name" aria-invalid={!!errors.company} className={`${input} h-11`} />
         </Field>
         <Field label="Phone number" name="phone" hint="Optional">
-          <input id="phone" name="phone" type="tel" autoComplete="tel" placeholder="Enter your phone number" className={`${input} h-12`} />
+          <input id="phone" name="phone" type="tel" autoComplete="tel" placeholder="Enter your phone number" className={`${input} h-11`} />
         </Field>
-        <Field label="What are you interested in?" name="interest" error={errors.interest} required>
-          <select id="interest" name="interest" defaultValue="" aria-invalid={!!errors.interest} className={`${input} h-12 appearance-none bg-[length:16px] bg-[position:right_14px_center] bg-no-repeat pr-10`} style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%238c8c8c' stroke-width='1.6'%3E%3Cpath d='M4 6l4 4 4-4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")" }}>
+        <Field label="What are you interested in?" name="interest" error={errors.interest} required wide>
+          <select id="interest" name="interest" defaultValue="" aria-invalid={!!errors.interest} className={`${input} h-11 appearance-none bg-[length:16px] bg-[position:right_14px_center] bg-no-repeat pr-10`} style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%238c8c8c' stroke-width='1.6'%3E%3Cpath d='M4 6l4 4 4-4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")" }}>
             <option value="" disabled>
               Select an option
             </option>
@@ -84,14 +84,14 @@ export function EnquiryForm() {
             ))}
           </select>
         </Field>
-        <Field label="Tell us a little about your requirement" name="message" error={errors.message} required>
-          <textarea id="message" name="message" rows={5} placeholder="Type your message here..." aria-invalid={!!errors.message} className={`${input} resize-y py-3`} />
+        <Field label="Tell us a little about your requirement" name="message" error={errors.message} required wide>
+          <textarea id="message" name="message" rows={3} placeholder="Type your message here..." aria-invalid={!!errors.message} className={`${input} resize-y py-3`} />
         </Field>
       </div>
 
       <button
         type="submit"
-        className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-xl bg-brand text-[15px] font-medium text-white transition-[filter,transform] duration-300 hover:brightness-110 active:scale-[0.99]"
+        className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-xl bg-brand text-[15px] font-medium text-white transition-[filter,transform] duration-300 hover:brightness-110 active:scale-[0.99]"
       >
         {form.submit}
       </button>
@@ -112,6 +112,7 @@ function Field({
   error,
   required,
   hint,
+  wide,
   children,
 }: {
   label: string;
@@ -119,10 +120,11 @@ function Field({
   error?: string;
   required?: boolean;
   hint?: string;
+  wide?: boolean;
   children: ReactNode;
 }) {
   return (
-    <div>
+    <div className={wide ? "sm:col-span-2" : undefined}>
       <label htmlFor={name} className="text-[14px] font-medium text-ink">
         {label}
         {required ? <span className="text-brand"> *</span> : hint ? <span className="font-normal text-sub"> ({hint})</span> : null}

@@ -21,11 +21,11 @@ function VersaArt({ active }: { active: boolean }) {
   return (
     <div className="relative h-full overflow-hidden">
       <Image
-        src="/products/versa-dashboard.jpg"
-        alt="The Versa dashboard showing sanctioned limit, cards issued and credit utilisation"
+        src="/products/versa-flow.jpg"
+        alt="The PropelGo Versa dashboard with cards, spend overview and transactions"
         fill
         sizes="320px"
-        className="object-cover object-[center_18%]"
+        className="object-cover object-left-top"
       />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_42%,rgba(255,255,255,0.72))]" />
       <motion.div
@@ -50,31 +50,17 @@ function VersaArt({ active }: { active: boolean }) {
   );
 }
 
-/** A PropelGo card held in a hand, with the OD/CC limit gauge kept faint behind it. */
+/** A PropelGo ODCC card held in a hand. */
 function OdccArt({ active }: { active: boolean }) {
-  const r = 78;
-  const arc = `M ${100 - r} 100 A ${r} ${r} 0 0 1 ${100 + r} 100`;
   return (
     <div className="relative h-full overflow-hidden">
-      <div className="pointer-events-none absolute inset-x-0 -top-1 flex justify-center opacity-50" aria-hidden="true">
-        <div className="relative w-[150px]">
-          <svg viewBox="0 0 200 112" className="w-full" fill="none">
-            <path d={arc} stroke="#E8E8E8" strokeWidth="14" strokeLinecap="round" />
-            <motion.path d={arc} stroke="#95DE64" strokeWidth="14" strokeLinecap="round" initial={false} animate={{ pathLength: active ? 0.82 : 0.58 }} transition={{ duration: 0.9, ease }} />
-            <motion.path d={arc} stroke="#017649" strokeWidth="14" strokeLinecap="round" initial={false} animate={{ pathLength: active ? 0.46 : 0.3 }} transition={{ duration: 0.9, ease, delay: 0.05 }} />
-          </svg>
-          <p className="absolute inset-x-0 bottom-1 text-center text-[10px] text-sub">
-            OD/CC limit <span className="tabular font-semibold text-ink">₹5 Cr</span>
-          </p>
-        </div>
-      </div>
       <motion.div
-        className="absolute inset-x-3 bottom-0 h-[76%]"
+        className="absolute inset-x-3 top-3 bottom-0"
         initial={false}
         animate={{ y: active ? -6 : 0, scale: active ? 1.03 : 1 }}
         transition={{ duration: 0.6, ease }}
       >
-        <Image src="/products/odcc-hand.png" alt="A hand holding a PropelGo commercial credit card" fill sizes="280px" className="object-contain object-bottom" />
+        <Image src="/products/odcc-card.png" alt="A hand holding a PropelGo ODCC commercial credit card" fill sizes="280px" className="object-contain object-bottom" />
       </motion.div>
     </div>
   );
@@ -98,12 +84,12 @@ function OrchestrationArt({ active }: { active: boolean }) {
     <div className="relative grid h-full place-items-center">
       <div className="relative h-[176px] w-[288px]">
         <svg viewBox="0 0 288 176" className="absolute inset-0 size-full" fill="none" aria-hidden="true">
-          <circle cx={HUB.x} cy={HUB.y} r="78" stroke="#0e8ba3" strokeOpacity="0.18" strokeDasharray="2 4" />
+          <circle cx={HUB.x} cy={HUB.y} r="78" stroke="#017649" strokeOpacity="0.16" strokeDasharray="2 4" />
           {GATEWAYS.map((g, i) => (
             <motion.path
               key={g.label}
               d={route(g.x, g.y)}
-              stroke={i === live ? "#0e8ba3" : "#b7d5dc"}
+              stroke={i === live ? "#017649" : "#bfdcc8"}
               strokeWidth="1.5"
               strokeLinecap="round"
               initial={false}
@@ -120,10 +106,10 @@ function OrchestrationArt({ active }: { active: boolean }) {
           return (
             <span
               key={g.label}
-              className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-white px-2.5 py-1 text-[11px] font-medium whitespace-nowrap shadow-[0_8px_16px_-10px_rgba(14,139,163,0.6)] ring-1 transition-colors duration-300"
-              style={{ left: g.x, top: g.y, color: on ? "#0a6a7d" : "#595959", borderColor: "transparent", boxShadow: on ? "inset 0 0 0 1px #0e8ba3, 0 8px 16px -10px rgba(14,139,163,0.7)" : undefined }}
+              className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-white px-2.5 py-1 text-[11px] font-medium whitespace-nowrap shadow-[0_8px_16px_-10px_rgba(1,118,73,0.5)] ring-1 transition-colors duration-300"
+              style={{ left: g.x, top: g.y, color: on ? "#04452b" : "#595959", borderColor: "transparent", boxShadow: on ? "inset 0 0 0 1px #017649, 0 8px 16px -10px rgba(1,118,73,0.6)" : undefined }}
             >
-              <span className="mr-1.5 inline-block size-1.5 rounded-full align-middle" style={{ background: on ? "#0e8ba3" : "#c5dfe4" }} />
+              <span className="mr-1.5 inline-block size-1.5 rounded-full align-middle" style={{ background: on ? "#017649" : "#c9e3cf" }} />
               {g.label}
             </span>
           );
