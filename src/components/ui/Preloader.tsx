@@ -150,7 +150,7 @@ export function Preloader() {
                 exit={{ scale: 1.6 * cardScale, opacity: 0, transition: { duration: 0.55, ease: inOut } }}
               >
                 <motion.div
-                  className="pointer-events-none absolute -inset-1 rounded-[22px]"
+                  className="pointer-events-none absolute inset-0 rounded-[20px]"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: [0, 1, 0.55, 1, 1] }}
                   transition={{ duration: CARDS_S, delay: reduce ? 0 : INTRO_S - 0.15, times: [0, 0.22, 0.6, 0.9, 1] }}
@@ -221,9 +221,12 @@ function Rays() {
 function Card({ finish, hero = false }: { finish: Finish; hero?: boolean }) {
   const light = finish.ink === "light";
   return (
-    <div className="relative size-full overflow-hidden rounded-[20px] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] [backface-visibility:hidden]" style={{ background: finish.bg }}>
+    <div
+      className={`relative size-full overflow-hidden rounded-[20px] [backface-visibility:hidden] ${hero ? "shadow-[0_30px_60px_-24px_rgba(3,163,95,0.45)]" : "shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)]"}`}
+      style={{ background: finish.bg }}
+    >
       <div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_30%,rgba(255,255,255,0.22)_45%,transparent_60%)]" />
-      <div className="absolute inset-0 rounded-[20px] ring-1 ring-white/15 ring-inset" />
+      <div className={`absolute inset-0 rounded-[20px] ring-inset ${hero ? "ring-[1.5px] ring-[#b7eb8f]/70" : "ring-1 ring-white/15"}`} />
       <div className="absolute top-5 left-5">
         {hero ? <Logo tone="dark" className="h-7 w-auto" /> : <LogoMark tone={light ? "dark" : "light"} className="size-8" />}
       </div>

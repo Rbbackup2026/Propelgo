@@ -451,7 +451,7 @@ function EcosystemStats({ standalone = false }: { standalone?: boolean }) {
         </div>
         <div className={`order-1 flex flex-col lg:order-2 ${standalone ? "" : "lg:py-10"}`}>
           <ClipReveal>
-            <h3 className="max-w-[16ch] text-[clamp(2.25rem,1.4rem+2.6vw,4rem)] leading-[1.04] font-bold tracking-[-0.035em] text-balance text-ink">{stats.title}</h3>
+            <h3 className="max-w-[18ch] text-[clamp(2rem,1.5rem+1.7vw,3rem)] leading-[1.07] font-semibold tracking-[-0.035em] text-balance text-ink">{stats.title}</h3>
           </ClipReveal>
           <ClipReveal delay={0.08}>
             <p className="mt-6 max-w-[46ch] text-[clamp(1.05rem,0.95rem+0.3vw,1.2rem)] leading-[1.6] text-pretty text-copy">{overview.body}</p>

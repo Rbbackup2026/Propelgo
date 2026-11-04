@@ -11,6 +11,7 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { Resources } from "@/components/home/Resources";
 import { FinalCta } from "@/components/home/FinalCta";
 import { DirectionSwitcher } from "@/components/options/DirectionSwitcher";
+import { AutoScroll } from "@/components/ui/AutoScroll";
 
 const orgJsonLd = {
   "@context": "https://schema.org",
@@ -39,6 +40,7 @@ export default function HomePage() {
         <FinalCta tone="spectrum" />
       </main>
       <Footer ribbon="twist" />
+      <AutoScroll />
       {/* Review aid while the client compares directions; remove before launch. */}
       <DirectionSwitcher current="a" />
     </>
