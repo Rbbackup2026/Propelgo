@@ -146,7 +146,7 @@ function Panel({ kind, index, playing, reduce }: { kind: CapabilityKey; index: n
             </span>
           </div>
 
-          <div className="absolute inset-x-0 top-1/2 h-[300px] -translate-y-[44%]" aria-hidden="true">
+          <div className={`absolute inset-x-0 ${kind === "reconcile" ? "top-[84px] bottom-5" : "top-1/2 h-[300px] -translate-y-[44%]"}`} aria-hidden="true">
             <div className="absolute inset-x-8 inset-y-0 rounded-[22px] md:inset-x-12" style={{ background: `linear-gradient(180deg, ${accent.soft}, rgba(255,255,255,0) 85%)` }} />
             <CapabilityTileArt kind={kind} playing={playing} />
           </div>

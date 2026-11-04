@@ -469,120 +469,105 @@ function StageIcon({ index }: { index: number }) {
   );
 }
 
-/* ---------- 4. Reconciliation: statement lines scroll past the match line and lock to the ledger. ---------- */
+/* ---------- 4. Reconciliation: a transaction table behind, and the ledger match in front. ---------- */
 
 const T = ACCENTS.reconcile;
-const ROW = 54;
-const entries = [
-  { ref: "UTR 77810", amt: 248500, gl: "Travel · Skyline" },
-  { ref: "UTR 77811", amt: 86240, gl: "Travel · Aerolink" },
-  { ref: "UTR 77812", amt: 412000, gl: "Capex · Meridian" },
-  { ref: "UTR 77813", amt: 19800, gl: "Software · Cloud" },
-  { ref: "UTR 77814", amt: 105000, gl: "Vendor · Brightline" },
-  { ref: "UTR 77815", amt: 62400, gl: "Travel · Skyline" },
+const txns = [
+  { id: "TXN-77810", card: "4021", amt: 248500, ledger: "Travel · Skyline" },
+  { id: "TXN-77811", card: "7713", amt: 86240, ledger: "Travel · Aerolink" },
+  { id: "TXN-77812", card: "3390", amt: 412000, ledger: "Capex · Meridian" },
+  { id: "TXN-77813", card: "1184", amt: 19800, ledger: "Software · Cloud" },
+  { id: "TXN-77814", card: "5678", amt: 105000, ledger: "Vendor · Brightline" },
+  { id: "TXN-77815", card: "4021", amt: 62400, ledger: "Travel · Skyline" },
 ];
 
-const mod = (n: number, m: number) => ((n % m) + m) % m;
-
 function ReconArt({ playing }: { playing: boolean }) {
-  const { cycle: step } = usePhaseLoop(1, 1500, playing);
-  const visible = [-2, -1, 0, 1, 2].map((o) => step + o);
+  const { phase, cycle } = usePhaseLoop(2, 1100, playing);
+  const focus = cycle % txns.length;
+  const matched = (i: number) => (playing ? i < focus || (i === focus && phase === 1) : true);
 
   return (
-    <div className="absolute inset-0 flex items-stretch gap-6 px-6 md:px-8">
-      <div className="relative min-w-0 flex-1 [mask-image:linear-gradient(to_bottom,transparent,#000_24%,#000_76%,transparent)]">
-        <div className="absolute inset-x-0 top-1/2 h-[46px] -translate-y-1/2 rounded-xl" style={{ background: T.soft }} aria-hidden="true" />
-        <AnimatePresence initial={false}>
-          {visible.map((i) => {
-            const e = entries[mod(i, entries.length)];
-            const offset = i - step;
-            const ok = offset <= 0;
+    <div className="absolute inset-0 px-4 sm:px-8">
+      <div className="relative mx-auto h-full max-w-[620px]">
+        <div className="absolute inset-x-0 top-1 bottom-3 overflow-hidden rounded-[22px] bg-white/95 shadow-[0_24px_50px_-28px_rgba(14,80,100,0.45)] ring-1 ring-black/[0.06]">
+          <div className="flex items-center gap-2 border-b border-line/80 px-4 py-2.5">
+            <span className="size-2 rounded-full" style={{ background: T.solid }} />
+            <span className="text-[13px] font-semibold text-ink">Transactions</span>
+            <span className="text-[11.5px] text-sub">Settlement · one view</span>
+            <span className="ml-auto rounded-full px-2 py-0.5 text-[10.5px] font-semibold" style={{ background: T.soft, color: T.deep }}>
+              {txns.length} lines
+            </span>
+          </div>
+          <div className="grid grid-cols-[minmax(0,1.15fr)_72px_minmax(0,0.85fr)_minmax(0,1fr)] gap-2 px-4 py-2 pr-[46%] text-[10px] font-semibold tracking-[0.04em] text-sub uppercase sm:pr-[250px]">
+            <span>Transaction ID</span>
+            <span>Card ID</span>
+            <span className="text-right">Amount</span>
+            <span>Ledger</span>
+          </div>
+          {txns.map((row, i) => {
+            const on = i === focus && playing;
+            const ok = matched(i);
             return (
-              <motion.div
-                key={i}
-                className="absolute inset-x-0 top-1/2 -mt-[22px] grid h-[44px] grid-cols-[minmax(0,1fr)_48px_minmax(0,1fr)] items-center"
-                initial={{ y: 3 * ROW, opacity: 0 }}
-                animate={{ y: offset * ROW, opacity: 1 }}
-                exit={{ y: -3 * ROW, opacity: 0 }}
-                transition={{ type: "spring", bounce: 0.15, visualDuration: 0.7 }}
+              <div
+                key={row.id}
+                className="grid grid-cols-[minmax(0,1.15fr)_72px_minmax(0,0.85fr)_minmax(0,1fr)] items-center gap-2 border-t border-line/60 px-4 py-2 pr-[46%] transition-colors duration-300 sm:pr-[250px]"
+                style={{ background: on ? T.soft : "transparent" }}
               >
-                <Row ok={ok} top={e.ref} bottom={`₹${inr.format(e.amt)}`} />
-                <span className="relative flex h-full items-center justify-center">
-                  <span className="absolute inset-x-1 border-t border-dashed border-ghost" />
-                  <motion.span
-                    className="absolute inset-x-1 h-[2px] origin-left rounded-full"
-                    style={{ background: T.solid }}
-                    initial={false}
-                    animate={{ scaleX: ok ? 1 : 0 }}
-                    transition={{ duration: 0.45, ease, delay: offset === 0 ? 0.35 : 0 }}
-                  />
-                  <motion.span
-                    className="relative grid size-5 place-items-center rounded-full text-white"
-                    style={{ background: T.solid }}
-                    initial={false}
-                    animate={{ scale: ok ? 1 : 0 }}
-                    transition={{ type: "spring", bounce: 0.5, visualDuration: 0.35, delay: offset === 0 ? 0.6 : 0 }}
-                  >
-                    <Check className="size-2.5" />
-                  </motion.span>
+                <span className="tabular truncate text-[12px] font-medium text-ink">{row.id}</span>
+                <span className="tabular text-[12px] text-copy">•••• {row.card}</span>
+                <span className="tabular text-right text-[12px] font-semibold text-ink">₹{inr.format(row.amt)}</span>
+                <span className="flex min-w-0 items-center gap-1.5">
+                  <span className="truncate text-[11.5px] text-copy">{row.ledger}</span>
+                  <MatchMark ok={ok} small />
                 </span>
-                <Row ok={ok} top={e.gl} bottom={`₹${inr.format(e.amt)}`} />
-              </motion.div>
+              </div>
             );
           })}
-        </AnimatePresence>
-      </div>
+        </div>
 
-      <MatchRing step={step} />
-    </div>
-  );
-}
-
-function Row({ ok, top, bottom }: { ok: boolean; top: string; bottom: string }) {
-  return (
-    <div
-      className="h-full min-w-0 rounded-lg px-3 py-1.5 transition-[background-color,box-shadow] duration-500"
-      style={{ background: ok ? "#ffffff" : "#fafafa", boxShadow: `inset 0 0 0 1px ${ok ? "rgba(14,139,163,0.35)" : "#e8e8e8"}` }}
-    >
-      <p className="truncate text-[11px] text-sub">{top}</p>
-      <p className="tabular truncate text-[13px] font-semibold text-ink">{bottom}</p>
-    </div>
-  );
-}
-
-function MatchRing({ step }: { step: number }) {
-  const r = 44;
-  const c = 2 * Math.PI * r;
-  return (
-    <div className="hidden w-[150px] shrink-0 flex-col items-center justify-center sm:flex">
-      <div className="relative size-[120px]">
-        <svg viewBox="0 0 120 120" className="size-full -rotate-90">
-          <circle cx="60" cy="60" r={r} stroke="#e8e8e8" strokeWidth="8" fill="none" />
-          <motion.circle
-            cx="60"
-            cy="60"
-            r={r}
-            stroke={T.solid}
-            strokeWidth="8"
-            strokeLinecap="round"
-            fill="none"
-            strokeDasharray={c}
-            initial={{ strokeDashoffset: c }}
-            whileInView={{ strokeDashoffset: c * (1 - 0.987) }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.6, ease }}
-          />
-        </svg>
-        <div className="absolute inset-0 grid place-items-center text-center">
-          <div>
-            <p className="tabular text-[22px] leading-none font-semibold tracking-[-0.02em] text-ink">98.7%</p>
-            <p className="mt-1 text-[10.5px] text-sub">auto-matched</p>
+        <div className="absolute top-12 right-2 w-[46%] rounded-[18px] bg-white p-3 shadow-[0_28px_50px_-24px_rgba(14,60,80,0.55)] ring-1 ring-black/[0.07] sm:top-14 sm:right-3 sm:w-[236px]">
+          <div className="flex items-center justify-between">
+            <p className="text-[13px] font-semibold text-ink">Match to ledger</p>
+            <span className="tabular text-[11px] font-semibold" style={{ color: T.deep }}>
+              98.7%
+            </span>
+          </div>
+          <p className="mt-0.5 text-[11px] text-sub">Payments lock to settlement on their own.</p>
+          <div className="mt-2.5 space-y-1.5">
+            {txns.slice(0, 4).map((row, i) => {
+              const ok = matched(i);
+              return (
+                <div key={row.id} className="flex items-center gap-2 rounded-xl px-2 py-1.5" style={{ background: i === focus && playing ? T.soft : "#f7fafb" }}>
+                  <div className="min-w-0 flex-1">
+                    <p className="tabular truncate text-[11.5px] font-semibold text-ink">
+                      {row.id}
+                      <span className="font-medium text-sub"> · •••• {row.card}</span>
+                    </p>
+                    <p className="truncate text-[10.5px] text-copy">
+                      ₹{inr.format(row.amt)} → {row.ledger}
+                    </p>
+                  </div>
+                  <MatchMark ok={ok} />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
-      <p className="tabular mt-3 text-[13px] font-semibold" style={{ color: T.deep }}>
-        {inr.format(1284 + step)} today
-      </p>
     </div>
+  );
+}
+
+function MatchMark({ ok, small = false }: { ok: boolean; small?: boolean }) {
+  const size = small ? "size-4" : "size-5";
+  return (
+    <motion.span
+      className={`grid ${size} shrink-0 place-items-center rounded-full`}
+      initial={false}
+      animate={{ backgroundColor: ok ? T.solid : "#e7eef0", color: ok ? "#ffffff" : "#8aa0a6" }}
+      transition={{ duration: 0.25 }}
+    >
+      {ok ? <Check className={small ? "size-2" : "size-2.5"} /> : <span className={`${small ? "h-px w-1.5" : "h-[1.5px] w-2"} rounded-full bg-current`} />}
+    </motion.span>
   );
 }
