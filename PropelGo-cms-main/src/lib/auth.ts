@@ -8,6 +8,10 @@ import { redirect } from "next/navigation";
 const COOKIE_NAME = "propelgo_admin_session";
 const SESSION_DURATION_SECONDS = 60 * 60 * 8;
 
+// Session subject for the admin configured through ADMIN_EMAIL / ADMIN_PASSWORD_HASH
+// rather than a row in admin_users.
+export const ENV_ADMIN_ID = 0;
+
 function getAuthKey(): Uint8Array {
   const secret = process.env.AUTH_SECRET;
 
@@ -63,7 +67,7 @@ export async function getAdminSession(): Promise<{
     if (
       payload.role !== "admin" ||
       !Number.isSafeInteger(adminId) ||
-      adminId <= 0
+      adminId < ENV_ADMIN_ID
     ) {
       return null;
     }

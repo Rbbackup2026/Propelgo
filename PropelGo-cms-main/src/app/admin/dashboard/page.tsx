@@ -1,5 +1,5 @@
 
-import { requireAdmin } from "@/lib/auth";
+import { ENV_ADMIN_ID, requireAdmin } from "@/lib/auth";
 import { query } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -13,13 +13,16 @@ type AdminRow = {
 export default async function AdminDashboardPage() {
   const session = await requireAdmin();
 
-  const admins = await query<AdminRow[]>(
-    `SELECT name, email
-     FROM admin_users
-     WHERE id = ? AND is_active = TRUE
-     LIMIT 1`,
-    [session.adminId],
-  );
+  const admins =
+    session.adminId === ENV_ADMIN_ID
+      ? [{ name: "Admin", email: process.env.ADMIN_EMAIL ?? "" }]
+      : await query<AdminRow[]>(
+          `SELECT name, email
+           FROM admin_users
+           WHERE id = ? AND is_active = TRUE
+           LIMIT 1`,
+          [session.adminId],
+        );
 
   if (!admins[0]) {
     return (

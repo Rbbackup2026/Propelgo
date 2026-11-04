@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { query } from "@/lib/db";
-import { createAdminSession } from "@/lib/auth";
+import { ENV_ADMIN_ID, createAdminSession } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -32,6 +32,26 @@ export async function POST(request: Request) {
 
     const email = parsed.data.email.toLowerCase();
     const password = parsed.data.password;
+
+    const envAdminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+    const envAdminHash = process.env.ADMIN_PASSWORD_HASH;
+
+    if (envAdminEmail && envAdminHash && email === envAdminEmail) {
+      if (!(await bcrypt.compare(password, envAdminHash))) {
+        return NextResponse.json(
+          { success: false, message: "Invalid email or password." },
+          { status: 401 },
+        );
+      }
+
+      await createAdminSession(ENV_ADMIN_ID);
+
+      return NextResponse.json({
+        success: true,
+        message: "Login successful.",
+        redirectTo: "/admin/dashboard",
+      });
+    }
 
     const admins = await query<AdminRow[]>(
       `SELECT id, password_hash, is_active
