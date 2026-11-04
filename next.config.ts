@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const cmsUrl = process.env.CMS_URL?.replace(/\/+$/, "");
+const cmsUrl = (process.env.CMS_URL ?? "https://propelgo-cms.vercel.app").replace(/\/+$/, "");
 
 const nextConfig: NextConfig = {
   /* config options here */
