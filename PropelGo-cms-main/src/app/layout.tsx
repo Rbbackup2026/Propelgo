@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import logo from "../../public/propelgo-logo.png";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,6 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "PropelGo Admin",
   description: "PropelGo website content management",
+  icons: { icon: logo.src },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
