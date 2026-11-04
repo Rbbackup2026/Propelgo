@@ -113,7 +113,7 @@ export default function AdminShell({
               pathname.startsWith(`${module.href}/`);
 
             return (
-              <Link
+              <Link prefetch={false}
                 key={module.href}
                 href={module.href}
                 aria-current={isActive ? "page" : undefined}

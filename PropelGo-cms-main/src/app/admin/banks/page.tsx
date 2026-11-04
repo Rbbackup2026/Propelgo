@@ -170,13 +170,13 @@ export default function BanksPage() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
           <BrandLogo width={180} />
           <div className="flex items-center gap-3">
-            <Link
+            <Link prefetch={false}
               href="/admin/dashboard"
               className="rounded-xl px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
             >
               Dashboard
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/admin/dashboard"
               className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
             >
@@ -200,7 +200,7 @@ export default function BanksPage() {
             </p>
           </div>
 
-          <Link
+          <Link prefetch={false}
             href="/admin/banks/new"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-800"
           >
@@ -359,7 +359,7 @@ export default function BanksPage() {
 
                         <td className="px-5 py-4">
                           <div className="flex items-center justify-end gap-2">
-                            <Link
+                            <Link prefetch={false}
                               href={`/admin/banks/${bank.id}/edit`}
                               className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100"
                             >

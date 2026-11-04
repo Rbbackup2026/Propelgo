@@ -242,7 +242,7 @@ export default function StatisticForm({ mode, statisticId }: Props) {
       </section>
 
       <div className="flex justify-end gap-3">
-        <Link
+        <Link prefetch={false}
           href="/admin/statistics"
           className="rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
         >

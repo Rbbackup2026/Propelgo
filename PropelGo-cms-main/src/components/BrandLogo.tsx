@@ -14,7 +14,7 @@ export default function BrandLogo({
   className = "",
 }: BrandLogoProps) {
   return (
-    <Link
+    <Link prefetch={false}
       href={href}
       aria-label="PropelGo dashboard"
       className={`inline-flex w-fit shrink-0 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-4 ${className}`}

@@ -290,7 +290,7 @@ export default function AdminEntityForm({
       </section>
 
       <div className="flex flex-wrap justify-end gap-3">
-        <Link
+        <Link prefetch={false}
           href={`/admin/${kind}`}
           className="rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
         >

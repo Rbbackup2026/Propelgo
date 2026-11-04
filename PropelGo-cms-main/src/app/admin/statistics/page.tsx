@@ -160,7 +160,7 @@ export default function StatisticsPage() {
       <header className="border-b border-slate-200 bg-white px-5 py-4 sm:px-8">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
           <BrandLogo width={180} />
-          <Link
+          <Link prefetch={false}
             href="/admin/dashboard"
             className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
@@ -183,7 +183,7 @@ export default function StatisticsPage() {
             </p>
           </div>
 
-          <Link
+          <Link prefetch={false}
             href="/admin/statistics/new"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-700 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-teal-800"
           >
@@ -310,7 +310,7 @@ export default function StatisticsPage() {
                         </td>
                         <td className="px-5 py-4">
                           <div className="flex items-center justify-end gap-2">
-                            <Link
+                            <Link prefetch={false}
                               href={`/admin/statistics/${item.id}/edit`}
                               className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100"
                             >

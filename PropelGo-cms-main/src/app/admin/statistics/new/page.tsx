@@ -12,14 +12,14 @@ export default async function NewStatisticPage() {
       <header className="border-b border-slate-200 bg-white px-5 py-4 sm:px-8">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
           <BrandLogo width={180} />
-          <Link href="/admin/dashboard" className="text-sm font-medium text-slate-600 hover:text-teal-700">
+          <Link prefetch={false} href="/admin/dashboard" className="text-sm font-medium text-slate-600 hover:text-teal-700">
             Dashboard
           </Link>
         </div>
       </header>
 
       <div className="mx-auto max-w-5xl px-5 py-8 sm:px-8">
-        <Link href="/admin/statistics" className="text-sm font-medium text-teal-700 hover:underline">
+        <Link prefetch={false} href="/admin/statistics" className="text-sm font-medium text-teal-700 hover:underline">
           ← All statistics
         </Link>
 
