@@ -135,7 +135,6 @@ export const products = {
   title: "One platform. Multiple ways to power business payments.",
   highlight: "power business payments.",
   copy: "From vendor payments and commercial credit to payment orchestration, PropelGo brings together infrastructure designed for modern enterprise payment operations.",
-  hint: "Tap a card to see what's inside",
   items: [
     {
       key: "versa" as ProductKey,

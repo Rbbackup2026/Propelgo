@@ -8,7 +8,7 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { Resources } from "@/components/home/Resources";
 import { FinalCta } from "@/components/home/FinalCta";
 import { DirectionSwitcher } from "@/components/options/DirectionSwitcher";
-import { Hero } from "@/components/home/Hero";
+import { HeroC } from "@/components/options/c/HeroC";
 import { EcosystemC } from "@/components/options/c/EcosystemC";
 import { OverviewC } from "@/components/options/c/OverviewC";
 
@@ -22,7 +22,7 @@ export default function DirectionC() {
     <>
       <Header />
       <main>
-        <Hero ribbon="twist" />
+        <HeroC orbit />
         <EcosystemC />
         <OverviewC />
         <Products />

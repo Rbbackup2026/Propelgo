@@ -11,6 +11,7 @@ import { Check, ContactlessIcon } from "@/components/ui/icons";
 import { usePreloaderDone } from "@/lib/preloader";
 import { useStageScale } from "@/lib/useStageScale";
 import { OdccScene, RoutingScene } from "./HeroScenes";
+import { CardOrbit } from "./CardOrbit";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 /** Lets the preloader curtain clear before copy rises. */
@@ -29,7 +30,8 @@ const TXNS = [
   { vendor: "Vendor Atlas, Mumbai", initials: "VA", last4: "1184", amount: 32000 },
 ];
 
-export function HeroC() {
+/** `orbit` is Direction C: the card stays centred while Versa screens from the single-flow dashboards turn around it. */
+export function HeroC({ orbit = false }: { orbit?: boolean }) {
   const reduce = useReducedMotion();
   const ready = usePreloaderDone() || !!reduce;
   const px = useMotionValue(0);
@@ -94,7 +96,7 @@ export function HeroC() {
           </motion.div>
         </div>
 
-        <Stage ready={ready} mx={mx} my={my} />
+        <Stage ready={ready} mx={mx} my={my} orbit={orbit} />
       </div>
     </section>
   );
@@ -120,7 +122,14 @@ const SCENES = [
   { key: "routing", ms: 8700 },
 ] as const;
 
-function Stage({ ready, mx, my }: { ready: boolean; mx: MotionValue<number>; my: MotionValue<number> }) {
+/** Direction C gives the centred card and the two Versa screens a full turn before ODCC. */
+const ORBIT_SCENES = [
+  { key: "versa", ms: 15000 },
+  { key: "odcc", ms: 7800 },
+  { key: "routing", ms: 8700 },
+] as const;
+
+function Stage({ ready, mx, my, orbit }: { ready: boolean; mx: MotionValue<number>; my: MotionValue<number>; orbit: boolean }) {
   const { ref, scale } = useStageScale<HTMLDivElement>(STAGE_W);
   const inView = useInView(ref, { margin: "0px 0px -10% 0px" });
   const reduce = useReducedMotion();
@@ -133,26 +142,28 @@ function Stage({ ready, mx, my }: { ready: boolean; mx: MotionValue<number>; my:
   const farX = useTransform(mx, [-0.5, 0.5], [8, -8]);
   const parallax = { nearX, nearY, farX };
 
+  const scenes = orbit ? ORBIT_SCENES : SCENES;
   const [scene, setScene] = useState(0);
   useEffect(() => {
     if (!live) return;
-    const id = setTimeout(() => setScene((s) => (s + 1) % SCENES.length), SCENES[scene].ms);
+    const id = setTimeout(() => setScene((s) => (s + 1) % scenes.length), scenes[scene].ms);
     return () => clearTimeout(id);
-  }, [live, scene]);
+  }, [live, scene, scenes]);
 
   return (
     <div ref={ref} className="relative w-full" style={{ height: STAGE_H * scale }}>
       <div className="absolute top-0 left-0 origin-top-left" style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}>
         <AnimatePresence initial={false}>
           <motion.div
-            key={SCENES[scene].key}
+            key={scenes[scene].key}
             className="absolute inset-0"
             initial={{ opacity: 0, x: 70, scale: 0.95, filter: "blur(8px)" }}
             animate={{ opacity: 1, x: 0, scale: 1, filter: "blur(0px)" }}
             exit={{ opacity: 0, x: -70, scale: 0.95, filter: "blur(8px)" }}
             transition={{ duration: 0.8, ease }}
           >
-            {scene === 0 && <VersaScene ready={ready} live={live} rotateX={rotateX} rotateY={rotateY} {...parallax} />}
+            {scene === 0 &&
+              (orbit ? <CardOrbit live={live} /> : <VersaScene ready={ready} live={live} rotateX={rotateX} rotateY={rotateY} {...parallax} />)}
             {scene === 1 && <OdccScene live={live} {...parallax} />}
             {scene === 2 && <RoutingScene live={live} {...parallax} />}
           </motion.div>

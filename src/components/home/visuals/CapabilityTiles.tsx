@@ -4,6 +4,7 @@ import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { Fragment } from "react";
 import type { CapabilityKey } from "@/content/home";
 import { Check, ContactlessIcon } from "@/components/ui/icons";
+import { LOGO_GREEN, LOGO_MARK } from "@/components/ui/Logo";
 import { usePhaseLoop } from "@/lib/useStageScale";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 
@@ -117,7 +118,12 @@ function RouterArt({ playing }: { playing: boolean }) {
         transition={{ type: "spring", bounce: 0.5, visualDuration: 0.4 }}
       >
         <rect x={HUB.x - 34} y={HUB.y - 34} width="68" height="68" rx="18" fill={R.solid} />
-        <path d={`M ${HUB.x - 14} ${HUB.y} h 8 c 6 0 6 -10 13 -10 h 7 M ${HUB.x - 6} ${HUB.y} c 6 0 6 10 13 10 h 7 M ${HUB.x - 6} ${HUB.y} h 20`} stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
+        <g transform={`translate(${HUB.x - 22.3} ${HUB.y - 22}) scale(1.1)`} aria-label="PropelGo">
+          <path d={LOGO_MARK.disc} fill="#062617" />
+          <path fillRule="evenodd" clipRule="evenodd" d={LOGO_MARK.p} fill="#fff" />
+          <path fillRule="evenodd" clipRule="evenodd" d={LOGO_MARK.arrow} fill={LOGO_GREEN} />
+          <path fillRule="evenodd" clipRule="evenodd" d={LOGO_MARK.dot} fill="#fff" />
+        </g>
       </motion.g>
 
       <AnimatePresence mode="wait">

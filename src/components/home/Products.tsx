@@ -70,9 +70,6 @@ function ProductsSection() {
 
       <div className="container-page relative">
         <SectionIntro title={products.title} highlight={spectrum ? products.highlight : undefined} copy={products.copy} align="center" />
-        <p className="mt-6 flex items-center justify-center gap-2 text-[14px] text-sub">
-          <FlipIcon className="size-4" /> {products.hint}
-        </p>
       </div>
 
       {desktop ? <Stage /> : <MobileRow />}

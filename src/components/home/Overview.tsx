@@ -487,7 +487,10 @@ const STREAM: StreamItem[] = kinds.flatMap((_, i) => [
 function VerticalRail() {
   const loop = [...STREAM, ...STREAM];
   return (
-    <div className="relative mt-6 h-[560px] overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,#000_6%,#000_94%,transparent)] lg:h-auto lg:min-h-[600px] lg:flex-1">
+    <div
+      data-autoscroll-pause
+      className="group/stream relative mt-6 h-[560px] overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,#000_6%,#000_94%,transparent)] lg:h-auto lg:min-h-[600px] lg:flex-1"
+    >
       <svg viewBox="0 0 400 800" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 size-full" fill="none" aria-hidden="true">
         <defs>
           <linearGradient id="strand" x1="0" y1="0" x2="0" y2="800" gradientUnits="userSpaceOnUse">
@@ -500,7 +503,7 @@ function VerticalRail() {
           <path key={i} d={d} stroke="url(#strand)" strokeOpacity={0.22} strokeWidth="1" vectorEffect="non-scaling-stroke" />
         ))}
       </svg>
-      <div className="group/stream absolute inset-x-0 top-0">
+      <div className="absolute inset-x-0 top-0">
         {/* Per-item padding rather than gap keeps the -50% loop seamless. */}
         <ul className="animate-marquee-y group-hover/stream:[animation-play-state:paused] motion-reduce:animate-none">
           {loop.map((it, i) => (

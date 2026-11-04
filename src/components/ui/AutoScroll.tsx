@@ -43,7 +43,7 @@ function nextTarget() {
   const max = document.documentElement.scrollHeight - vh;
   if (y >= max - 4) return null;
   const tops = Array.from(document.querySelectorAll<HTMLElement>("main > *, body > footer, footer")).map((el) => Math.round(el.getBoundingClientRect().top + y));
-  const next = tops.sort((a, b) => a - b).find((t) => t > y + 8);
+  const next = tops.sort((a, b) => a - b).find((t) => t > y + 40);
   const target = next !== undefined && next - y <= vh ? next : y + Math.round(vh * 0.85);
   return Math.min(target, max);
 }
@@ -62,11 +62,12 @@ export function AutoScroll() {
     let glide: AnimationPlaybackControls | null = null;
     let countdown: AnimationPlaybackControls | null = null;
     let lastY = -1;
+    let held = false;
 
     const schedule = () => {
       window.clearTimeout(timer);
       countdown?.stop();
-      if (nextTarget() === null) {
+      if (held || nextTarget() === null) {
         progress.set(0);
         return;
       }
@@ -106,7 +107,23 @@ export function AutoScroll() {
       schedule();
     };
 
+    /** Hovering a [data-autoscroll-pause] region holds the countdown until the cursor leaves. */
+    const setHeld = (next: boolean) => {
+      if (next === held) return;
+      held = next;
+      if (!glide) schedule();
+    };
+    const onPointerOver = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      setHeld(e.target instanceof Element && !!e.target.closest("[data-autoscroll-pause]"));
+    };
+    const onPointerOut = (e: PointerEvent) => {
+      if (e.pointerType === "mouse" && !e.relatedTarget) setHeld(false);
+    };
+
     const opts = { passive: true } as const;
+    window.addEventListener("pointerover", onPointerOver, opts);
+    window.addEventListener("pointerout", onPointerOut, opts);
     window.addEventListener("wheel", interrupt, opts);
     window.addEventListener("touchstart", interrupt, opts);
     window.addEventListener("pointerdown", interrupt, opts);
@@ -119,6 +136,8 @@ export function AutoScroll() {
       glide?.stop();
       countdown?.stop();
       progress.set(0);
+      window.removeEventListener("pointerover", onPointerOver);
+      window.removeEventListener("pointerout", onPointerOut);
       window.removeEventListener("wheel", interrupt);
       window.removeEventListener("touchstart", interrupt);
       window.removeEventListener("pointerdown", interrupt);
