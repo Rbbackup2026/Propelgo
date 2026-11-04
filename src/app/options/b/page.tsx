@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Hero } from "@/components/home/Hero";
 import { Ecosystem } from "@/components/home/Ecosystem";
-import { Overview } from "@/components/home/Overview";
+import { ExperienceStats } from "@/components/home/Overview";
+import { Leadership } from "@/components/home/Leadership";
 import { Products } from "@/components/home/Products";
 import { Capabilities } from "@/components/home/Capabilities";
 import { Security } from "@/components/home/Security";
@@ -11,6 +11,7 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { Resources } from "@/components/home/Resources";
 import { FinalCta } from "@/components/home/FinalCta";
 import { DirectionSwitcher } from "@/components/options/DirectionSwitcher";
+import { HeroB } from "@/components/options/b/HeroB";
 
 export const metadata: Metadata = {
   title: "Direction B",
@@ -22,17 +23,18 @@ export default function DirectionB() {
     <>
       <Header />
       <main>
-        <Hero stage="dashboard" ribbon="fan" />
+        <HeroB />
         <Ecosystem />
-        <Overview />
+        <ExperienceStats />
         <Products />
         <Capabilities />
+        <Leadership />
         <Security />
         <Testimonials />
         <Resources />
         <FinalCta tone="spectrum" />
       </main>
-      <Footer ribbon="loop" />
+      <Footer ribbon="twist" />
       <DirectionSwitcher current="b" />
     </>
   );
