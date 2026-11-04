@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Served under the main site's domain via rewrites, so assets need their own prefix.
+  assetPrefix: "/admin-static",
   turbopack: {
     rules: {
       "*.css": {
